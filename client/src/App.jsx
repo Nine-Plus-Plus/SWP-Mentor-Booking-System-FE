@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div>    
-      App
+      App booking mentor
     </div>
   )
 }
