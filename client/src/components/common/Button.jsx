@@ -1,16 +1,26 @@
 import React, { memo } from 'react'
 
-const Button = ({text, textColor, bgColor, bgHover, IcAfter, onClick, fullWidth, type='submit' }) => {
-    return (
+const Button = ({
+    text,
+    textColor,
+    bgColor,
+    bgHover,
+    IcBefore,
+    onClick,
+    fullWidth,
+    htmlType,
+    isLoading, 
+}) => {    return (
         <button
-            type={type}
+            type={htmlType}
             className={`w-full ${textColor} ${bgColor} ${fullWidth} 
             flex items-center justify-center gap-1 cursor-pointer text-xl
             p-2 rounded-lg hover:underline px-12 font-semibold hover:${bgHover}`}
             onClick={onClick}
-        >
-            {IcAfter && <IcAfter />}
+        >   
+            {IcBefore && <IcBefore />}
             {text}
+        {isLoading && <i class="fa-solid fa-circle-notch fa-spin text-sm"></i>}
         </button>
     )
 }

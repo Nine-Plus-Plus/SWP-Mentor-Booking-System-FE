@@ -5,12 +5,17 @@ import { Divider, Form, Input } from 'antd'
 import { EyeInvisibleFilled, EyeTwoTone, GoogleCircleFilled, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 import { Button } from '../index'
 import icons from '../../utils/icon'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { StudentLogin } from '../../apis/UserServices'
+import { toast } from 'react-toastify';
+
 
 const Login = () => {
     const [isShowPass, setIsShowPass] = useState(false)
     const [form] = Form.useForm()
-    const [payload, setPayload] = useState({})
+    const [payload, setPayload] = useState({ username: '', password: '' })
+    const navigate = useNavigate()
+    const [isLoading, setIsLoading] = useState(false)
     
     const { FaSignInAlt, FcGoogle } = icons
 
@@ -18,7 +23,30 @@ const Login = () => {
         setPayload(values)
     }
 
-    console.log(payload)
+    const handleLogin = async () => {
+        if (payload.username && payload.password) {
+            setIsLoading(true)
+            const response = await StudentLogin(payload)
+            setIsLoading(false)
+            if (response && response.data.token) {
+                localStorage.setItem("token", response.data.token)
+                toast.success("Login SuccessFull")
+                navigate('/')
+            }
+            else {
+                if (response && response.status === 400)
+                    toast.error(response.data.error)
+            }
+        }
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setPayload((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
     return (
         <div className="w-full h-min-heigh-custom flex items-center justify-center">
@@ -54,7 +82,9 @@ const Login = () => {
                             <Input
                                 prefix={<UserOutlined className="mr-2" />}
                                 placeholder="Username"
+                                name="username"
                                 className='text-xl'
+                                onChange={handleInputChange} // Gán hàm xử lý onChange
                             />
                         </Form.Item>
                         <Form.Item
@@ -71,6 +101,8 @@ const Login = () => {
                                 type={isShowPass ? 'text' : 'password'}
                                 placeholder="Password"
                                 className='text-xl'
+                                name="password"
+                                onChange={handleInputChange} // Gán hàm xử lý onChange
                                 suffix={
                                     isShowPass ?
                                         <EyeTwoTone className='text-gray-400' onClick={() => { setIsShowPass(false) }}/>
@@ -91,17 +123,20 @@ const Login = () => {
                                 bgColor='bg-main-1'
                                 bgHover={'bg-main-2'}
                                 text={'Sign In'}
-                                IcAfter={FaSignInAlt}
+                                htmlType='submit'
+                                IcBefore={FaSignInAlt}
+                                onClick={handleLogin}
+                                isLoading={isLoading}
                             />
                         </Form.Item>
-                        <Divider style={{borderColor:'#C1C1C1'}}>
+                        <Divider style={{ borderColor: '#C1C1C1' }}>
                             Sign in with
                         </Divider>
                         <Button
-                            IcAfter={FcGoogle}
+                            IcBefore={FcGoogle}
                             bgColor='bg-gray-100'
                             bgHover={'bg-blue-300'}
-                            type='button'
+                            htmlType='button'
                         >
                         </Button>
                     </Form>
