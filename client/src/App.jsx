@@ -5,8 +5,8 @@ import Login from './components/login/Login'
 import PublicLayout from './pages/public/PublicLayout'
 import PublicHome from './pages/public/PublicHome'
 import PublicAboutUs from './pages/public/PublicAboutUs'
-import PublicStudent from './pages/public/PublicStudent'
 import { ToastContainer } from 'react-toastify';
+import PublicStudent from './pages/users/PublicStudent'
 
 function App() {
 
@@ -23,7 +23,8 @@ function App() {
           <Route path={path.ABOUT_US} element={<PublicAboutUs />}/>
           <Route path={path.LOGIN} element={<Login />}/>
         </Route>
-        <Route path={path.PUBLIC_STUDENT} element={<PublicStudent/>} />
+        <Route path={path.PUBLIC_STUDENT} element={<PublicStudent />}>
+        </Route>
       </Routes>
     </div>
   )

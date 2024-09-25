@@ -4,7 +4,7 @@ const path = {
     LOGIN: "login",
     PUBLIC: "public",
     ABOUT_US: "about-us",
-    PUBLIC_STUDENT: "public-student"
+    PUBLIC_STUDENT: "student"
 }
 
 export default path

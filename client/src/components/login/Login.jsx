@@ -31,7 +31,7 @@ const Login = () => {
             if (response && response.data.token) {
                 localStorage.setItem("token", response.data.token)
                 toast.success("Login SuccessFull")
-                navigate('/')
+                navigate('/public-student')
             }
             else {
                 if (response && response.status === 400)

@@ -1,8 +1,10 @@
+
 import React from 'react'
 
-const TopHeader = () => {
+const TopHeader = ({mode}) => {
     return (
-        <div>TopHeader</div>
+        <div >
+        </div>
     )
 }
 
