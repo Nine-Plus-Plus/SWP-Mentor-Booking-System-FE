@@ -1,10 +1,15 @@
 const path = {
-    HOME: "",
-    // PUBLIC_HOME: "public",
+    // Public
+    HOME: "/*",
     LOGIN: "login",
     PUBLIC: "public",
     ABOUT_US: "about-us",
-    PUBLIC_STUDENT: "student"
+
+    // Student
+    PUBLIC_STUDENT: "student",
+    STUDENT_HOME: "home",
+    STUDENT_VIEW_MENTOR: "view-mentor",
+    STUDENT_VIEW_CLASS: "view-class",
 }
 
 export default path

@@ -8,6 +8,7 @@ import icons from '../../utils/icon'
 import { Link, useNavigate } from 'react-router-dom'
 import { StudentLogin } from '../../apis/UserServices'
 import { toast } from 'react-toastify';
+import { useUserStore } from '../../store/useUserStore'
 
 
 const Login = () => {
@@ -16,6 +17,7 @@ const Login = () => {
     const [payload, setPayload] = useState({ username: '', password: '' })
     const navigate = useNavigate()
     const [isLoading, setIsLoading] = useState(false)
+    const { setModal } = useUserStore()
     
     const { FaSignInAlt, FcGoogle } = icons
 
@@ -29,9 +31,10 @@ const Login = () => {
             const response = await StudentLogin(payload)
             setIsLoading(false)
             if (response && response.data.token) {
-                localStorage.setItem("token", response.data.token)
+                ///// set token
+                setModal(response.data.token, 'student', 'Wyn', true)
                 toast.success("Login SuccessFull")
-                navigate('/public-student')
+                navigate('/student')
             }
             else {
                 if (response && response.status === 400)
@@ -121,7 +124,7 @@ const Login = () => {
                             <Button
                                 textColor='text-white'
                                 bgColor='bg-main-1'
-                                bgHover={'bg-main-2'}
+                                bgHover='hover:bg-main-2'
                                 text={'Sign In'}
                                 htmlType='submit'
                                 IcBefore={FaSignInAlt}
@@ -135,7 +138,7 @@ const Login = () => {
                         <Button
                             IcBefore={FcGoogle}
                             bgColor='bg-gray-100'
-                            bgHover={'bg-blue-300'}
+                            bgHover='hover:bg-blue-300'
                             htmlType='button'
                         >
                         </Button>

@@ -1,26 +1,39 @@
 import React, { memo, useState } from 'react'
-import { Button, Dropdown, Layout, Menu, Space, Tooltip } from 'antd'
-import { NavLink } from 'react-router-dom'
+import { Button, Dropdown, Layout, Menu, Space } from 'antd'
+import { NavLink, Outlet } from 'react-router-dom'
 import { AppstoreOutlined, AreaChartOutlined, CaretDownOutlined, ContactsOutlined, HomeOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined, SolutionOutlined, TeamOutlined, TransactionOutlined, UserOutlined } from '@ant-design/icons'
 import icons from '../../utils/icon'
+import path from '../../utils/path'
+import { toast } from 'react-toastify'
+import { useUserStore } from '../../store/useUserStore'
 
-const Navigation = () => {
+const Navigation = ({ children }) => {
+    
     const { Header, Sider } = Layout
-    const [collapsed, setCollapsed] = useState(false)
     const { IoIosNotifications } = icons
     const [notificationCount, setNotificationCount] = useState(3)
+    const { resetUserStore } = useUserStore()
+    const [collapsed, setCollapsed] = useState(false)
+    const { Content } = Layout;
+
+    const handleLogOut = () => {
+        resetUserStore()
+        toast.success("Log Out SuccessFull!!!")
+    }
 
     const menuNavbarItems = [
         {
             key: "home",
             icon: <HomeOutlined />,
-            label: "Home",
+            label: <NavLink to={'/'} className="text-white">Home</NavLink>,
             className: 'text-white text-lg',
         },
         {
             key: "mentor",
             icon: <SolutionOutlined />,
             label: "Mentor",
+            label: <NavLink to={path.STUDENT_VIEW_MENTOR} className="text-white">Mentor</NavLink>,
+
             className: 'text-white text-lg',
         },
         {
@@ -38,7 +51,7 @@ const Navigation = () => {
         {
             key: "class",
             icon: <ContactsOutlined />,
-            label: "Class",
+            label: <NavLink to={path.STUDENT_VIEW_CLASS} className="text-white">Class</NavLink>,
             className: 'text-white text-lg',
         },
         {
@@ -78,62 +91,16 @@ const Navigation = () => {
             key: "logout",
             icon: <LogoutOutlined />,
             label: "Log Out",
+            onClick: handleLogOut
         },
     ];
 
-    
-    // const menuItems = [
-    //     {
-    //       key: "home",
-    //       icon: <HomeOutlined />,
-    //       label: <NavLink to="/home" className="text-white">Home</NavLink>,
-    //       className: 'text-white text-lg',
-    //     },
-    //     {
-    //       key: "mentor",
-    //       icon: <SolutionOutlined />,
-    //       label: <NavLink to="/mentor" className="text-white">Mentor</NavLink>,
-    //       className: 'text-white text-lg',
-    //     },
-    //     {
-    //       key: "activity",
-    //       icon: <AppstoreOutlined />,
-    //       label: <NavLink to="/activity" className="text-white">Activity</NavLink>,
-    //       className: 'text-white text-lg',
-    //     },
-    //     {
-    //       key: "progress",
-    //       icon: <AreaChartOutlined />,
-    //       label: <NavLink to="/progress" className="text-white">Process</NavLink>,
-    //       className: 'text-white text-lg',
-    //     },
-    //     {
-    //       key: "class",
-    //       icon: <ContactsOutlined />,
-    //       label: <NavLink to="/class" className="text-white">Class</NavLink>,
-    //       className: 'text-white text-lg',
-    //     },
-    //     {
-    //       key: "group",
-    //       icon: <TeamOutlined />,
-    //       label: <NavLink to="/group" className="text-white">Group</NavLink>,
-    //       className: 'text-white text-lg',
-    //     },
-    //     {
-    //       key: "point",
-    //       icon: <TransactionOutlined />,
-    //       label: <NavLink to="/point" className="text-white">History point</NavLink>,
-    //       className: 'text-white text-lg',
-    //     },
-    //   ];
-
-
     return (
-        <Layout className='bg-gray-300'>
+        <Layout className='bg-gray-300 flex w-3/5 h-screen'>
             <Sider className='text-white' collapsed={collapsed} >
                 <div className='h-[8vh] flex items-center justify-center py-[1vh] bg-gray-200 '>
                     <NavLink className='flex items-center h-full'
-                        to={'.'}
+                        to={'/'}
                         onClick={() => { setVariant('/public') }}
                     >
                         <img src='logoFPT.svg' className='object-contain h-full' />
@@ -146,7 +113,7 @@ const Navigation = () => {
                     theme='light'
                 />
             </Sider>
-            <Layout>
+            <Layout className='relative'>
                 <Header className='bg-gray-200 p-0 flex items-center h-[8vh] justify-between'>
                     <Button
                         type='text'
@@ -187,10 +154,17 @@ const Navigation = () => {
                             </div>
                         </div>
                     </div>
-                </Header>   
+                </Header>
+                
+                {/* Component con */}
+                <Content className='p-2 overflow-auto h-[calc(100vh-8vh)] w-full'>
+                    <div className="w-full h-full flex flex-col flex-wrap break-words">
+                        {children}
+                    </div>
+                </Content>
             </Layout>
         </Layout>
     )
 }
 
-export default Navigation
+export default memo(Navigation)
