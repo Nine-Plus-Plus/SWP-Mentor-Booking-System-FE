@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import path from './utils/path'
 import { Route, Routes } from 'react-router-dom'
-import Login from './components/login/Login'
+import {Login} from './components/index'
 import PublicLayout from './pages/public/PublicLayout'
 import PublicHome from './pages/public/PublicHome'
 import PublicAboutUs from './pages/public/PublicAboutUs'

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Divider, Form, Input } from 'antd'
