@@ -5,6 +5,7 @@ import Login from './components/login/Login'
 import PublicLayout from './pages/public/PublicLayout'
 import PublicHome from './pages/public/PublicHome'
 import PublicAboutUs from './pages/public/PublicAboutUs'
+import ForgotPass from './components/forgotpass/ForgotPass'
 
 function App() {
 
@@ -15,8 +16,8 @@ function App() {
           <Route index element={<PublicHome />}/>
           <Route path={path.ABOUT_US} element={<PublicAboutUs />}/>
           <Route path={path.LOGIN} element={<Login />}/>
-        </Route>
-          
+          <Route path={path.FORGOTPASS} element={<ForgotPass/>}/>
+        </Route>          
       </Routes>
     </div>
   )

@@ -81,7 +81,7 @@ const Login = () => {
                         </Form.Item>
                         <Form.Item>
                             {/* code here */}
-                            <Link to={'/'} className='text-blue-600 hover:underline'>
+                            <Link to="/public/forgot-pass" className='text-blue-600 hover:underline'>
                                 Forgot password ?
                             </Link>
                         </Form.Item>
