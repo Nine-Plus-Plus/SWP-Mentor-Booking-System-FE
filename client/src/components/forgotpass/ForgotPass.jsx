@@ -5,16 +5,21 @@ import { Divider, Form, Input } from 'antd'
 import { EyeInvisibleFilled, EyeTwoTone, GoogleCircleFilled, LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 import { Button } from '../index'
 import icons from '../../utils/icon'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 export const ForgotPass = () => {
     const [form] = Form.useForm()
-    const [payload, setPayload] = useState({})
+    const [payload, setPayload] = useState({}) 
+    const navigate = useNavigate()  // Sử dụng useNavigate để điều hướng   
     
     const { FaSignInAlt, FcGoogle } = icons
 
     const onFinish = values => {
         setPayload(values)
+        console.log('Payload:', values)
+        
+        // Điều hướng người dùng đến trang 'change-pass'
+        navigate('/public/change-pass')
     }
 
     console.log(payload)

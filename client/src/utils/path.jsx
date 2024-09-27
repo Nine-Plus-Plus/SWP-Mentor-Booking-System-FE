@@ -4,7 +4,8 @@ const path = {
     LOGIN: "login",
     PUBLIC: "public",
     ABOUT_US: "about-us",
-    FORGOTPASS: "forgot-pass",
+    FORGOT_PASSWORD: "forgot-pass",
+    CHANGE_PASSWORD: "change-pass",
 }
 
 export default path
