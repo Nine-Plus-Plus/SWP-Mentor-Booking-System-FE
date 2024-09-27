@@ -6,8 +6,9 @@ import icons from '../../utils/icon'
 import path from '../../utils/path'
 import { toast } from 'react-toastify'
 import { useUserStore } from '../../store/useUserStore'
+import Search from '../common/Search'
 
-const Navigation = ({ children }) => {
+const Navigation = ({ children, menuNavbarItemsStudent }) => {
     
     const { Header, Sider } = Layout
     const { IoIosNotifications } = icons
@@ -20,53 +21,6 @@ const Navigation = ({ children }) => {
         resetUserStore()
         toast.success("Log Out SuccessFull!!!")
     }
-
-    const menuNavbarItems = [
-        {
-            key: "home",
-            icon: <HomeOutlined />,
-            label: <NavLink to={'/'} className="text-white">Home</NavLink>,
-            className: 'text-white text-lg',
-        },
-        {
-            key: "mentor",
-            icon: <SolutionOutlined />,
-            label: "Mentor",
-            label: <NavLink to={path.STUDENT_VIEW_MENTOR} className="text-white">Mentor</NavLink>,
-
-            className: 'text-white text-lg',
-        },
-        {
-            key: "activity",
-            icon: <AppstoreOutlined />,
-            label: "Activity",
-            className: 'text-white text-lg',
-        },
-        {
-            key: "progress",
-            icon: <AreaChartOutlined />,
-            label: "Process",
-                className: 'text-white text-lg',
-        },
-        {
-            key: "class",
-            icon: <ContactsOutlined />,
-            label: <NavLink to={path.STUDENT_VIEW_CLASS} className="text-white">Class</NavLink>,
-            className: 'text-white text-lg',
-        },
-        {
-            key: "group",
-            icon: <TeamOutlined />,
-            label: "Group",
-            className: 'text-white text-lg',
-        },
-        {
-            key: "point",
-            icon: <TransactionOutlined />,
-            label: "History point",
-            className: 'text-white text-lg',
-        },
-    ];
 
     const items = [
         {
@@ -103,13 +57,13 @@ const Navigation = ({ children }) => {
                         to={'/'}
                         onClick={() => { setVariant('/public') }}
                     >
-                        <img src='logoFPT.svg' className='object-contain h-full' />
+                        <img src='/public/logoFPT.svg' className='object-contain h-full' alt='logo' />
                     </NavLink>
                 </div>
                 <Menu
                     className='h-[92vh] w-full flex flex-col gap-3 text-white font-semibold'
                     mode='inline'
-                    items={menuNavbarItems}
+                    items={menuNavbarItemsStudent}
                     theme='light'
                 />
             </Sider>
@@ -136,7 +90,7 @@ const Navigation = ({ children }) => {
                             <Dropdown menu={{ items, }} trigger={['click']}>
                                 <Space>
                                     <img 
-                                        src='avatar-default.jpg' 
+                                        src='/public/avatar-default.jpg' 
                                         alt='avatar' 
                                         className='object-cover h-[6vh] w-[6vh] rounded-full cursor-pointer' 
                                     />
@@ -158,7 +112,8 @@ const Navigation = ({ children }) => {
                 
                 {/* Component con */}
                 <Content className='p-2 overflow-auto h-[calc(100vh-8vh)] w-full'>
-                    <div className="w-full h-full flex flex-col flex-wrap break-words">
+                    <div className="w-full h-full flex flex-col break-words">
+                        <Search />
                         {children}
                     </div>
                 </Content>

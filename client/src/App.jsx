@@ -6,7 +6,7 @@ import PublicLayout from './pages/public/PublicLayout'
 import PublicHome from './pages/public/PublicHome'
 import PublicAboutUs from './pages/public/PublicAboutUs'
 import { ToastContainer } from 'react-toastify';
-import PublicStudent from './pages/users/PublicStudent'
+import {PublicStudent, PublicMentor} from './pages/users'
 import PrivateRoute from '../middlewares/privateRoute'
 import { useUserStore } from './store/useUserStore'
 
@@ -22,15 +22,19 @@ function App() {
       />
       <Routes>
         <Route path="/" element={<Navigate to={!isLoggedIn ? path.PUBLIC : path.PUBLIC_STUDENT} replace />} />
+
+        {/* Route cho trang public */}
         <Route path={path.PUBLIC} element={<PublicLayout />}>
           <Route index element={<PublicHome />}/>
           <Route path={path.ABOUT_US} element={<PublicAboutUs />}/>
           <Route path={path.LOGIN} element={<Login />}/>
         </Route>
+
+        {/* Route cho trang mentor */}
         <Route
           path={path.PUBLIC_STUDENT}
           element={
-            <PrivateRoute >
+            <PrivateRoute role={role}>
               <PublicStudent />
             </PrivateRoute>
           }
@@ -39,6 +43,20 @@ function App() {
           <Route path={path.STUDENT_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
         </Route>
+
+        {/* Route cho trang mentor */}
+        <Route
+          path={path.PUBLIC_MENTOR}
+          element={
+            <PrivateRoute role={role}>
+              <PublicMentor />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<StudentHome />} />
+          <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
+        </Route>
+        <Route path="*" element={<Navigate to={path.PUBLIC} replace />} />
       </Routes>
     </div>
   )

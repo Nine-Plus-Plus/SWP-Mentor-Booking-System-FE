@@ -10,6 +10,11 @@ const path = {
     STUDENT_HOME: "home",
     STUDENT_VIEW_MENTOR: "view-mentor",
     STUDENT_VIEW_CLASS: "view-class",
+
+    // Mentor
+    PUBLIC_MENTOR: "mentor",
+    MENTOR_HOME: "home",
+    MENTOR_VIEW_CLASS: "view-class",
 }
 
 export default path
