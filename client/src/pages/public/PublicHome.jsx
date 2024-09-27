@@ -1,8 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import path from '../../utils/path'
+import { useUserStore } from '../../store/useUserStore'
 
 const PublicHome = () => {
+    const { isLoggedIn } = useUserStore()
     return (
         <div className="flex flex-col items-center justify-center h-min-heigh-custom">
             <header className="text-center my-8">
@@ -23,7 +25,7 @@ const PublicHome = () => {
                     </p>
                 </div>
                 <div className="space-x-4">
-                    <Link to={path.LOGIN}>
+                    <Link to={isLoggedIn ? '/' : path.LOGIN}>
                         <button className="px-6 py-3 bg-amber-200 text-orange-900 font-semibold rounded-md hover:bg-amber-800 hover:text-white">
                             Get Started
                         </button>

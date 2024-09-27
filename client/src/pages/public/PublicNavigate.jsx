@@ -1,18 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import path from '../../utils/path'
 import clsx from 'clsx'
+import { useUserStore } from '../../store/useUserStore'
+import { LoginOutlined, LogoutOutlined } from '@ant-design/icons'
 
 const PublicNavigate = () => {
     const navItem = 'text-xl font-semibold text-main-1 text-center w-[150px]'
     const navItemClick= 'border-b-4 border-main-1 font-black'
     const location = useLocation()
     const [variant, setVariant] = useState(location.pathname)
+    const { resetUserStore, isLoggedIn } = useUserStore()
+    
     useEffect(() => {
         setVariant(location.pathname)
     }, [location.pathname])
+
+    const handleLogout = () => {
+        resetUserStore()
+        toast.success("Log Out SuccessFull!!!")
+    }
     
-    console.log(location.pathname)
     return (
         <div className='w-full h-[8vh] p-2 px-5 flex flex-wrap items-center justify-between border-b'>
             <div className=' h-[6vh] flex flex-row items-center'>
@@ -51,15 +59,18 @@ const PublicNavigate = () => {
                     className={clsx(navItem, variant === '/public/login' && navItemClick)}
                     onClick={() => { setVariant('/public/login') }}
                 >
-                    <div className="flex items-center justify-center h-[6vh]">
+                    <div className="flex items-center justify-center h-[6vh] gap-2"
+                        onClick={isLoggedIn ? handleLogout : undefined}
+                    >
                         <span className="text-center">
-                            Login
+                            {isLoggedIn ? "Log Out" : "Log In"}
                         </span>
+                        {isLoggedIn ? <LogoutOutlined /> : <LoginOutlined />}
                     </div>
-                </NavLink>
+                </NavLink> 
             </div>
         </div>
     )
 }
 
-export default PublicNavigate
+export default memo(PublicNavigate)
