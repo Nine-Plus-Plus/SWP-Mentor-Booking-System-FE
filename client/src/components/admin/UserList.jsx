@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react"; // Import useState và useEffect
-import { getAllUsers } from "../../apis/UserServices";
-import { deleteUser } from "../../apis/UserServices";
+import React, { useState, useEffect } from 'react'; // Import useState và useEffect
+import { getAllUsers } from '../../apis/UserServices';
+import { deleteUser } from '../../apis/UserServices';
 
 function UserList() {
   const [users, setUsers] = useState([]);
@@ -9,12 +9,12 @@ function UserList() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       try {
         const response = await getAllUsers(token);
         setUsers(response.data.usersDTOList);
       } catch (err) {
-        setError(err.message || "Đã xảy ra lỗi");
+        setError(err.message || 'Đã xảy ra lỗi');
       } finally {
         setLoading(false);
       }
@@ -23,22 +23,22 @@ function UserList() {
     fetchUsers();
   }, []);
 
-  const handleDelete = async (userId) => {
-    const token = localStorage.getItem("token");
+  const handleDelete = async userId => {
+    const token = localStorage.getItem('token');
     try {
       const response = await deleteUser(userId, token);
       if (response.status === 200) {
-        toast.success("User deleted successfully");
-        setUsers(users.filter((user) => user.id !== userId)); // Cập nhật danh sách người dùng
+        toast.success('User deleted successfully');
+        setUsers(users.filter(user => user.id !== userId)); // Cập nhật danh sách người dùng
       } else {
-        toast.error("Failed to delete user: " + response.data.message);
+        toast.error('Failed to delete user: ' + response.data.message);
       }
     } catch (error) {
-      console.error("Delete user error:", error);
-      toast.error("Failed to delete user: " + error.message);
+      console.error('Delete user error:', error);
+      toast.error('Failed to delete user: ' + error.message);
     }
   };
-  const handleUpdate = async (userId) => {};
+  const handleUpdate = async userId => {};
 
   if (loading) {
     return <div className="text-center text-gray-700">Loading...</div>;
@@ -66,19 +66,12 @@ function UserList() {
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
             {users.map((user, index) => (
-              <tr
-                key={user.id}
-                className="border-b border-gray-200 hover:bg-gray-100"
-              >
-                <td className="py-3 px-6 text-left whitespace-nowrap">
-                  {index + 1}
-                </td>
+              <tr key={user.id} className="border-b border-gray-200 hover:bg-gray-100">
+                <td className="py-3 px-6 text-left whitespace-nowrap">{index + 1}</td>
                 <td className="py-3 px-6 text-left">{user.id}</td>
                 <td className="py-3 px-6 text-left">{user.username}</td>
                 <td className="py-3 px-6 text-left">{user.email}</td>
-                <td className="py-3 px-6 text-left">
-                  {new Date(user.dateCreated).toLocaleDateString()}
-                </td>
+                <td className="py-3 px-6 text-left">{new Date(user.dateCreated).toLocaleDateString()}</td>
                 <td className="py-3 px-6 text-left">{user.role.roleName}</td>
                 <td className="py-3 px-6 text-center">
                   <button

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Navigation } from "../../components/index";
-import { Outlet } from "react-router-dom";
-import { useUserStore } from "../../store/useUserStore";
-import { menuNavbarItemsStudent } from "../../utils/constant";
+import React, { useEffect, useState } from 'react';
+import { Navigation } from '../../components/index';
+import { Outlet } from 'react-router-dom';
+import { useUserStore } from '../../store/useUserStore';
+import { menuNavbarItemsStudent } from '../../utils/constant';
 
 const PublicStudent = () => {
   const { resetUserStore, token } = useUserStore();

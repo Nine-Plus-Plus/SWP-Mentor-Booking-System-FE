@@ -1,8 +1,8 @@
-import React from "react";
-import { Navigation } from "../../components/index";
-import { Outlet } from "react-router-dom";
-import { useUserStore } from "../../store/useUserStore";
-import { menuNavbarItemsAdmin } from "../../utils/constant";
+import React from 'react';
+import { Navigation } from '../../components/index';
+import { Outlet } from 'react-router-dom';
+import { useUserStore } from '../../store/useUserStore';
+import { menuNavbarItemsAdmin } from '../../utils/constant';
 
 function PublicAdmin() {
   return (
