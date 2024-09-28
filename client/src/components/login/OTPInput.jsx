@@ -3,7 +3,7 @@ import { Form } from 'antd';
 import { Button } from '../index';
 import { useNavigate } from 'react-router-dom';
 
-export const OTPInput = () => {
+const OTPInput = () => {
   const [disable, setDisable] = useState(false); // Trạng thái vô hiệu hóa nút
   const [timerCount, setTimerCount] = useState(30); // Thời gian đếm ngược (30 giây)
   const [otp, setOtp] = useState(['', '', '', '', '']); // State cho từng ô OTP
@@ -134,3 +134,5 @@ export const OTPInput = () => {
     </div>
   );
 };
+
+export default OTPInput;

@@ -2,42 +2,15 @@ import React, { useState } from 'react';
 import { Form, Input } from 'antd';
 import { EyeInvisibleFilled, EyeTwoTone, LockOutlined } from '@ant-design/icons';
 import { Button } from '../index';
-import { useNavigate } from 'react-router-dom';
-import { StudentLogin } from '../../apis/UserServices';
-import { toast } from 'react-toastify';
-import { useUserStore } from '../../store/useUserStore';
 
-export const ChangePass = () => {
-  const [isShowPass, setIsShowPass] = useState(false);
+const ChangePass = () => {
   const [form] = Form.useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { setModal } = useUserStore();
+  const [isShowPass, setIsShowPass] = useState(false);
+  const [payload, setPayload] = useState({});
 
-  // Hàm xử lý khi submit form
-  const onFinish = async values => {
-    const { newPassword } = values;
-    setIsLoading(true);
-    const response = await StudentLogin({ password: newPassword });
-    setIsLoading(false);
-    if (response && response.data.token) {
-      setModal(response.data.token, 'student', 'Wyn', true);
-      toast.success('Password Changed Successfully');
-      navigate('/student');
-    } else {
-      toast.error('Fail to change password!!!');
-    }
+  const onFinish = values => {
+    setPayload(values);
   };
-
-  // Hàm xác nhận mật khẩu có khớp hay không
-  const validateConfirmPassword = ({ getFieldValue }) => ({
-    validator(_, value) {
-      if (!value || getFieldValue('newPassword') === value) {
-        return Promise.resolve();
-      }
-      return Promise.reject(new Error('Passwords do not match!'));
-    }
-  });
 
   return (
     <div className="w-full h-min-heigh-custom flex items-center justify-center">
@@ -52,58 +25,61 @@ export const ChangePass = () => {
           <span className="text-gray-600 border-b-4 border-orange-600">Change Password</span>
         </div>
         <div className="w-full">
-          <Form name="change_password" form={form} onFinish={onFinish}>
-            {/* Trường nhập New Password */}
-            <Form.Item
-              name="newPassword"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your New Password!'
-                }
-              ]}
-            >
-              <Input.Password
+          <Form name="change_password" initialValues={{ remember: true }} form={form} onFinish={onFinish}>
+            {/* Password field */}
+            <Form.Item name="newPassword" rules={[{ required: true, message: 'Please input your new Password!' }]}>
+              <Input
                 prefix={<LockOutlined className="mr-2" />}
                 type={isShowPass ? 'text' : 'password'}
                 placeholder="New Password"
                 className="text-xl"
-                iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleFilled />)}
+                suffix={
+                  isShowPass ? (
+                    <EyeTwoTone className="text-gray-400" onClick={() => setIsShowPass(false)} />
+                  ) : (
+                    <EyeInvisibleFilled className="text-gray-400" onClick={() => setIsShowPass(true)} />
+                  )
+                }
               />
             </Form.Item>
 
-            {/* Trường nhập Confirm Password */}
+            {/* Confirm Password field */}
             <Form.Item
-              name="confirmPassword"
+              name="confirmNewPassword"
               dependencies={['newPassword']}
-              hasFeedback
               rules={[
                 {
                   required: true,
-                  message: 'Please confirm your New Password!'
+                  message: 'Please confirm your password!'
                 },
-                validateConfirmPassword // Thêm quy tắc kiểm tra mật khẩu khớp
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('newPassword') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('The two passwords do not match!'));
+                  }
+                })
               ]}
             >
-              <Input.Password
+              <Input
                 prefix={<LockOutlined className="mr-2" />}
                 type={isShowPass ? 'text' : 'password'}
                 placeholder="Confirm Password"
                 className="text-xl"
-                iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleFilled />)}
+                suffix={
+                  isShowPass ? (
+                    <EyeTwoTone className="text-gray-400" onClick={() => setIsShowPass(false)} />
+                  ) : (
+                    <EyeInvisibleFilled className="text-gray-400" onClick={() => setIsShowPass(true)} />
+                  )
+                }
               />
             </Form.Item>
 
-            {/* Nút Confirm */}
+            {/* Submit button */}
             <Form.Item className="flex items-center justify-center w-full">
-              <Button
-                textColor="text-white"
-                bgColor="bg-main-1"
-                bgHover="hover:bg-main-2"
-                text={'Confirm'}
-                htmlType="submit"
-                isLoading={isLoading}
-              />
+              <Button textColor="text-white" bgColor="bg-main-1" bgHover="bg-main-2" text="Confirm" />
             </Form.Item>
           </Form>
         </div>

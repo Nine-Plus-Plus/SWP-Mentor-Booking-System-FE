@@ -1,22 +1,22 @@
 import path from './utils/path';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { ClassList, Login, MentorList, StudentHome } from './components/index';
-import PublicLayout from './pages/public/PublicLayout';
-import PublicHome from './pages/public/PublicHome';
-import PublicAboutUs from './pages/public/PublicAboutUs';
+import {
+  ClassList,
+  Login,
+  MentorList,
+  StudentHome,
+  ChangePass,
+  OTPInput,
+  ForgotPass,
+  UserList,
+  AdminHome,
+  Activity,
+  StudentProfile
+} from './components/index';
+import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
-import { PublicStudent, PublicMentor } from './pages/users';
 import PrivateRoute from '../middlewares/privateRoute';
 import { useUserStore } from './store/useUserStore';
-import Activity from './components/student/Activity';
-import StudentProfile from './components/student/StudentProfile';
-import PublicAdmin from './pages/users/PublicAdmin';
-import ForgotPass from './components/login/ForgotPass'
-import ChangePass from './components/login/ChangePass'
-import { OTPInput } from './components/login/OTPInput'
-
-import AdminHome from './components/admin/AdminHome';
-import UserList from './components/admin/UserList';
 
 function App() {
   const { isLoggedIn, role } = useUserStore();
@@ -32,12 +32,12 @@ function App() {
 
         {/* Route cho trang public */}
         <Route path={path.PUBLIC} element={<PublicLayout />}>
-          <Route index element={<PublicHome />}/>
-          <Route path={path.ABOUT_US} element={<PublicAboutUs />}/>
-          <Route path={path.LOGIN} element={<Login />}/>
-          <Route path={path.FORGOT_PASS} element={<ForgotPass/>}/>
-          <Route path={path.CHANGE_PASS} element={<ChangePass/>}/>
-          <Route path={path.OTP_INPUT} element={<OTPInput/>}/>
+          <Route index element={<PublicHome />} />
+          <Route path={path.ABOUT_US} element={<PublicAboutUs />} />
+          <Route path={path.LOGIN} element={<Login />} />
+          <Route path={path.FORGOT_PASS} element={<ForgotPass />} />
+          <Route path={path.CHANGE_PASS} element={<ChangePass />} />
+          <Route path={path.OTP_INPUT} element={<OTPInput />} />
         </Route>
 
         {/* Route cho trang student */}

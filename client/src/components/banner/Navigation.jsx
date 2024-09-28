@@ -13,7 +13,7 @@ import icons from '../../utils/icon';
 import path from '../../utils/path';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../store/useUserStore';
-import Search from '../common/Search';
+import { Search } from '../index';
 
 const Navigation = ({ children, menuNavbarItemsStudent }) => {
   const { Header, Sider } = Layout;
