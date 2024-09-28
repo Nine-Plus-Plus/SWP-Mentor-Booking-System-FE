@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { getMyProfile } from "../../apis/UserServices"; // Đảm bảo đường dẫn chính xác
+import React, { useState, useEffect } from 'react';
+import { getMyProfile } from '../../apis/UserServices'; // Đảm bảo đường dẫn chính xác
 
 function StudentProfile() {
   const [profile, setProfile] = useState({
-    username: "",
-    email: "",
-    birthDate: "",
-    photo: "",
-    address: "",
-    phone: "",
-    gender: "",
-    dateCreated: "",
+    username: '',
+    email: '',
+    birthDate: '',
+    photo: '',
+    address: '',
+    phone: '',
+    gender: '',
+    dateCreated: ''
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,27 +18,27 @@ function StudentProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         if (token) {
           const response = await getMyProfile(token);
-          console.log("API Response:", response);
+          console.log('API Response:', response);
           const user = response.usersDTO;
           // Kiểm tra cấu trúc dữ liệu và gán giá trị tương ứng
           setProfile({
-            username: user.username || "",
-            email: user.email || "",
-            birthDate: user.birthDate || "",
-            photo: user.photo || "",
-            address: user.address || "",
-            phone: user.phone || "",
-            gender: user.gender || "",
-            dateCreated: user.dateCreated || "",
+            username: user.username || '',
+            email: user.email || '',
+            birthDate: user.birthDate || '',
+            photo: user.photo || '',
+            address: user.address || '',
+            phone: user.phone || '',
+            gender: user.gender || '',
+            dateCreated: user.dateCreated || ''
           });
         } else {
-          setError("Token không tồn tại");
+          setError('Token không tồn tại');
         }
       } catch (err) {
-        setError(err.message || "Đã xảy ra lỗi");
+        setError(err.message || 'Đã xảy ra lỗi');
       } finally {
         setLoading(false);
       }
@@ -69,10 +69,7 @@ function StudentProfile() {
           </div>
         )}
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-medium mb-2"
-            htmlFor="name"
-          >
+          <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="name">
             Name
           </label>
           <input
@@ -84,10 +81,7 @@ function StudentProfile() {
           />
         </div>
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-medium mb-2"
-            htmlFor="email"
-          >
+          <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="email">
             Email
           </label>
           <input
@@ -99,10 +93,7 @@ function StudentProfile() {
           />
         </div>
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-medium mb-2"
-            htmlFor="birthDate"
-          >
+          <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="birthDate">
             Birth Date
           </label>
           <input
@@ -114,10 +105,7 @@ function StudentProfile() {
           />
         </div>
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-medium mb-2"
-            htmlFor="address"
-          >
+          <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="address">
             Address
           </label>
           <input
@@ -129,10 +117,7 @@ function StudentProfile() {
           />
         </div>
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-medium mb-2"
-            htmlFor="phone"
-          >
+          <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="phone">
             Phone
           </label>
           <input
