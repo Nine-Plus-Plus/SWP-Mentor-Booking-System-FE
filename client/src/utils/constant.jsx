@@ -1,4 +1,4 @@
-import { AppstoreOutlined, AreaChartOutlined, ContactsOutlined, HomeOutlined, SolutionOutlined, TeamOutlined, TransactionOutlined } from "@ant-design/icons";
+import { AppstoreOutlined, AreaChartOutlined, ContactsOutlined, HomeOutlined, NotificationOutlined, SolutionOutlined, TeamOutlined, TransactionOutlined } from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 import path from "./path";
 
@@ -29,7 +29,7 @@ export const menuNavbarItemsStudent = [
     },
     {
         key: "notification",
-        icon: <AppstoreOutlined />,
+        icon: <NotificationOutlined />,
         label: "Notification",
         className: 'text-white text-lg',
     },
