@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react'
 import { Button, Dropdown, Layout, Menu, Space } from 'antd'
 import { NavLink, Outlet } from 'react-router-dom'
-import { AppstoreOutlined, AreaChartOutlined, CaretDownOutlined, ContactsOutlined, HomeOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined, SolutionOutlined, TeamOutlined, TransactionOutlined, UserOutlined } from '@ant-design/icons'
+import { CaretDownOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons'
 import icons from '../../utils/icon'
 import path from '../../utils/path'
 import { toast } from 'react-toastify'
@@ -61,7 +61,7 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
                     </NavLink>
                 </div>
                 <Menu
-                    className='h-[92vh] w-full flex flex-col gap-3 text-white font-semibold'
+                    className='h-[92vh] w-full flex flex-col gap-1 text-white font-semibold'
                     mode='inline'
                     items={menuNavbarItemsStudent}
                     theme='light'
