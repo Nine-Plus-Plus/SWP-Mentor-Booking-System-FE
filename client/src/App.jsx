@@ -64,7 +64,7 @@ function App() {
                 </Route>
                 <Route path="*" element={<Navigate to={path.PUBLIC} replace />} />
 
-                {/* Route cho trang mentor */}
+                {/* Route cho trang admin */}
                 <Route path={path.PUBLIC_ADMIN} element={<PublicAdmin />}>
                     <Route index element={<AdminHome />} />
                     <Route path={path.STUDENT_PROFILE} element={<StudentProfile />} />
