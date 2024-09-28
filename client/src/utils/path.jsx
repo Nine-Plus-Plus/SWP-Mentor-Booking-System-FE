@@ -1,9 +1,13 @@
 const path = {
+
   // Public
   HOME: '/*',
   LOGIN: 'login',
   PUBLIC: 'public',
   ABOUT_US: 'about-us',
+  FORGOT_PASS: "forgot-password",
+  CHANGE_PASS: "change-password",
+  OTP_INPUT: "send-recovery-otp",
 
   // Student
   PUBLIC_STUDENT: 'student',

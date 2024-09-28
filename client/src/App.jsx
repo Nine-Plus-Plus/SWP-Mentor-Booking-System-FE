@@ -11,6 +11,9 @@ import { useUserStore } from './store/useUserStore';
 import Activity from './components/student/Activity';
 import StudentProfile from './components/student/StudentProfile';
 import PublicAdmin from './pages/users/PublicAdmin';
+import ForgotPass from './components/login/ForgotPass'
+import ChangePass from './components/login/ChangePass'
+import { OTPInput } from './components/login/OTPInput'
 
 import AdminHome from './components/admin/AdminHome';
 import UserList from './components/admin/UserList';
@@ -29,9 +32,12 @@ function App() {
 
         {/* Route cho trang public */}
         <Route path={path.PUBLIC} element={<PublicLayout />}>
-          <Route index element={<PublicHome />} />
-          <Route path={path.ABOUT_US} element={<PublicAboutUs />} />
-          <Route path={path.LOGIN} element={<Login />} />
+          <Route index element={<PublicHome />}/>
+          <Route path={path.ABOUT_US} element={<PublicAboutUs />}/>
+          <Route path={path.LOGIN} element={<Login />}/>
+          <Route path={path.FORGOT_PASS} element={<ForgotPass/>}/>
+          <Route path={path.CHANGE_PASS} element={<ChangePass/>}/>
+          <Route path={path.OTP_INPUT} element={<OTPInput/>}/>
         </Route>
 
         {/* Route cho trang student */}
