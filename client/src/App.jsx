@@ -5,6 +5,7 @@ import {ClassList, Login, MentorList, StudentHome} from './components/index'
 import PublicLayout from './pages/public/PublicLayout'
 import PublicHome from './pages/public/PublicHome'
 import PublicAboutUs from './pages/public/PublicAboutUs'
+<<<<<<< HEAD
 import { ToastContainer } from 'react-toastify';
 import {PublicStudent, PublicMentor} from './pages/users'
 import PrivateRoute from '../middlewares/privateRoute'
@@ -12,6 +13,10 @@ import { useUserStore } from './store/useUserStore'
 import ForgotPass from './components/login/ForgotPass'
 import ChangePass from './components/login/ChangePass'
 import { OTPInput } from './components/login/OTPInput'
+=======
+import ForgotPass from './components/forgotpass/ForgotPass'
+import ChangePass from './components/forgotpass/ChangePass'
+>>>>>>> 818a23c2de59ac6a268ad1dc1635ace3dd0df0ab
 
 function App() {
 
@@ -31,6 +36,7 @@ function App() {
           <Route index element={<PublicHome />}/>
           <Route path={path.ABOUT_US} element={<PublicAboutUs />}/>
           <Route path={path.LOGIN} element={<Login />}/>
+<<<<<<< HEAD
           <Route path={path.FORGOT_PASS} element={<ForgotPass/>}/>
           <Route path={path.CHANGE_PASS} element={<ChangePass/>}/>
           <Route path={path.OTP_INPUT} element={<OTPInput/>}/>
@@ -63,6 +69,11 @@ function App() {
           <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
         </Route>
         <Route path="*" element={<Navigate to={path.PUBLIC} replace />} />
+=======
+          <Route path={path.FORGOT_PASSWORD} element={<ForgotPass/>}/>
+          <Route path={path.CHANGE_PASSWORD} element={<ChangePass/>}/>
+        </Route>          
+>>>>>>> 818a23c2de59ac6a268ad1dc1635ace3dd0df0ab
       </Routes>
     </div>
   )

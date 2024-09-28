@@ -115,7 +115,11 @@ const Login = () => {
                         </Form.Item>
                         <Form.Item>
                             {/* code here */}
+<<<<<<< HEAD
                             <Link to='/public/forgot-password' className='text-blue-600 hover:underline'>
+=======
+                            <Link to="/public/forgot-pass" className='text-blue-600 hover:underline'>
+>>>>>>> 818a23c2de59ac6a268ad1dc1635ace3dd0df0ab
                                 Forgot password ?
                             </Link>
                         </Form.Item>
