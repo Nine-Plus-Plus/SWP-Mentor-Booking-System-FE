@@ -14,7 +14,7 @@ const Button = ({
 }) => {    return (
         <button
             type={htmlType}
-            className={`w-full ${textColor} ${bgColor} ${fullWidth} 
+            className={`${textColor} ${bgColor} ${fullWidth} 
             flex items-center justify-center gap-1 cursor-pointer ${textSize}
             p-2 rounded-lg hover:underline px-12 font-semibold ${bgHover}`}
             onClick={onClick}
