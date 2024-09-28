@@ -9,6 +9,9 @@ import { ToastContainer } from 'react-toastify';
 import {PublicStudent, PublicMentor} from './pages/users'
 import PrivateRoute from '../middlewares/privateRoute'
 import { useUserStore } from './store/useUserStore'
+import ForgotPass from './components/login/ForgotPass'
+import ChangePass from './components/login/ChangePass'
+import { OTPInput } from './components/login/OTPInput'
 
 function App() {
 
@@ -28,6 +31,9 @@ function App() {
           <Route index element={<PublicHome />}/>
           <Route path={path.ABOUT_US} element={<PublicAboutUs />}/>
           <Route path={path.LOGIN} element={<Login />}/>
+          <Route path={path.FORGOT_PASS} element={<ForgotPass/>}/>
+          <Route path={path.CHANGE_PASS} element={<ChangePass/>}/>
+          <Route path={path.OTP_INPUT} element={<OTPInput/>}/>
         </Route>
 
         {/* Route cho trang mentor */}

@@ -8,6 +8,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { StudentLogin } from '../../apis/UserServices'
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../store/useUserStore'
+import path from '../../utils/path'
 
 
 const Login = () => {
@@ -58,8 +59,7 @@ const Login = () => {
                     Welcome To Booking Mentor System
                 </h1>
                 <div className='flex justify-start items-center w-full gap-5 border-b text-lg font-bold'>
-                    <span className='text-gray-600 border-b-4 border-orange-600'
-                    >
+                    <span className='text-gray-600 border-b-4 border-orange-600'>
                         Sign In
                     </span>
                 </div>
@@ -115,7 +115,7 @@ const Login = () => {
                         </Form.Item>
                         <Form.Item>
                             {/* code here */}
-                            <Link to={'/'} className='text-blue-600 hover:underline'>
+                            <Link to='/public/forgot-password' className='text-blue-600 hover:underline'>
                                 Forgot password ?
                             </Link>
                         </Form.Item>
