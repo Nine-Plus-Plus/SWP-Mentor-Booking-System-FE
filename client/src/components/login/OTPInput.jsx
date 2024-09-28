@@ -47,22 +47,33 @@ const OTPInput = () => {
   };
 
   // Hàm xử lý chuyển đổi giữa các input khi người dùng nhập OTP
-  const handleChange = (event, index, nextInput) => {
+  const handleChange = (event, index) => {
     const value = event.target.value;
-    if (/^[0-9]*$/.test(value)) {
-      if (value.length === 1) {
-        const newOtp = [...otp];
-        newOtp[index] = value; // Cập nhật giá trị tương ứng với ô OTP
-        setOtp(newOtp);
 
-        // Chuyển focus đến ô tiếp theo nếu có
+    if (/^[0-9]*$/.test(value)) { // Kiểm tra xem giá trị nhập vào có phải là số không
+      const newOtp = [...otp];
+      newOtp[index] = value; // Cập nhật giá trị tương ứng với ô OTP
+      setOtp(newOtp); // Cập nhật state với giá trị mới
+
+      // Chuyển focus đến ô tiếp theo nếu có
+      if (value.length === 1 && index < otp.length - 1) {
         const nextInput = document.getElementById(`otp${index + 1}`);
         if (nextInput) {
           nextInput.focus();
         }
       }
-    } else {
-      event.target.value = ''; // Xóa giá trị nếu không phải số
+    } else if (value === '') {
+      // Nếu người dùng xóa ký tự
+      const newOtp = [...otp];
+      newOtp[index] = ''; // Đặt giá trị ô hiện tại về rỗng
+      setOtp(newOtp); // Cập nhật state
+      // Chuyển focus về ô trước đó nếu không phải ô đầu tiên
+      if (index > 0) {
+        const previousInput = document.getElementById(`otp${index - 1}`);
+        if (previousInput) {
+          previousInput.focus();
+        }
+      }
     }
   };
 
