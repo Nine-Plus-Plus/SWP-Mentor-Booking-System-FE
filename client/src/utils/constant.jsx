@@ -3,6 +3,7 @@ import {
   AreaChartOutlined,
   ContactsOutlined,
   HomeOutlined,
+  NotificationOutlined,
   SolutionOutlined,
   TeamOutlined,
   TransactionOutlined,
