@@ -7,7 +7,7 @@ import {
     GoogleCircleFilled,
     LockOutlined,
     MailOutlined,
-    UserOutlined,
+    UserOutlined
 } from '@ant-design/icons';
 import { Button } from '../index';
 import icons from '../../utils/icon';
@@ -26,7 +26,7 @@ const Login = () => {
 
     const { FaSignInAlt, FcGoogle } = icons;
 
-    const onFinish = (values) => {
+    const onFinish = values => {
         setPayload(values);
     };
 
@@ -70,7 +70,7 @@ const Login = () => {
                     <Form
                         name="normal_login"
                         initialValues={{
-                            remember: true,
+                            remember: true
                         }}
                         form={form}
                         onFinish={onFinish}
@@ -80,8 +80,8 @@ const Login = () => {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your Username!',
-                                },
+                                    message: 'Please input your Username!'
+                                }
                             ]}
                         >
                             <Input
@@ -97,8 +97,8 @@ const Login = () => {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your Password!',
-                                },
+                                    message: 'Please input your Password!'
+                                }
                             ]}
                         >
                             <Input
@@ -148,6 +148,7 @@ const Login = () => {
                         <Divider style={{ borderColor: '#C1C1C1' }}>Sign in with</Divider>
                         <Button
                             IcBefore={FcGoogle}
+                            fullWidth={'w-full'}
                             bgColor="bg-gray-100"
                             bgHover="hover:bg-blue-300"
                             htmlType="button"
