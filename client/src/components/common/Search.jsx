@@ -31,7 +31,7 @@ const Search = () => {
 //         </div>
     return (
       <div>
-        cc
+        <DatePicker />
       </div>
     )
 }
