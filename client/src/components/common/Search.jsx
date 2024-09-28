@@ -1,8 +1,9 @@
 import { DatePicker, Space } from 'antd';
 import React, { useState } from 'react';
 import { Button } from '../index';
+import path from '../../utils/path';
 
-const Search = () => {
+const Search = ({ searchFor }) => {
   const { RangePicker } = DatePicker;
 
   const [payload, setPayload] = useState({
@@ -18,6 +19,7 @@ const Search = () => {
   const handleOnChanges = e => {
     const { name, value } = e.target;
     setPayload(preData => ({ ...preData, [name]: value }));
+    console.log(payload);
   };
 
   const handleSubmit = () => {
@@ -25,9 +27,9 @@ const Search = () => {
   };
 
   return (
-    <div className="flex w-full justify-between h-[7vh] p-2 bg-[#F5F5F5] rounded-md">
+    <div className="flex w-full gap-3 h-[7vh] p-2 bg-[#F5F5F5] rounded-md">
       <input
-        className="rounded-md w-1/4 text-lg p-1"
+        className="rounded-md w-1/5 text-lg p-1"
         type="input"
         placeholder="Name"
         name="name"
@@ -35,25 +37,26 @@ const Search = () => {
       />
 
       <input
-        className="rounded-md w-1/4 text-lg p-1"
+        className="rounded-md w-1/5 text-lg p-1"
         type="input"
         placeholder="Skill"
         name="skill"
         onChange={handleOnChanges}
       />
-
-      <RangePicker
-        showTime={{
-          format: 'HH:mm'
-        }}
-        format="DD-MM-YYYY HH:mm"
-        onChange={(value, dateString) => {
-          console.log('Selected Time: ', value);
-          console.log('Formatted Selected Time: ', dateString);
-          setPayload(preData => ({ ...preData, date: dateString }));
-        }}
-        onOk={onOk}
-      />
+      {searchFor === path.STUDENT_VIEW_MENTOR && (
+        <RangePicker
+          showTime={{
+            format: 'HH:mm'
+          }}
+          format="DD-MM-YYYY HH:mm"
+          onChange={(value, dateString) => {
+            console.log('Selected Time: ', value);
+            console.log('Formatted Selected Time: ', dateString);
+            setPayload(preData => ({ ...preData, date: dateString }));
+          }}
+          onOk={onOk}
+        />
+      )}
 
       <Button
         text={'Search'}

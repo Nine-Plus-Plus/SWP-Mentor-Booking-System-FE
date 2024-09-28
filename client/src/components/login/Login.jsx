@@ -41,7 +41,7 @@ const Login = () => {
         toast.success('Login SuccessFull');
         navigate('/student');
       } else {
-        if (response && response.status === 400) toast.error(response.data.error);
+        if (response && response.status === 400) toast.error(response.data.message);
       }
     }
   };

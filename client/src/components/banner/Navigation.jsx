@@ -1,6 +1,6 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Button, Dropdown, Layout, Menu, Space } from 'antd';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   CaretDownOutlined,
   LogoutOutlined,
@@ -22,6 +22,16 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
   const { resetUserStore } = useUserStore();
   const [collapsed, setCollapsed] = useState(false);
   const { Content } = Layout;
+  const location = useLocation();
+  const [searchFor, setSearchFor] = useState('');
+
+  useEffect(() => {
+    const subPath = location.pathname.split('/').pop();
+    // console.log(subPath);
+
+    if (subPath === 'student' || subPath === path.STUDENT_PROFILE) setSearchFor(null);
+    else setSearchFor(subPath);
+  }, [location.pathname]);
 
   const handleLogOut = () => {
     resetUserStore();
@@ -129,7 +139,7 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
         {/* Component con */}
         <Content className="p-2 overflow-auto h-[calc(100vh-8vh)] w-full">
           <div className="w-full h-full flex flex-col break-words">
-            <Search />
+            {searchFor && <Search searchFor={searchFor} />}
             {children}
           </div>
         </Content>
