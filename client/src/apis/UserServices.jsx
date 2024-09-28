@@ -6,7 +6,7 @@ export const StudentLogin = payload =>
         try {
             const response = await axiosConfig({
                 method: 'post',
-                url: '/api/login',
+                url: '/api/auth/login',
                 data: payload
             });
             resolve(response);

@@ -46,12 +46,12 @@ const Login = () => {
         }
     };
 
-    const handleInputChange = e => {
-        const { name, value } = e.target;
-        setPayload(prev => ({
-            ...prev,
-            [name]: value
-        }));
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setPayload((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     };
 
     return (
