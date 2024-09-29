@@ -8,12 +8,10 @@ const PrivateRoute = ({ children, role }) => {
         return <Navigate to="/public/login" />;
     }
 
-    console.log(children.type.name.toUpperCase().includes(role.toUpperCase()))
     if (!children.type.name.toUpperCase().includes(role.toUpperCase())) {
         return <Navigate to={`/${role}`} />;
     }
 
-    console.log()
     return (
         children
     )
