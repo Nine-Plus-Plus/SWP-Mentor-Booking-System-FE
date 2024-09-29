@@ -37,8 +37,8 @@ const Login = () => {
       setIsLoading(false);
       if (response && response.data.token) {
         ///// set token
-        navigate('/student');
         setModal(response.data.token, 'student', 'Wyn', true);
+        navigate('/student');
         toast.success('Login SuccessFull');
       } else {
         if (response && response.status === 400) toast.error(response.data.message);
