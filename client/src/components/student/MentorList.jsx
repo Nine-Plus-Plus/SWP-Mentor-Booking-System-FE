@@ -1,11 +1,12 @@
-import React from 'react'
+import React from 'react';
+import MentorItem from './MentorItem';
 
 const MentorList = () => {
-    return (
-        <div className='p-3 bg-white rounded-md flex flex-col'>
-            Mentor
-        </div>
-    )
-}
+  return (
+    <div className="p-3 bg-white rounded-md flex flex-col">
+      <MentorItem />
+    </div>
+  );
+};
 
-export default MentorList
+export default MentorList;
