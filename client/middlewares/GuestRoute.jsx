@@ -4,7 +4,7 @@ import path from '../src/utils/path';
 const GuestRoute = ({ element: Component }) => {
   const token = localStorage.getItem('token');
   
-  return token ? <Navigate to={path.PUBLIC} /> : <Component />;
+  return token ? <Navigate to={'/'} /> : <Component />;
 };
 
 export default GuestRoute;
