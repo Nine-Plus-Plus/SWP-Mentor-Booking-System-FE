@@ -16,6 +16,7 @@ import {
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
 import PrivateRoute from '../middlewares/privateRoute';
+import GuestRoute from '../middlewares/GuestRoute';
 import { useUserStore } from './store/useUserStore';
 
 function App() {
@@ -34,10 +35,10 @@ function App() {
         <Route path={path.PUBLIC} element={<PublicLayout />}>
           <Route index element={<PublicHome />} />
           <Route path={path.ABOUT_US} element={<PublicAboutUs />} />
-          <Route path={path.LOGIN} element={<Login />} />
-          <Route path={path.FORGOT_PASS} element={<ForgotPass />} />
-          <Route path={path.CHANGE_PASS} element={<ChangePass />} />
-          <Route path={path.OTP_INPUT} element={<OTPInput />} />
+          <Route path={path.LOGIN} element={<GuestRoute element={Login} />} />
+          <Route path={path.FORGOT_PASS} element={<GuestRoute element={ForgotPass} />} />
+          <Route path={path.CHANGE_PASS} element={<GuestRoute element={ChangePass} />} />
+          <Route path={path.OTP_INPUT} element={<GuestRoute element={OTPInput} />} />
         </Route>
 
         {/* Route cho trang student */}
