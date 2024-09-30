@@ -15,7 +15,6 @@ export { default as StudentHome } from './student/StudentHome';
 export { default as StudentProfile } from './student/StudentProfile';
 export { default as MentorList } from './student/MentorList';
 export { default as Activity } from './student/Activity';
-export { default as MentorItem } from './student/MentorItem';
 // admin
 export { default as AdminHome } from './admin/AdminHome';
 export { default as UserList } from './admin/UserList';

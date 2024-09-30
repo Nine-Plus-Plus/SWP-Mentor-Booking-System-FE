@@ -2,5 +2,6 @@
 
 SWP Mentor Booking System - Front-end
 
-// npm install @mobiscroll/react
+// npm install -g @mobiscroll/cli 
 
+mobiscroll config react

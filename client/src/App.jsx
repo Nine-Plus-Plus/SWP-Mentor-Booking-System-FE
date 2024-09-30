@@ -18,9 +18,14 @@ import { ToastContainer } from 'react-toastify';
 import PrivateRoute from '../middlewares/privateRoute';
 import GuestRoute from '../middlewares/GuestRoute';
 import { useUserStore } from './store/useUserStore';
+import { useEffect } from 'react';
 
 function App() {
-  const { isLoggedIn, role } = useUserStore();
+  const { token, role, resetUserStore } = useUserStore();
+  useEffect(() => {
+    if (!localStorage.getItem('token')) resetUserStore();
+  }, [localStorage.getItem('token')]);
+
   return (
     <div>
       <ToastContainer
@@ -29,7 +34,8 @@ function App() {
         limit={3} // Giới hạn số lượng toast hiển thị
       />
       <Routes>
-        <Route path="/" element={<Navigate to={!isLoggedIn ? path.PUBLIC : path.PUBLIC_STUDENT} replace />} />
+        {/* {!token && <Route path="/" element={<PublicHome />} />} */}
+        <Route path="/" element={<Navigate to={!token ? path.PUBLIC : path.PUBLIC_STUDENT} replace />} />
 
         {/* Route cho trang public */}
         <Route path={path.PUBLIC} element={<PublicLayout />}>
