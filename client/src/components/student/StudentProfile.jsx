@@ -41,7 +41,7 @@ function StudentProfile() {
           style: {
             position: { of: event.currentTarget, offset: '0 -30' }, // Sử dụng event.currentTarget
             minWidth: `${tipText.length + 2}ch`, // Thiết lập độ rộng tối thiểu
-            width: 'auto',
+            width: 'auto'
           }
         });
       })
@@ -134,7 +134,7 @@ function StudentProfile() {
 
       {/* Basic Info */}
       <div className="bg-white p-8 rounded-lg shadow-lg mb-6">
-      <h3 className="text-xl font-semibold text-gray-900 mb-4">Basic Infomation</h3>
+        <h3 className="text-xl font-semibold text-gray-900 mb-4">Basic Infomation</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700 text-sm font-medium">Full Name</label>
