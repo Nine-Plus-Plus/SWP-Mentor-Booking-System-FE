@@ -50,7 +50,8 @@ const OTPInput = () => {
   const handleChange = (event, index) => {
     const value = event.target.value;
 
-    if (/^[0-9]*$/.test(value)) { // Kiểm tra xem giá trị nhập vào có phải là số không
+    if (/^[0-9]*$/.test(value)) {
+      // Kiểm tra xem giá trị nhập vào có phải là số không
       const newOtp = [...otp];
       newOtp[index] = value; // Cập nhật giá trị tương ứng với ô OTP
       setOtp(newOtp); // Cập nhật state với giá trị mới
