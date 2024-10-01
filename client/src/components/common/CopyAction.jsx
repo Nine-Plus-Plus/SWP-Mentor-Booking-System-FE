@@ -1,7 +1,7 @@
 // Button.js
 import React, { useImperativeHandle, forwardRef, useRef, memo, useMemo } from 'react';
 
-const Button = memo(
+const CopyAction = memo(
   forwardRef((props, ref) => {
     const baseRef = useRef(null);
 
@@ -34,4 +34,4 @@ const Button = memo(
   })
 );
 
-export default Button;
+export default CopyAction;
