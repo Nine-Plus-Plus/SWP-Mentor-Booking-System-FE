@@ -47,7 +47,6 @@ export const menuNavbarItemsStudent = [
   {
     key: 'mentor',
     icon: <SolutionOutlined />,
-    label: 'Mentor',
     label: (
       <NavLink to={path.STUDENT_VIEW_MENTOR} className="text-white">
         Mentor
