@@ -1,9 +1,11 @@
 import {
   AppstoreOutlined,
   AreaChartOutlined,
+  ClockCircleOutlined,
   ContactsOutlined,
   HomeOutlined,
   NotificationOutlined,
+  ReconciliationOutlined,
   SolutionOutlined,
   TeamOutlined,
   TransactionOutlined,
@@ -20,16 +22,6 @@ export const menuNavbarItemsStudent = [
     label: (
       <NavLink to={'/'} className="text-white">
         Home
-      </NavLink>
-    ),
-    className: 'text-white text-lg'
-  },
-  {
-    key: 'profile',
-    icon: <UserOutlined />,
-    label: (
-      <NavLink to={path.STUDENT_PROFILE} className="text-white">
-        Profile
       </NavLink>
     ),
     className: 'text-white text-lg'
@@ -68,11 +60,21 @@ export const menuNavbarItemsStudent = [
     className: 'text-white text-lg'
   },
   {
-    key: 'activity',
-    icon: <AppstoreOutlined />,
+    key: 'meeting',
+    icon: <ClockCircleOutlined />,
     label: (
       <NavLink to={path.STUDENT_ACTIVITY} className="text-white">
-        Actitvity
+        Meeting
+      </NavLink>
+    ),
+    className: 'text-white text-lg'
+  },
+  {
+    key: 'booking',
+    icon: <ReconciliationOutlined />,
+    label: (
+      <NavLink to={path.STUDENT_ACTIVITY} className="text-white">
+        Booking
       </NavLink>
     ),
     className: 'text-white text-lg'

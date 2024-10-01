@@ -50,7 +50,11 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: 'View Profile'
+      label: (
+        <NavLink to={path.STUDENT_PROFILE} className="text-white">
+          View Profile
+        </NavLink>
+      )
     },
     {
       key: 'settings',
