@@ -16,6 +16,7 @@ const path = {
   STUDENT_VIEW_CLASS: 'view-class',
   STUDENT_ACTIVITY: 'activity',
   STUDENT_PROFILE: 'profile-student',
+  
 
   // Mentor
   PUBLIC_MENTOR: 'mentor',
