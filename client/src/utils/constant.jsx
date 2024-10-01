@@ -171,3 +171,9 @@ export const menuNavbarItemsAdmin = [
     className: 'text-white text-lg'
   }
 ];
+
+export const roleForComponent = {
+  ADMIN: path.PUBLIC_ADMIN,
+  STUDENT: path.PUBLIC_STUDENT,
+  MENTOR: path.PUBLIC_MENTOR
+};
