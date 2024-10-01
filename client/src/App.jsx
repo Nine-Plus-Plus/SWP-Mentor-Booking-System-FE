@@ -15,16 +15,17 @@ import {
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
-import PrivateRoute from '../middlewares/privateRoute';
-import GuestRoute from '../middlewares/GuestRoute';
+import PrivateRoute from '../src/middlewares/PrivateRoute';
+import GuestRoute from '../src/middlewares/GuestRoute';
 import { useUserStore } from './store/useUserStore';
 import { useEffect } from 'react';
+import { roleForComponent } from './utils/constant';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
   useEffect(() => {
     if (!localStorage.getItem('token')) resetUserStore();
-  }, [localStorage.getItem('token')]);
+  }, []);
 
   return (
     <div>
@@ -35,7 +36,7 @@ function App() {
       />
       <Routes>
         {/* {!token && <Route path="/" element={<PublicHome />} />} */}
-        <Route path="/" element={<Navigate to={!token ? path.PUBLIC : path.PUBLIC_STUDENT} replace />} />
+        <Route path="/" element={<Navigate to={!token ? path.PUBLIC : roleForComponent[role]} replace />} />
 
         {/* Route cho trang public */}
         <Route path={path.PUBLIC} element={<PublicLayout />}>
@@ -78,7 +79,14 @@ function App() {
         <Route path="*" element={<Navigate to={path.PUBLIC} replace />} />
 
         {/* Route cho trang admin */}
-        <Route path={path.PUBLIC_ADMIN} element={<PublicAdmin />}>
+        <Route
+          path={path.PUBLIC_ADMIN}
+          element={
+            <PrivateRoute role={role}>
+              <PublicAdmin />
+            </PrivateRoute>
+          }
+        >
           <Route index element={<AdminHome />} />
           <Route path={path.STUDENT_PROFILE} element={<StudentProfile />} />
           <Route path={path.ADMIN_USER_LIST} element={<UserList />} />
