@@ -5,7 +5,7 @@ import icons from '../../utils/icon';
 
 const UserItem = ({ avatar, role, name, code, specialized, gender, addGroup, showSchedule, star, sameClass }) => {
   const { FaStar, FaStarHalf } = icons;
-
+  
   const handleStar = star => {
     let stars = [];
     if (star > 0) for (let i = 1; i <= star; i++) stars.push(<FaStar color="#F8D72A" className="start-item" />);
