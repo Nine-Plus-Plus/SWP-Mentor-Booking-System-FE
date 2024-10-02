@@ -50,7 +50,11 @@ export const menuNavbarItemsStudent = [
   {
     key: 'group',
     icon: <TeamOutlined />,
-    label: 'Group',
+    label: (
+      <NavLink to={path.STUDENT_GROUP} className="text-white">
+        Group
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {
