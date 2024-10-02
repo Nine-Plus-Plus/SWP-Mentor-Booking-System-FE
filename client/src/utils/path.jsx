@@ -1,13 +1,12 @@
 const path = {
-
   // Public
   HOME: '/*',
   LOGIN: 'login',
   PUBLIC: 'public',
   ABOUT_US: 'about-us',
-  FORGOT_PASS: "forgot-password",
-  CHANGE_PASS: "change-password",
-  OTP_INPUT: "send-recovery-otp",
+  FORGOT_PASS: 'forgot-password',
+  CHANGE_PASS: 'change-password',
+  OTP_INPUT: 'send-recovery-otp',
 
   // Student
   PUBLIC_STUDENT: 'student',
@@ -16,7 +15,6 @@ const path = {
   STUDENT_VIEW_CLASS: 'view-class',
   STUDENT_ACTIVITY: 'activity',
   STUDENT_PROFILE: 'profile-student',
-  
 
   // Mentor
   PUBLIC_MENTOR: 'mentor',
@@ -26,7 +24,7 @@ const path = {
   // Admin
   PUBLIC_ADMIN: 'admin',
   ADMIN_HOME: 'home',
-  ADMIN_USER_LIST: 'user-list'
+  ADMIN_USER_MANAGER: 'user-manager'
 };
 
 export default path;

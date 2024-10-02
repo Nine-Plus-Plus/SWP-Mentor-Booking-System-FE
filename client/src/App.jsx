@@ -8,7 +8,6 @@ import {
   ChangePass,
   OTPInput,
   ForgotPass,
-  UserList,
   AdminHome,
   Activity,
   StudentProfile
@@ -20,6 +19,7 @@ import GuestRoute from '../src/middlewares/GuestRoute';
 import { useUserStore } from './store/useUserStore';
 import { useEffect } from 'react';
 import { roleForComponent } from './utils/constant';
+import UserManager from './components/admin/UserManager';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
@@ -89,7 +89,7 @@ function App() {
         >
           <Route index element={<AdminHome />} />
           <Route path={path.STUDENT_PROFILE} element={<StudentProfile />} />
-          <Route path={path.ADMIN_USER_LIST} element={<UserList />} />
+          <Route path={path.ADMIN_USER_MANAGER} element={<UserManager />} />
         </Route>
       </Routes>
     </div>

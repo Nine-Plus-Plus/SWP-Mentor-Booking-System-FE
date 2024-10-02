@@ -163,7 +163,7 @@ export const menuNavbarItemsAdmin = [
     key: 'users-manager',
     icon: <ContactsOutlined />,
     label: (
-      <NavLink to={path.ADMIN_USER_LIST} className="text-white">
+      <NavLink to={path.ADMIN_USER_MANAGER} className="text-white">
         Users
       </NavLink>
     ),
