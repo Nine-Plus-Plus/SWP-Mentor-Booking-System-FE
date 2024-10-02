@@ -1,10 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { getMyProfile } from '../../apis/UserServices';
-import CopyAction from '../common/CopyAction';
+import CopyAction from './CopyAction';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 
 function StudentProfile() {
+  const param = useParams();
+  console.log(param);
+
   const [profile, setProfile] = useState({
     id: 1809, // Default id if not available
     photo: '',

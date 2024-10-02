@@ -2,15 +2,24 @@ import React from 'react';
 import { Button } from '../index';
 import clsx from 'clsx';
 import icons from '../../utils/icon';
+import { useNavigate } from 'react-router-dom';
+import path from '../../utils/path';
 
 const UserItem = ({ avatar, role, name, code, specialized, gender, addGroup, showSchedule, star, sameClass }) => {
   const { FaStar, FaStarHalf } = icons;
+  const navigate = useNavigate();
 
   const handleStar = star => {
     let stars = [];
     if (star > 0) for (let i = 1; i <= star; i++) stars.push(<FaStar color="#F8D72A" className="start-item" />);
     if (star > 0 && star % 1 !== 0) stars.push(<FaStarHalf color="#F8D72A" className="start-item" />);
     return stars;
+  };
+
+  
+
+  const handleViewProfile = () => {
+    navigate(`${path.USER_PROFILE}/hehe/haha`);
   };
 
   return (
@@ -74,7 +83,7 @@ const UserItem = ({ avatar, role, name, code, specialized, gender, addGroup, sho
                 textColor={'text-white'}
                 textSize={'text-sm'}
                 bgHover={'hover:bg-orange-400 hover:text-gray-100'}
-                onClick={() => {}}
+                onClick={handleViewProfile}
               />
             </div>
             {showSchedule && (

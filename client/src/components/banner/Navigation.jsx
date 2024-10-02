@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Button, Dropdown, Layout, Menu, Space } from 'antd';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   CaretDownOutlined,
   LogoutOutlined,
@@ -27,9 +27,9 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
 
   useEffect(() => {
     const subPath = location.pathname.split('/').pop();
-    // console.log(subPath);
+    console.log(subPath);
 
-    if (subPath === 'student' || subPath === path.STUDENT_PROFILE) setSearchFor(null);
+    if (subPath === 'student' || subPath===path.STUDENT_GROUP || subPath === path.USER_PROFILE || subPath === '*') setSearchFor(null);
     else setSearchFor(subPath);
   }, [location.pathname]);
 
@@ -51,7 +51,7 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
       key: 'profile',
       icon: <UserOutlined />,
       label: (
-        <NavLink to={path.STUDENT_PROFILE} className="text-white">
+        <NavLink to={path.USER_PROFILE} className="text-white">
           View Profile
         </NavLink>
       )
