@@ -12,7 +12,8 @@ import {
   AdminHome,
   Activity,
   UserProfile,
-  StudentGroup
+  StudentGroup,
+  JoinGroup
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -21,6 +22,7 @@ import GuestRoute from '../src/middlewares/GuestRoute';
 import { useUserStore } from './store/useUserStore';
 import { useEffect } from 'react';
 import { roleForComponent } from './utils/constant';
+import CreateProject from './components/student/CreateProject';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
@@ -63,9 +65,11 @@ function App() {
           <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
           <Route path={path.STUDENT_ACTIVITY} element={<Activity />} />
           <Route path={path.STUDENT_GROUP} element={<StudentGroup />} />
+          <Route path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}`} element={<CreateProject />} />
+          <Route path={`${path.STUDENT_GROUP}/${path.STUDENT_JOIN_GROUP}`} element={<JoinGroup />} />
           <Route path={`${path.STUDENT_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.STUDENT_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
-          <Route path={path.USER_PROFILE} element={<UserProfile />} />
+          <Route path={path.USER_PROFILE_NAME_ID} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
         </Route>
 

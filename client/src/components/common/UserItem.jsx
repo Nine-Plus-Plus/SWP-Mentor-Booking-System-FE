@@ -16,12 +16,6 @@ const UserItem = ({ avatar, role, name, code, specialized, gender, addGroup, sho
     return stars;
   };
 
-  
-
-  const handleViewProfile = () => {
-    navigate(`${path.USER_PROFILE}/hehe/haha`);
-  };
-
   return (
     <div className="border shadow-md rounded-md h-[180px]">
       <div className="h-[179px] flex w-full gap-4">
@@ -83,7 +77,7 @@ const UserItem = ({ avatar, role, name, code, specialized, gender, addGroup, sho
                 textColor={'text-white'}
                 textSize={'text-sm'}
                 bgHover={'hover:bg-orange-400 hover:text-gray-100'}
-                onClick={handleViewProfile}
+                to={`${path.USER_PROFILE}/hehe/haha`}
               />
             </div>
             {showSchedule && (

@@ -21,7 +21,8 @@ const path = {
   STUDENT_VIEW_CLASS: 'view-class',
   STUDENT_ACTIVITY: 'activity',
   STUDENT_GROUP: 'group',
-  
+  STUDENT_CREATE_GROUP: 'create-group',
+  STUDENT_JOIN_GROUP: 'join-group',
 
   // Mentor
   PUBLIC_MENTOR: 'mentor',

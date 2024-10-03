@@ -19,18 +19,25 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
   const { Header, Sider } = Layout;
   const { IoIosNotifications } = icons;
   const [notificationCount, setNotificationCount] = useState(3);
-  const { resetUserStore } = useUserStore();
+  const { resetUserStore, role } = useUserStore();
   const [collapsed, setCollapsed] = useState(false);
   const { Content } = Layout;
   const location = useLocation();
   const [searchFor, setSearchFor] = useState('');
 
   useEffect(() => {
-    const subPath = location.pathname.split('/').pop();
+    const subPath = location.pathname.split('/');
     console.log(subPath);
+    console.log(subPath.includes('profile-user'));
 
-    if (subPath === 'student' || subPath===path.STUDENT_GROUP || subPath === path.USER_PROFILE || subPath === '*') setSearchFor(null);
-    else setSearchFor(subPath);
+    if (
+      subPath[subPath.length - 1] === 'student' ||
+      subPath.push() === path.STUDENT_GROUP ||
+      subPath.includes('profile-user')
+    )
+      setSearchFor('');
+    else setSearchFor(subPath.pop());
+    console.log(subPath);
   }, [location.pathname]);
 
   const handleLogOut = () => {
@@ -134,7 +141,7 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
 
               <div className="flex flex-col items-center justify-evenly">
                 <p className="h-[3vh] text-sm font-semibold">Quốc Thắng</p>
-                <p className="h-[3vh] text-sm">Student</p>
+                <p className="h-[3vh] text-sm">{role}</p>
               </div>
             </div>
           </div>

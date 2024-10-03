@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "react-copy-to-clipboard": "^5.1.0",
-    "react-toastify": "^10.0.5"
-  }
-}
