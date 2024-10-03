@@ -8,6 +8,7 @@ export { default as Search } from './common/Search';
 export { default as Button } from './common/Button';
 export { default as ClassList } from './common/ClassList';
 export { default as UserItem } from './common/UserItem';
+export { default as HistoryPoint } from './common/HistoryPoint';
 // banner
 export { default as Navigation } from './banner/Navigation';
 // student

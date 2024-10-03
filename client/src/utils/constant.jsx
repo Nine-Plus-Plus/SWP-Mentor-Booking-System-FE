@@ -88,7 +88,11 @@ export const menuNavbarItemsStudent = [
   {
     key: 'point',
     icon: <TransactionOutlined />,
-    label: 'History point',
+    label: (
+      <NavLink to={path.STUDENT_HISTORY_POINT} className="text-white">
+        History Point
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   }
 ];
@@ -135,7 +139,11 @@ export const menuNavbarItemsMentor = [
   {
     key: 'point',
     icon: <TransactionOutlined />,
-    label: 'History point',
+    label: (
+      <NavLink to={path.STUDENT_HISTORY_POINT} className="text-white">
+        History Point
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   }
 ];

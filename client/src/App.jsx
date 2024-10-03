@@ -11,7 +11,8 @@ import {
   UserList,
   AdminHome,
   Activity,
-  StudentProfile
+  StudentProfile,
+  HistoryPoint
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -62,6 +63,7 @@ function App() {
           <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
           <Route path={path.STUDENT_ACTIVITY} element={<Activity />} />
           <Route path={path.STUDENT_PROFILE} element={<StudentProfile />} />
+          <Route path={path.STUDENT_HISTORY_POINT} element={<HistoryPoint />} />
         </Route>
 
         {/* Route cho trang mentor */}
