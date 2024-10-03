@@ -53,7 +53,8 @@ const Login = () => {
     const { name, value } = e.target;
     setPayload(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
+
     }));
   };
 
@@ -131,7 +132,6 @@ const Login = () => {
               />
             </Form.Item>
             <Form.Item>
-              {/* code here */}
               <Link to="/public/forgot-password" className="text-blue-600 hover:underline">
                 Forgot password ?
               </Link>

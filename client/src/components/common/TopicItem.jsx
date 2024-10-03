@@ -2,7 +2,7 @@ import { Space, Table, Tag } from 'antd';
 import Column from 'antd/es/table/Column';
 import React from 'react';
 
-const TopicItem = () => {
+const TopicItem = ({ setPayloadProject, setShowTopic }) => {
   const data = [
     {
       key: '1',
@@ -158,6 +158,15 @@ const TopicItem = () => {
     }
   ];
 
+  const handleGetClick = record => {
+    setPayloadProject(prev => ({
+      ...prev,
+      idTopic: record.id,
+      projectName: record.topic_name
+    }));
+    setShowTopic(false);
+  };
+
   return (
     <div className="border shadow-md rounded-md">
       <Table dataSource={data} pagination={{ pageSize: 5 }} scroll={{ x: '1000px' }}>
@@ -187,7 +196,7 @@ const TopicItem = () => {
           className="whitespace-pre-line text-left align-top"
           render={actors => (
             <>
-              {actors.map(actor => {
+              {actors.map((actor, index) => {
                 let color = actor.length > 6 ? 'geekblue' : 'green';
                 if (
                   actor.toUpperCase().includes('ADMIN') ||
@@ -197,7 +206,7 @@ const TopicItem = () => {
                   color = 'volcano';
                 }
                 return (
-                  <Tag color={color} key={actor} className="inline-block mt-1 w-[180px]">
+                  <Tag color={color} key={index} className="inline-block mt-1 w-[180px]">
                     {actor.toUpperCase()}
                   </Tag>
                 );
@@ -212,8 +221,12 @@ const TopicItem = () => {
           className="whitespace-pre-line text-left align-top"
           render={f_requirements => (
             <>
-              {f_requirements.map(nf_requirement => {
-                return <p className="w-[800px]">{nf_requirement}</p>;
+              {f_requirements.map((nf_requirement, index) => {
+                return (
+                  <p key={index} className="w-[800px]">
+                    {nf_requirement}
+                  </p>
+                );
               })}
             </>
           )}
@@ -225,8 +238,12 @@ const TopicItem = () => {
           className="whitespace-pre-line text-left align-top"
           render={nf_requirements => (
             <>
-              {nf_requirements.map(nf_requirement => {
-                return <p className="w-[300px]">{nf_requirement}</p>;
+              {nf_requirements.map((nf_requirement, index) => {
+                return (
+                  <p key={index} className="w-[300px]">
+                    {nf_requirement}
+                  </p>
+                );
               })}
             </>
           )}
@@ -244,7 +261,9 @@ const TopicItem = () => {
           className="whitespace-pre-line align-top items-center text-center text-green-500"
           render={(_, record) => (
             <Space size="middle">
-              <a className="">Get</a>
+              <a className="text-md font-semibold" onClick={() => handleGetClick(record)}>
+                Get
+              </a>
             </Space>
           )}
         />

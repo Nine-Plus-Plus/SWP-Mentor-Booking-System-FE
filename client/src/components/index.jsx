@@ -17,6 +17,8 @@ export { default as StudentHome } from './student/StudentHome';
 export { default as UserProfile } from './common/UserProfile';
 export { default as MentorList } from './student/MentorList';
 export { default as StudentGroup } from './student/StudentGroup';
+export { default as CreateProject } from './student/CreateProject';
+export { default as JoinGroup } from './student/JoinGroup';
 export { default as Activity } from './student/Activity';
 // admin
 export { default as AdminHome } from './admin/AdminHome';
