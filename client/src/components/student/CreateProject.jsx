@@ -2,16 +2,17 @@ import { Form, Input } from 'antd';
 import React, { useEffect, useState } from 'react';
 import TopicList from '../common/TopicList';
 import TextArea from 'antd/es/input/TextArea';
-import Button from '../common/Button';
+import { Button, ClassList } from '../index';
 import { useNavigate } from 'react-router-dom';
 import path from '../../utils/path';
-import { toast } from 'react-toastify';
 
 const CreateProject = () => {
   const [form] = Form.useForm();
   const [showTopic, setShowTopic] = useState(true);
-  const navigate = useNavigate();
   const [showFormInput, setShowFormInput] = useState(false);
+  const [showClass, setShowClass] = useState(false);
+
+  const navigate = useNavigate();
   useEffect(() => {
     setShowFormInput(!showTopic);
   }, [showTopic]);
@@ -19,7 +20,7 @@ const CreateProject = () => {
   const [payloadProject, setPayloadProject] = useState({
     idTopic: '',
     projectName: '',
-    className: 'se',
+    className: 'SE',
     description: ''
   });
   const [payloadGroup, setPayloadGroup] = useState({
@@ -28,7 +29,7 @@ const CreateProject = () => {
 
   const onFinish = values => {
     console.log('finish', values);
-    handleSubmitProject(values);
+    handleSubmitFormCreate(values);
   };
 
   const handleInputChange = e => {
@@ -41,11 +42,11 @@ const CreateProject = () => {
       : setPayloadGroup(value);
   };
 
-  const handleSubmitProject = () => {
-    navigate(`${path.STUDENT_GROUP}`);
+  const handleSubmitFormCreate = () => {
     console.log(payloadProject);
     console.log(payloadGroup);
-    toast.success('Create Project Successfully!');
+    setShowFormInput(false);
+    setShowClass(true);
   };
 
   return (
@@ -106,11 +107,13 @@ const CreateProject = () => {
                 text={'Create'}
                 textColor={'text-white'}
                 textSize={'text-xl'}
+                onClick={handleSubmitFormCreate}
               />
             </Form.Item>
           </Form>
         </div>
       )}
+      {showClass && <ClassList addGroup={true} />}
     </div>
   );
 };

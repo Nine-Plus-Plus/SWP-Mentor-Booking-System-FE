@@ -19,7 +19,7 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
   const { Header, Sider } = Layout;
   const { IoIosNotifications } = icons;
   const [notificationCount, setNotificationCount] = useState(3);
-  const { resetUserStore, role } = useUserStore();
+  const { resetUserStore, role, current } = useUserStore();
   const [collapsed, setCollapsed] = useState(false);
   const { Content } = Layout;
   const location = useLocation();
@@ -140,7 +140,7 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
               </Dropdown>
 
               <div className="flex flex-col items-center justify-evenly">
-                <p className="h-[3vh] text-sm font-semibold">Quốc Thắng</p>
+                <p className="h-[3vh] text-sm font-semibold">{current}</p>
                 <p className="h-[3vh] text-sm">{role}</p>
               </div>
             </div>
@@ -149,10 +149,10 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
 
         {/* Component con */}
         <Content className="p-2 overflow-auto h-[calc(100vh-8vh)] w-full">
-          <div className="w-full h-full flex flex-col break-words">
-            {searchFor && <Search searchFor={searchFor} />}
-            {children}
-          </div>
+          {/* <div className="w-full h-full flex flex-col break-words"> */}
+          {/* {searchFor && <Search searchFor={searchFor} />} */}
+          {children}
+          {/* </div> */}
         </Content>
       </Layout>
     </Layout>
