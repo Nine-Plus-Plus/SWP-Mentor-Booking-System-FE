@@ -77,7 +77,7 @@ export const menuNavbarItemsStudent = [
     key: 'booking',
     icon: <ReconciliationOutlined />,
     label: (
-      <NavLink to={path.STUDENT_ACTIVITY} className="text-white">
+      <NavLink to={path.STUDENT_BOOKING} className="text-white">
         Booking
       </NavLink>
     ),
@@ -92,7 +92,11 @@ export const menuNavbarItemsStudent = [
   {
     key: 'point',
     icon: <TransactionOutlined />,
-    label: 'History point',
+    label: (
+      <NavLink to={path.STUDENT_HISTORY_POINT} className="text-white">
+        History Point
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   }
 ];

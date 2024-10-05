@@ -13,7 +13,9 @@ import {
   Activity,
   UserProfile,
   StudentGroup,
-  JoinGroup
+  ListGroup,
+  CreateProject,
+  ListHistoryPoint
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -22,7 +24,6 @@ import GuestRoute from '../src/middlewares/GuestRoute';
 import { useUserStore } from './store/useUserStore';
 import { useEffect } from 'react';
 import { roleForComponent } from './utils/constant';
-import CreateProject from './components/student/CreateProject';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
@@ -32,11 +33,7 @@ function App() {
 
   return (
     <div>
-      <ToastContainer
-        position="top-right" // Vị trí hiển thị toast
-        autoClose={1000} // Thời gian tự động đóng sau 1 giây
-        limit={3} // Giới hạn số lượng toast hiển thị
-      />
+      <ToastContainer position="top-right" autoClose={1000} limit={3} />
       <Routes>
         {/* {!token && <Route path="/" element={<PublicHome />} />} */}
         <Route path="/" element={<Navigate to={!token ? path.PUBLIC : roleForComponent[role]} replace />} />
@@ -63,14 +60,19 @@ function App() {
           <Route index element={<StudentHome />} />
           <Route path={path.STUDENT_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
-          <Route path={path.STUDENT_ACTIVITY} element={<Activity />} />
+          <Route path={path.STUDENT_BOOKING} element={<Activity />} />
           <Route path={path.STUDENT_GROUP} element={<StudentGroup />} />
           <Route path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}`} element={<CreateProject />} />
-          <Route path={`${path.STUDENT_GROUP}/${path.STUDENT_JOIN_GROUP}`} element={<JoinGroup />} />
+          <Route
+            path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}/${path.USER_PROFILE_NAME_ID}`}
+            element={<UserProfile />}
+          />
+          {/* <Route path={`${path.STUDENT_GROUP}/${path.LIST_GROUP}`} element={<ListGroup />} /> */}
           <Route path={`${path.STUDENT_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.STUDENT_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_NAME_ID} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
+          <Route path={path.STUDENT_HISTORY_POINT} element={<ListHistoryPoint />} />
         </Route>
 
         {/* Route cho trang mentor */}
