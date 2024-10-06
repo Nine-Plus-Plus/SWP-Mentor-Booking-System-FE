@@ -33,7 +33,8 @@ const path = {
   // Admin
   PUBLIC_ADMIN: 'admin',
   ADMIN_HOME: 'home',
-  ADMIN_USER_MANAGER: 'user-manager'
+  ADMIN_USER_MANAGER: 'user-manager',
+  ADMIN_USER_LIST: 'user-list'
 };
 
 export default path;

@@ -25,3 +25,4 @@ export { default as Activity } from './student/Activity';
 // admin
 export { default as AdminHome } from './admin/AdminHome';
 export { default as UserManager } from './admin/UserManager';
+export { default as UserList } from './admin/UserList';

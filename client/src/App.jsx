@@ -14,7 +14,8 @@ import {
   StudentGroup,
   ListGroup,
   CreateProject,
-  ListHistoryPoint
+  ListHistoryPoint,
+  UserList,
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -99,7 +100,7 @@ function App() {
           }
         >
           <Route index element={<AdminHome />} />
-          <Route path={path.UserProfile} element={<UserProfile />} />
+          <Route path={path.USER_PROFILE} element={<UserProfile />} />
           <Route path={path.ADMIN_USER_LIST} element={<UserList />} />
         </Route>
       </Routes>
