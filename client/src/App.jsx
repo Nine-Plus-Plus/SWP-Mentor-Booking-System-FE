@@ -8,7 +8,6 @@ import {
   ChangePass,
   OTPInput,
   ForgotPass,
-  UserList,
   AdminHome,
   Activity,
   UserProfile,
@@ -24,6 +23,7 @@ import GuestRoute from '../src/middlewares/GuestRoute';
 import { useUserStore } from './store/useUserStore';
 import { useEffect } from 'react';
 import { roleForComponent } from './utils/constant';
+import UserManager from './components/admin/UserManager';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
