@@ -26,7 +26,6 @@ export const getMyProfile = token =>
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('Response data:', response.data); // Log dữ liệu trả về từ API
       resolve(response.data);
     } catch (error) {
       reject(error);

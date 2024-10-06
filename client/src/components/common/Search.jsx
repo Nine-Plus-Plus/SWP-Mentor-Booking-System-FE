@@ -43,7 +43,7 @@ const Search = ({ searchFor }) => {
         name="skill"
         onChange={handleOnChanges}
       />
-      {searchFor === path.STUDENT_VIEW_MENTOR && (
+      {searchFor === 'mentor' && (
         <RangePicker
           showTime={{
             format: 'HH:mm'

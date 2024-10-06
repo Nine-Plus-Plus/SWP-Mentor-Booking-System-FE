@@ -8,13 +8,22 @@ const path = {
   CHANGE_PASS: 'change-password',
   OTP_INPUT: 'send-recovery-otp',
 
+  // Common User
+  USER_PROFILE_NAME_ID: 'profile-user/:name/:id',
+  USER_PROFILE_NAME_ID: 'profile-user/:name/:id',
+  USER_PROFILE_ALL: 'profile-user/*',
+  USER_PROFILE: 'profile-user',
+  LIST_GROUP: 'list-group',
+
   // Student
   PUBLIC_STUDENT: 'student',
   STUDENT_HOME: 'home',
   STUDENT_VIEW_MENTOR: 'view-mentor',
   STUDENT_VIEW_CLASS: 'view-class',
-  STUDENT_ACTIVITY: 'activity',
-  STUDENT_PROFILE: 'profile-student',
+  STUDENT_BOOKING: 'booking',
+  STUDENT_GROUP: 'group',
+  STUDENT_CREATE_GROUP: 'create-group',
+  STUDENT_HISTORY_POINT: 'history-point',
 
   // Mentor
   PUBLIC_MENTOR: 'mentor',
