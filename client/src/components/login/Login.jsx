@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import { Divider, Form, Input } from 'antd';
+import axios from 'axios';
 import {
   EyeInvisibleFilled,
   EyeTwoTone,
@@ -40,13 +41,17 @@ const Login = () => {
         ///// set token
         setModal(response.data.token, response.data.role, 'Wyn', true);
         console.log(response);
-        
+
         navigate(roleForComponent[role]);
         toast.success('Login SuccessFull');
       } else {
         if (response && response.status === 400) toast.error(response.data.message);
       }
     }
+  };
+
+  const handleLoginGoogle = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
   const handleInputChange = e => {
@@ -155,6 +160,7 @@ const Login = () => {
               bgColor="bg-gray-100"
               bgHover="hover:bg-blue-300"
               htmlType="button"
+              onClick={handleLoginGoogle}
             ></Button>
           </Form>
         </div>
