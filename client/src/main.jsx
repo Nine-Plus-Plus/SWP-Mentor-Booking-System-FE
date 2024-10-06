@@ -4,6 +4,7 @@ import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import '@mobiscroll/react/dist/css/mobiscroll.min.css';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>

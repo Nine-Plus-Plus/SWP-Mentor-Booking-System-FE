@@ -15,6 +15,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { StudentLogin } from '../../apis/UserServices';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../store/useUserStore';
+import { roleForComponent } from '../../utils/constant';
 
 const Login = () => {
   const [isShowPass, setIsShowPass] = useState(false);
@@ -22,7 +23,7 @@ const Login = () => {
   const [payload, setPayload] = useState({ username: '', password: '' });
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { setModal } = useUserStore();
+  const { setModal, role } = useUserStore();
 
   const { FaSignInAlt, FcGoogle } = icons;
 
@@ -37,11 +38,13 @@ const Login = () => {
       setIsLoading(false);
       if (response && response.data.token) {
         ///// set token
-        setModal(response.data.token, 'student', 'Wyn', true);
+        setModal(response.data.token, response.data.role, 'Wyn', true);
+        console.log(response);
+        
+        navigate(roleForComponent[role]);
         toast.success('Login SuccessFull');
-        navigate('/student');
       } else {
-        if (response && response.status === 400) toast.error(response.data.error);
+        if (response && response.status === 400) toast.error(response.data.message);
       }
     }
   };
@@ -50,7 +53,8 @@ const Login = () => {
     const { name, value } = e.target;
     setPayload(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
+
     }));
   };
 
@@ -128,8 +132,7 @@ const Login = () => {
               />
             </Form.Item>
             <Form.Item>
-              {/* code here */}
-              <Link to={'/'} className="text-blue-600 hover:underline">
+              <Link to="/public/forgot-password" className="text-blue-600 hover:underline">
                 Forgot password ?
               </Link>
             </Form.Item>

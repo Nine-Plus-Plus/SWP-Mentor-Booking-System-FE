@@ -4,6 +4,7 @@ import path from '../../utils/path';
 import clsx from 'clsx';
 import { useUserStore } from '../../store/useUserStore';
 import { LoginOutlined, LogoutOutlined } from '@ant-design/icons';
+import { toast } from 'react-toastify';
 
 const PublicNavigate = () => {
   const navItem = 'text-xl font-semibold text-main-1 text-center w-[150px]';

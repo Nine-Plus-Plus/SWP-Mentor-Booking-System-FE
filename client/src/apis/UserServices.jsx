@@ -6,7 +6,7 @@ export const StudentLogin = payload =>
     try {
       const response = await axiosConfig({
         method: 'post',
-        url: '/api/login',
+        url: '/api/auth/login',
         data: payload
       });
       resolve(response);
@@ -72,7 +72,7 @@ export const updateUser = (id, data, token) =>
     try {
       const response = await axiosConfig({
         method: 'put',
-        url: `/admin/update-user/${id}`,
+        url: `api/admin/update-user/${id}`,
         data: data,
         headers: {
           Authorization: `Bearer ${token}`
@@ -91,6 +91,24 @@ export const deleteUser = (id, token) =>
       const response = await axiosConfig({
         method: 'delete',
         url: `api/admin/delete-user/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+// Phương thức thêm người dùng
+export const createUser = (data, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/admin/create-user`,
+        data: data,
         headers: {
           Authorization: `Bearer ${token}`
         }

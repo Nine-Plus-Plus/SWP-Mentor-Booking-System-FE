@@ -1,9 +1,11 @@
 import {
   AppstoreOutlined,
   AreaChartOutlined,
+  ClockCircleOutlined,
   ContactsOutlined,
   HomeOutlined,
   NotificationOutlined,
+  ReconciliationOutlined,
   SolutionOutlined,
   TeamOutlined,
   TransactionOutlined,
@@ -25,16 +27,6 @@ export const menuNavbarItemsStudent = [
     className: 'text-white text-lg'
   },
   {
-    key: 'profile',
-    icon: <UserOutlined />,
-    label: (
-      <NavLink to={path.STUDENT_PROFILE} className="text-white">
-        Profile
-      </NavLink>
-    ),
-    className: 'text-white text-lg'
-  },
-  {
     key: 'class',
     icon: <ContactsOutlined />,
     label: (
@@ -47,7 +39,6 @@ export const menuNavbarItemsStudent = [
   {
     key: 'mentor',
     icon: <SolutionOutlined />,
-    label: 'Mentor',
     label: (
       <NavLink to={path.STUDENT_VIEW_MENTOR} className="text-white">
         Mentor
@@ -59,7 +50,11 @@ export const menuNavbarItemsStudent = [
   {
     key: 'group',
     icon: <TeamOutlined />,
-    label: 'Group',
+    label: (
+      <NavLink to={path.STUDENT_GROUP} className="text-white">
+        Group
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {
@@ -69,11 +64,21 @@ export const menuNavbarItemsStudent = [
     className: 'text-white text-lg'
   },
   {
-    key: 'activity',
-    icon: <AppstoreOutlined />,
+    key: 'meeting',
+    icon: <ClockCircleOutlined />,
     label: (
       <NavLink to={path.STUDENT_ACTIVITY} className="text-white">
-        Actitvity
+        Meeting
+      </NavLink>
+    ),
+    className: 'text-white text-lg'
+  },
+  {
+    key: 'booking',
+    icon: <ReconciliationOutlined />,
+    label: (
+      <NavLink to={path.STUDENT_BOOKING} className="text-white">
+        Booking
       </NavLink>
     ),
     className: 'text-white text-lg'
@@ -87,7 +92,11 @@ export const menuNavbarItemsStudent = [
   {
     key: 'point',
     icon: <TransactionOutlined />,
-    label: 'History point',
+    label: (
+      <NavLink to={path.STUDENT_HISTORY_POINT} className="text-white">
+        History Point
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   }
 ];
@@ -164,10 +173,16 @@ export const menuNavbarItemsAdmin = [
     key: 'users-manager',
     icon: <ContactsOutlined />,
     label: (
-      <NavLink to={path.ADMIN_USER_LIST} className="text-white">
+      <NavLink to={path.ADMIN_USER_MANAGER} className="text-white">
         Users
       </NavLink>
     ),
     className: 'text-white text-lg'
   }
 ];
+
+export const roleForComponent = {
+  ADMIN: path.PUBLIC_ADMIN,
+  STUDENT: path.PUBLIC_STUDENT,
+  MENTOR: path.PUBLIC_MENTOR
+};
