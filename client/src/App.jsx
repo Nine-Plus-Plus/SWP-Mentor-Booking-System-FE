@@ -20,6 +20,7 @@ import {
   SemesterManager,
   ClassManager,
   SkillManager,
+  UserList
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -66,7 +67,7 @@ function App() {
           <Route index element={<StudentHome />} />
           <Route path={path.STUDENT_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
-          <Route path={path.STUDENT_MEETING} element={<Meeting/>}/>          
+          <Route path={path.STUDENT_MEETING} element={<Meeting />} />
           <Route index element={<UserHome />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
@@ -76,10 +77,9 @@ function App() {
           <Route
             path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}/${path.USER_PROFILE_NAME_ID}`}
             element={<UserProfile />}
-          />          
+          />
           <Route path={`${path.STUDENT_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.STUDENT_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
-          />
           {/* <Route path={`${path.STUDENT_GROUP}/${path.LIST_GROUP}`} element={<ListGroup />} /> */}
           <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
@@ -117,13 +117,13 @@ function App() {
           }
         >
           <Route index element={<AdminHome />} />
-          <Route path={path.UserProfile} element={<UserProfile />} />
           <Route path={path.USER_PROFILE} element={<UserProfile />} />
           <Route path={path.ADMIN_STUDENT_MANAGER} element={<StudentManager />} />
           <Route path={path.ADMIN_MENTOR_MANAGER} element={<MentorManager />} />
           <Route path={path.ADMIN_SKILL_MANAGER} element={<SkillManager />} />
           <Route path={path.ADMIN_SEMESTER_MANAGER} element={<SemesterManager />} />
           <Route path={path.ADMIN_CLASS_MANAGER} element={<ClassManager />} />
+          {/* <Route path={path.ADMIN_USER_MANAGER} element={<UserList />} /> */}
         </Route>
       </Routes>
     </div>
