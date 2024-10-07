@@ -24,6 +24,7 @@ import { useUserStore } from './store/useUserStore';
 import { useEffect } from 'react';
 import { roleForComponent } from './utils/constant';
 import UserManager from './components/admin/UserManager';
+import { Meeting } from './components/common/Meeting';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
@@ -60,14 +61,14 @@ function App() {
           <Route index element={<StudentHome />} />
           <Route path={path.STUDENT_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
+          <Route path={path.STUDENT_MEETING} element={<Meeting/>}/>          
           <Route path={path.STUDENT_BOOKING} element={<Activity />} />
           <Route path={path.STUDENT_GROUP} element={<StudentGroup />} />
           <Route path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}`} element={<CreateProject />} />
           <Route
             path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}/${path.USER_PROFILE_NAME_ID}`}
             element={<UserProfile />}
-          />
-          {/* <Route path={`${path.STUDENT_GROUP}/${path.LIST_GROUP}`} element={<ListGroup />} /> */}
+          />          
           <Route path={`${path.STUDENT_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.STUDENT_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_NAME_ID} element={<UserProfile />} />
@@ -100,7 +101,7 @@ function App() {
         >
           <Route index element={<AdminHome />} />
           <Route path={path.UserProfile} element={<UserProfile />} />
-          <Route path={path.ADMIN_USER_LIST} element={<UserList />} />
+          {/* <Route path={path.ADMIN_USER_LIST} element={<UserList />} /> */}
         </Route>
       </Routes>
     </div>

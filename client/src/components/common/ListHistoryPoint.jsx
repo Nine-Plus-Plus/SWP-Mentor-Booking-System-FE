@@ -35,6 +35,13 @@ export const ListHistoryPoint = ({ pointHistoryId, points, status, dateCreated, 
           points={20}
           bookingId={123}
         />
+        <HistoryPointItem
+          dateCreated={'Saturday, Feb 6, 2024'}
+          pointHistoryId={113}
+          status={'Bonus'}
+          points={-20}
+          bookingId={123}
+        />        
       </div>
     </div>
   );
