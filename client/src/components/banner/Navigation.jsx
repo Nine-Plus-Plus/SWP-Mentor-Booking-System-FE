@@ -13,9 +13,9 @@ import icons from '../../utils/icon';
 import path from '../../utils/path';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../store/useUserStore';
-import { Search } from '../index';
+import Swal from 'sweetalert2';
 
-const Navigation = ({ children, menuNavbarItemsStudent }) => {
+const Navigation = ({ children, menuNavbar }) => {
   const { Header, Sider } = Layout;
   const { IoIosNotifications } = icons;
   const [notificationCount, setNotificationCount] = useState(3);
@@ -41,8 +41,40 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
   }, [location.pathname]);
 
   const handleLogOut = () => {
-    resetUserStore();
-    toast.success('Log Out SuccessFull!!!');
+    // Hiển thị hộp thoại xác nhận đăng xuất
+    Swal.fire({
+      title: 'Are you sure?', // Tiêu đề của hộp thoại
+      text: 'Log Out Your Account!', // Nội dung chính của hộp thoại
+      icon: 'warning', // Hiển thị biểu tượng cảnh báo
+      showCancelButton: true, // Hiển thị nút hủy
+      confirmButtonText: 'Yes, Log Out', // Văn bản nút xác nhận
+      cancelButtonText: 'No, cancel.', // Văn bản nút hủy
+      reverseButtons: true // Đảo ngược vị trí các nút
+    }).then(result => {
+      // Kiểm tra kết quả khi người dùng nhấn vào nút
+      if (result.isConfirmed) {
+        // Nếu người dùng xác nhận đăng xuất
+        resetUserStore(); // Gọi hàm reset trạng thái người dùng (đăng xuất)
+
+        // Hoặc hiển thị một thông báo thành công khác với SweetAlert2 (nếu muốn)
+        Swal.fire({
+          title: 'Logged Out!',
+          text: 'You have successfully logged out.',
+          icon: 'success',
+          timer: 2000, // Đóng sau 2 giây
+          showConfirmButton: false // Ẩn nút OK
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // Nếu người dùng hủy
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled Log Out!',
+          icon: 'error',
+          timer: 2000, // Đóng sau 2 giây
+          showConfirmButton: false // Ẩn nút OK
+        });
+      }
+    });
   };
 
   const items = [
@@ -93,7 +125,7 @@ const Navigation = ({ children, menuNavbarItemsStudent }) => {
         <Menu
           className="h-[92vh] w-full flex flex-col gap-1 text-white font-semibold"
           mode="inline"
-          items={menuNavbarItemsStudent}
+          items={menuNavbar}
           theme="light"
         />
       </Sider>

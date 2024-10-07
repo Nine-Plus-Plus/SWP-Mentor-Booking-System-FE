@@ -7,7 +7,7 @@ const MentorList = () => {
       <Search searchFor={'mentor'} />
       <div className="p-3 bg-white rounded-md flex flex-col gap-5">
         <UserItem
-          role={'Mentor'}
+          roleItem={'Mentor'}
           name={'Trịnh Quốc Thắng'}
           specialized={'React'}
           gender={'Male'}
@@ -16,7 +16,7 @@ const MentorList = () => {
           showSchedule={true}
         />
         <UserItem
-          role={'Mentor'}
+          roleItem={'Mentor'}
           name={'Trịnh Quốc Thắng'}
           specialized={'DOTNET'}
           gender={'Male'}
@@ -25,7 +25,7 @@ const MentorList = () => {
           showSchedule={true}
         />
         <UserItem
-          role={'Mentor'}
+          roleItem={'Mentor'}
           name={'Trịnh Quốc Thắng'}
           specialized={'DELOY'}
           gender={'Male'}
@@ -34,7 +34,7 @@ const MentorList = () => {
           showSchedule={true}
         />
         <UserItem
-          role={'Mentor'}
+          roleItem={'Mentor'}
           name={'Trịnh Quốc Thắng'}
           specialized={'React'}
           gender={'Male'}
@@ -43,7 +43,7 @@ const MentorList = () => {
           showSchedule={true}
         />
         <UserItem
-          role={'Mentor'}
+          roleItem={'Mentor'}
           name={'Trịnh Quốc Thắng'}
           specialized={'React'}
           gender={'Male'}
@@ -52,7 +52,7 @@ const MentorList = () => {
           showSchedule={true}
         />
         <UserItem
-          role={'Mentor'}
+          roleItem={'Mentor'}
           name={'Trịnh Quốc Thắng'}
           specialized={'React'}
           gender={'Male'}
@@ -61,7 +61,7 @@ const MentorList = () => {
           showSchedule={true}
         />
         <UserItem
-          role={'Mentor'}
+          roleItem={'Mentor'}
           name={'Trịnh Quốc Thắng'}
           specialized={'React'}
           gender={'Male'}
@@ -70,7 +70,7 @@ const MentorList = () => {
           showSchedule={true}
         />
         <UserItem
-          role={'Mentor'}
+          roleItem={'Mentor'}
           name={'Trịnh Quốc Thắng'}
           specialized={'React'}
           gender={'Male'}

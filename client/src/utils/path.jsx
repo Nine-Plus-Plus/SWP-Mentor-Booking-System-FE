@@ -14,12 +14,12 @@ const path = {
   USER_PROFILE_ALL: 'profile-user/*',
   USER_PROFILE: 'profile-user',
   LIST_GROUP: 'list-group',
+  USER_VIEW_MENTOR: 'view-mentor',
+  USER_VIEW_CLASS: 'view-class',
 
   // Student
   PUBLIC_STUDENT: 'student',
   STUDENT_HOME: 'home',
-  STUDENT_VIEW_MENTOR: 'view-mentor',
-  STUDENT_VIEW_CLASS: 'view-class',
   STUDENT_BOOKING: 'booking',
   STUDENT_GROUP: 'group',
   STUDENT_CREATE_GROUP: 'create-group',

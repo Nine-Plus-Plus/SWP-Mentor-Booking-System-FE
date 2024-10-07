@@ -1,5 +1,6 @@
 // require('dotenv').config()
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 // cau hinh lai axios
 const instance = axios.create({
@@ -11,6 +12,11 @@ const instance = axios.create({
 instance.interceptors.request.use(
   function (config) {
     // Do something before request is sent
+    let token = localStorage?.getItem('token');
+    if (token)
+      config.headers = {
+        Authorization: `Bearer ${token}`
+      };
     return config;
   },
   function (error) {
@@ -35,11 +41,26 @@ instance.interceptors.response.use(
       res.data = error.response.data;
       res.status = error.response.status;
       res.headers = error.response.headers;
+      if (error.response.status === 403) {
+        Swal.fire({
+          title: 'User authentication failed!',
+          text: `User verification failed, please log in again`,
+          icon: 'error',
+          timer: 3000,
+          timerProgressBar: true
+        });
+
+        localStorage.removeItem('token');
+
+        setTimeout(() => {
+          // Điều hướng người dùng về trang đăng nhập
+          window.location.href = '/public/login';
+        }, 3000);
+      }
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser
       // and an instance of http.ClientRequest in node.js
-      console.log(error.request);
     } else {
       // Something happened in setting up the request that triggered an Error
       console.log('Error', error.message);

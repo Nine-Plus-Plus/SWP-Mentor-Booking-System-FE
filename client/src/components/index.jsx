@@ -13,10 +13,10 @@ export { default as TopicItem } from './common/TopicItem';
 export { default as ListHistoryPoint } from './common/ListHistoryPoint';
 export { default as ListGroup } from './common/ListGroup';
 export { default as GroupItem } from './common/GroupItem';
+export { default as UserHome } from './common/UserHome';
 // banner
 export { default as Navigation } from './banner/Navigation';
 // student
-export { default as StudentHome } from './student/StudentHome';
 export { default as UserProfile } from './common/UserProfile';
 export { default as MentorList } from './student/MentorList';
 export { default as StudentGroup } from './student/StudentGroup';
