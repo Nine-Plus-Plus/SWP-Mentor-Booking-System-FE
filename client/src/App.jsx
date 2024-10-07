@@ -15,7 +15,11 @@ import {
   ListGroup,
   CreateProject,
   ListHistoryPoint,
-  UserList
+  StudentManager,
+  MentorManager,
+  SemesterManager,
+  ClassManager,
+  SkillManager,
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -24,7 +28,6 @@ import GuestRoute from '../src/middlewares/GuestRoute';
 import { useUserStore } from './store/useUserStore';
 import { useEffect } from 'react';
 import { roleForComponent } from './utils/constant';
-import UserManager from './components/admin/UserManager';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
@@ -106,7 +109,11 @@ function App() {
         >
           <Route index element={<AdminHome />} />
           <Route path={path.USER_PROFILE} element={<UserProfile />} />
-          <Route path={path.ADMIN_USER_MANAGER} element={<UserManager />} />
+          <Route path={path.ADMIN_STUDENT_MANAGER} element={<StudentManager />} />
+          <Route path={path.ADMIN_MENTOR_MANAGER} element={<MentorManager />} />
+          <Route path={path.ADMIN_SKILL_MANAGER} element={<SkillManager />} />
+          <Route path={path.ADMIN_SEMESTER_MANAGER} element={<SemesterManager />} />
+          <Route path={path.ADMIN_CLASS_MANAGER} element={<ClassManager />} />
         </Route>
       </Routes>
     </div>

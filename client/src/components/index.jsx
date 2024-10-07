@@ -24,5 +24,9 @@ export { default as CreateProject } from './student/CreateProject';
 export { default as Activity } from './student/Activity';
 // admin
 export { default as AdminHome } from './admin/AdminHome';
-export { default as UserManager } from './admin/UserManager';
+export { default as StudentManager } from './admin/StudentManager';
+export { default as MentorManager } from './admin/MentorManager';
+export { default as SkillManager } from './admin/SkillManager';
+export { default as SemesterManager } from './admin/SemesterManager';
+export { default as ClassManager } from './admin/ClassManager';
 export { default as UserList } from './admin/UserList';
