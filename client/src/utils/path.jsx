@@ -14,12 +14,12 @@ const path = {
   USER_PROFILE_ALL: 'profile-user/*',
   USER_PROFILE: 'profile-user',
   LIST_GROUP: 'list-group',
+  USER_VIEW_MENTOR: 'view-mentor',
+  USER_VIEW_CLASS: 'view-class',
 
   // Student
   PUBLIC_STUDENT: 'student',
   STUDENT_HOME: 'home',
-  STUDENT_VIEW_MENTOR: 'view-mentor',
-  STUDENT_VIEW_CLASS: 'view-class',
   STUDENT_BOOKING: 'booking',
   STUDENT_GROUP: 'group',
   STUDENT_CREATE_GROUP: 'create-group',
@@ -33,7 +33,8 @@ const path = {
   // Admin
   PUBLIC_ADMIN: 'admin',
   ADMIN_HOME: 'home',
-  ADMIN_USER_MANAGER: 'user-manager'
+  ADMIN_USER_MANAGER: 'user-manager',
+  ADMIN_USER_LIST: 'user-list'
 };
 
 export default path;

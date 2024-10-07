@@ -7,7 +7,7 @@ import { menuNavbarItemsAdmin } from '../../utils/constant';
 function PublicAdmin() {
   return (
     <div className="w-full flex-wrap flex justify-end">
-      <Navigation menuNavbarItemsStudent={menuNavbarItemsAdmin}>
+      <Navigation menuNavbar={menuNavbarItemsAdmin}>
         <Outlet />
       </Navigation>
     </div>

@@ -4,7 +4,7 @@ import {
   ClassList,
   Login,
   MentorList,
-  StudentHome,
+  UserHome,
   ChangePass,
   OTPInput,
   ForgotPass,
@@ -14,7 +14,8 @@ import {
   StudentGroup,
   ListGroup,
   CreateProject,
-  ListHistoryPoint
+  ListHistoryPoint,
+  UserList
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -57,9 +58,9 @@ function App() {
             </PrivateRoute>
           }
         >
-          <Route index element={<StudentHome />} />
-          <Route path={path.STUDENT_VIEW_MENTOR} element={<MentorList />} />
-          <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
+          <Route index element={<UserHome />} />
+          <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
+          <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
           <Route path={path.STUDENT_BOOKING} element={<Activity />} />
           <Route path={path.STUDENT_GROUP} element={<StudentGroup />} />
           <Route path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}`} element={<CreateProject />} />
@@ -68,8 +69,8 @@ function App() {
             element={<UserProfile />}
           />
           {/* <Route path={`${path.STUDENT_GROUP}/${path.LIST_GROUP}`} element={<ListGroup />} /> */}
-          <Route path={`${path.STUDENT_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
-          <Route path={`${path.STUDENT_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
+          <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
+          <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_NAME_ID} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
           <Route path={path.STUDENT_HISTORY_POINT} element={<ListHistoryPoint />} />
@@ -84,8 +85,13 @@ function App() {
             </PrivateRoute>
           }
         >
-          <Route index element={<StudentHome />} />
-          <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
+          <Route index element={<UserHome />} />
+          <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
+          <Route path={path.LIST_GROUP} element={<ListGroup />} />
+          <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
+          <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
+          <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
+          <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
         </Route>
         <Route path="*" element={<Navigate to={path.PUBLIC} replace />} />
 
@@ -99,8 +105,8 @@ function App() {
           }
         >
           <Route index element={<AdminHome />} />
-          <Route path={path.UserProfile} element={<UserProfile />} />
-          <Route path={path.ADMIN_USER_LIST} element={<UserList />} />
+          <Route path={path.USER_PROFILE} element={<UserProfile />} />
+          <Route path={path.ADMIN_USER_MANAGER} element={<UserManager />} />
         </Route>
       </Routes>
     </div>

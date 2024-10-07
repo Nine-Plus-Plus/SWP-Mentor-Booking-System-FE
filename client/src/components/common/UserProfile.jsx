@@ -65,7 +65,7 @@ function StudentProfile() {
         const token = localStorage.getItem('token');
         if (token) {
           const response = await getMyProfile(token);
-          console.log('API Response:', response); // Kiểm tra log dữ liệu trả về
+
           const user = response.usersDTO || {};
           console.log('User DTO:', user); // Kiểm tra dữ liệu trong `usersDTO`
           setProfile({

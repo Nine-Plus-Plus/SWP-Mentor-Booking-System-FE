@@ -6,6 +6,7 @@ import {
   HomeOutlined,
   NotificationOutlined,
   ReconciliationOutlined,
+  ScheduleOutlined,
   SolutionOutlined,
   TeamOutlined,
   TransactionOutlined,
@@ -30,7 +31,7 @@ export const menuNavbarItemsStudent = [
     key: 'class',
     icon: <ContactsOutlined />,
     label: (
-      <NavLink to={path.STUDENT_VIEW_CLASS} className="text-white">
+      <NavLink to={path.USER_VIEW_CLASS} className="text-white">
         Class
       </NavLink>
     ),
@@ -40,11 +41,10 @@ export const menuNavbarItemsStudent = [
     key: 'mentor',
     icon: <SolutionOutlined />,
     label: (
-      <NavLink to={path.STUDENT_VIEW_MENTOR} className="text-white">
+      <NavLink to={path.USER_VIEW_MENTOR} className="text-white">
         Mentor
       </NavLink>
     ),
-
     className: 'text-white text-lg'
   },
   {
@@ -66,11 +66,7 @@ export const menuNavbarItemsStudent = [
   {
     key: 'meeting',
     icon: <ClockCircleOutlined />,
-    label: (
-      <NavLink to={path.STUDENT_ACTIVITY} className="text-white">
-        Meeting
-      </NavLink>
-    ),
+    label: 'Meeting',
     className: 'text-white text-lg'
   },
   {
@@ -116,7 +112,7 @@ export const menuNavbarItemsMentor = [
     key: 'class',
     icon: <ContactsOutlined />,
     label: (
-      <NavLink to={path.STUDENT_VIEW_CLASS} className="text-white">
+      <NavLink to={path.USER_VIEW_CLASS} className="text-white">
         Class
       </NavLink>
     ),
@@ -125,25 +121,49 @@ export const menuNavbarItemsMentor = [
   {
     key: 'group',
     icon: <TeamOutlined />,
-    label: 'Group',
+    label: (
+      <NavLink to={path.LIST_GROUP} className="text-white">
+        Group
+      </NavLink>
+    ),
+    className: 'text-white text-lg'
+  },
+  {
+    key: 'schedule',
+    icon: <ClockCircleOutlined />,
+    label: 'Schedule',
+    className: 'text-white text-lg'
+  },
+  {
+    key: 'mentor',
+    icon: <SolutionOutlined />,
+    label: (
+      <NavLink to={path.USER_VIEW_MENTOR} className="text-white">
+        Mentor
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {
     key: 'notification',
-    icon: <AppstoreOutlined />,
+    icon: <NotificationOutlined />,
     label: 'Notification',
     className: 'text-white text-lg'
   },
   {
-    key: 'activity',
-    icon: <AppstoreOutlined />,
-    label: 'Activity',
+    key: 'meeting',
+    icon: <ScheduleOutlined />,
+    label: 'Meeting',
     className: 'text-white text-lg'
   },
   {
-    key: 'point',
-    icon: <TransactionOutlined />,
-    label: 'History point',
+    key: 'booking',
+    icon: <ReconciliationOutlined />,
+    label: (
+      <NavLink to={path.STUDENT_BOOKING} className="text-white">
+        Booking
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   }
 ];
@@ -155,16 +175,6 @@ export const menuNavbarItemsAdmin = [
     label: (
       <NavLink to={'/'} className="text-white">
         Home
-      </NavLink>
-    ),
-    className: 'text-white text-lg'
-  },
-  {
-    key: 'profile',
-    icon: <UserOutlined />,
-    label: (
-      <NavLink to={path.STUDENT_PROFILE} className="text-white">
-        Profile
       </NavLink>
     ),
     className: 'text-white text-lg'

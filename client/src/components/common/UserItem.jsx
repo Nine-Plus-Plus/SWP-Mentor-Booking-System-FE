@@ -6,10 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import path from '../../utils/path';
 import { SoundTwoTone } from '@ant-design/icons';
 import Swal from 'sweetalert2';
+import { useUserStore } from '../../store/useUserStore';
 
 const UserItem = ({
   avatar,
-  role,
+  roleItem,
   name,
   code,
   specialized,
@@ -26,6 +27,7 @@ const UserItem = ({
   const navigate = useNavigate();
   const [added, setAdded] = useState(false);
   const [selectMeeting, setSelectMeeting] = useState('');
+  const { role } = useUserStore();
 
   const handleStar = star => {
     let stars = [];
@@ -40,7 +42,6 @@ const UserItem = ({
   };
 
   const handleBookingClick = () => {
-    console.log(selectMeeting);
     if (selectMeeting) {
       Swal.fire({
         title: 'Are you sure?',
@@ -88,11 +89,11 @@ const UserItem = ({
               <h1
                 className={clsx(
                   'font-bold text-xl',
-                  role === 'Mentor' && 'text-red-500',
+                  roleItem === 'Mentor' && 'text-red-500',
                   sameClass && 'bg-yellow-400 p-1 rounded-md'
                 )}
               >
-                {role}
+                {roleItem}
               </h1>
               <div className="flex">
                 {handleStar(star).length > 0 &&
@@ -103,19 +104,19 @@ const UserItem = ({
             </div>
             <div className="flex flex-col gap-2 text-md">
               <p>
-                {role === 'Mentor' ? 'Mentor' : 'Student'} name: {name}
+                {roleItem === 'Mentor' ? 'Mentor' : 'Student'} name: {name}
               </p>
               <p>
-                {role === 'Mentor' ? 'Mentor' : 'Student'} code: {code}
+                {roleItem === 'Mentor' ? 'Mentor' : 'Student'} code: {code}
               </p>
               <p>
-                {role === 'Mentor' ? 'Skill' : 'Specialized'}: {specialized}
+                {roleItem === 'Mentor' ? 'Skill' : 'Specialized'}: {specialized}
               </p>
               <p>Gender: {gender}</p>
             </div>
           </div>
 
-          {showSchedule && (
+          {showSchedule && role !== 'MENTOR' && (
             <div className="flex flex-col h-full gap-3">
               <div className="flex">
                 <h1 className="font-bold text-xl text-white bg-blue-400 p-1 rounded-md ">Schedule</h1>
@@ -185,11 +186,12 @@ const UserItem = ({
                   textColor={'text-white'}
                   textSize={'text-sm'}
                   bgHover={'hover:bg-orange-400 hover:text-gray-100'}
+                  // fix
                   to={`${path.USER_PROFILE}/hehe/haha`}
                 />
               )}
             </div>
-            {showSchedule && (
+            {showSchedule && role === 'STUDENT' && (
               <div className="w-[15vw]">
                 <Button
                   text={'Booking'}
