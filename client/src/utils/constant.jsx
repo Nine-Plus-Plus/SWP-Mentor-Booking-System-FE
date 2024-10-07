@@ -69,7 +69,11 @@ export const menuNavbarItemsStudent = [
   {
     key: 'meeting',
     icon: <ClockCircleOutlined />,
-    label: 'Meeting',
+    label: (
+      <NavLink to={path.STUDENT_MEETING} className="text-white">
+        Meeting
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {

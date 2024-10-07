@@ -10,7 +10,6 @@ const path = {
 
   // Common User
   USER_PROFILE_NAME_ID: 'profile-user/:name/:id',
-  USER_PROFILE_NAME_ID: 'profile-user/:name/:id',
   USER_PROFILE_ALL: 'profile-user/*',
   USER_PROFILE: 'profile-user',
   LIST_GROUP: 'list-group',
@@ -20,6 +19,9 @@ const path = {
   // Student
   PUBLIC_STUDENT: 'student',
   STUDENT_HOME: 'home',
+  STUDENT_VIEW_MENTOR: 'view-mentor',
+  STUDENT_VIEW_CLASS: 'view-class',
+  STUDENT_MEETING: 'meeting',
   STUDENT_BOOKING: 'booking',
   STUDENT_GROUP: 'group',
   STUDENT_CREATE_GROUP: 'create-group',

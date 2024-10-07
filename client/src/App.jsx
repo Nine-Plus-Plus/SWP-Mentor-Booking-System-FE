@@ -28,6 +28,8 @@ import GuestRoute from '../src/middlewares/GuestRoute';
 import { useUserStore } from './store/useUserStore';
 import { useEffect } from 'react';
 import { roleForComponent } from './utils/constant';
+import UserManager from './components/admin/UserManager';
+import { Meeting } from './components/common/Meeting';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
@@ -61,6 +63,10 @@ function App() {
             </PrivateRoute>
           }
         >
+          <Route index element={<StudentHome />} />
+          <Route path={path.STUDENT_VIEW_MENTOR} element={<MentorList />} />
+          <Route path={path.STUDENT_VIEW_CLASS} element={<ClassList />} />
+          <Route path={path.STUDENT_MEETING} element={<Meeting/>}/>          
           <Route index element={<UserHome />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
@@ -70,6 +76,9 @@ function App() {
           <Route
             path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}/${path.USER_PROFILE_NAME_ID}`}
             element={<UserProfile />}
+          />          
+          <Route path={`${path.STUDENT_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
+          <Route path={`${path.STUDENT_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           />
           {/* <Route path={`${path.STUDENT_GROUP}/${path.LIST_GROUP}`} element={<ListGroup />} /> */}
           <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
@@ -108,6 +117,7 @@ function App() {
           }
         >
           <Route index element={<AdminHome />} />
+          <Route path={path.UserProfile} element={<UserProfile />} />
           <Route path={path.USER_PROFILE} element={<UserProfile />} />
           <Route path={path.ADMIN_STUDENT_MANAGER} element={<StudentManager />} />
           <Route path={path.ADMIN_MENTOR_MANAGER} element={<MentorManager />} />
