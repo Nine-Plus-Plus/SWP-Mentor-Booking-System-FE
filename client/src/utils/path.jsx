@@ -19,8 +19,6 @@ const path = {
   // Student
   PUBLIC_STUDENT: 'student',
   STUDENT_HOME: 'home',
-  STUDENT_VIEW_MENTOR: 'view-mentor',
-  STUDENT_VIEW_CLASS: 'view-class',
   STUDENT_MEETING: 'meeting',
   STUDENT_BOOKING: 'booking',
   STUDENT_GROUP: 'group',
@@ -30,7 +28,6 @@ const path = {
   // Mentor
   PUBLIC_MENTOR: 'mentor',
   MENTOR_HOME: 'home',
-  MENTOR_VIEW_CLASS: 'view-class',
 
   // Admin
   PUBLIC_ADMIN: 'admin',
