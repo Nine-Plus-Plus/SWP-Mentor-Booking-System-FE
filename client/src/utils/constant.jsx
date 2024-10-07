@@ -1,8 +1,10 @@
 import {
-  AppstoreOutlined,
   AreaChartOutlined,
+  BankOutlined,
   ClockCircleOutlined,
   ContactsOutlined,
+  GroupOutlined,
+  HeatMapOutlined,
   HomeOutlined,
   NotificationOutlined,
   ReconciliationOutlined,
@@ -10,6 +12,7 @@ import {
   SolutionOutlined,
   TeamOutlined,
   TransactionOutlined,
+  UngroupOutlined,
   UserOutlined
 } from '@ant-design/icons';
 
@@ -182,12 +185,65 @@ export const menuNavbarItemsAdmin = [
   {
     key: 'users-manager',
     icon: <ContactsOutlined />,
-    label: (
-      <NavLink to={path.ADMIN_USER_MANAGER} className="text-white">
-        Users
-      </NavLink>
-    ),
-    className: 'text-white text-lg'
+    label: 'Users',
+    className: 'text-white text-lg',
+    children: [
+      // Đây là các mục con của Users
+      {
+        key: 'users-student',
+        icon: <UserOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_STUDENT_MANAGER} className="text-white">
+            Student
+          </NavLink>
+        )
+      },
+      {
+        key: 'users-mentor',
+        icon: <UserOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_MENTOR_MANAGER} className="text-white">
+            Mentor
+          </NavLink>
+        )
+      },
+      {
+        key: 'skill-mentor',
+        icon: <HeatMapOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_SKILL_MANAGER} className="text-white">
+            Mentor Skill
+          </NavLink>
+        )
+      }
+    ]
+  },
+  {
+    key: 'university-manager',
+    icon: <BankOutlined />,
+    label: 'University',
+    className: 'text-white text-lg',
+    children: [
+      // Đây là các mục con của
+      {
+        key: 'semester',
+        icon: <GroupOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_SEMESTER_MANAGER} className="text-white">
+            Semester
+          </NavLink>
+        )
+      },
+      {
+        key: 'class',
+        icon: <UngroupOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_CLASS_MANAGER} className="text-white">
+            Class
+          </NavLink>
+        )
+      }
+    ]
   }
 ];
 

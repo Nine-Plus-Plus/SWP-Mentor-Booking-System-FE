@@ -123,10 +123,10 @@ const Navigation = ({ children, menuNavbar }) => {
           </NavLink>
         </div>
         <Menu
-          className="h-[92vh] w-full flex flex-col gap-1 text-white font-semibold"
+          className="h-[92vh] w-full flex flex-col gap-1 text-white font-semibold overflow-auto"
           mode="inline"
           items={menuNavbar}
-          theme="light"
+          theme={role === 'ADMIN' ? 'dark' : 'light'}
         />
       </Sider>
       <Layout className="relative">
