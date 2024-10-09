@@ -36,8 +36,8 @@ export const DemoBookingMentor = () => {
               <button className="p-2 bg-gray-200 rounded">Video</button>
             </div> */}
 
-          {/* Chat */}
-          <div className="bg-white p-5  mt-5">
+          {/* Information */}
+          <div className="bg-white p-5 mt-5">
             <p className="font-bold">Information</p>
             <div className="bg-gray-100 p-3 rounded mb-2">Booking Id</div>
             <div className="bg-gray-100 p-3 rounded mb-2">Group Id</div>
