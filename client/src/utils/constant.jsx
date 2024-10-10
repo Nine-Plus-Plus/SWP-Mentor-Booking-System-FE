@@ -1,14 +1,19 @@
 import {
-  AppstoreOutlined,
   AreaChartOutlined,
+  BankOutlined,
+  BookOutlined,
   ClockCircleOutlined,
   ContactsOutlined,
+  GroupOutlined,
+  HeatMapOutlined,
   HomeOutlined,
   NotificationOutlined,
   ReconciliationOutlined,
+  ScheduleOutlined,
   SolutionOutlined,
   TeamOutlined,
   TransactionOutlined,
+  UngroupOutlined,
   UserOutlined
 } from '@ant-design/icons';
 
@@ -30,7 +35,7 @@ export const menuNavbarItemsStudent = [
     key: 'class',
     icon: <ContactsOutlined />,
     label: (
-      <NavLink to={path.STUDENT_VIEW_CLASS} className="text-white">
+      <NavLink to={path.USER_VIEW_CLASS} className="text-white">
         Class
       </NavLink>
     ),
@@ -40,11 +45,10 @@ export const menuNavbarItemsStudent = [
     key: 'mentor',
     icon: <SolutionOutlined />,
     label: (
-      <NavLink to={path.STUDENT_VIEW_MENTOR} className="text-white">
+      <NavLink to={path.USER_VIEW_MENTOR} className="text-white">
         Mentor
       </NavLink>
     ),
-
     className: 'text-white text-lg'
   },
   {
@@ -67,7 +71,7 @@ export const menuNavbarItemsStudent = [
     key: 'meeting',
     icon: <ClockCircleOutlined />,
     label: (
-      <NavLink to={path.STUDENT_ACTIVITY} className="text-white">
+      <NavLink to={path.STUDENT_MEETING} className="text-white">
         Meeting
       </NavLink>
     ),
@@ -116,7 +120,7 @@ export const menuNavbarItemsMentor = [
     key: 'class',
     icon: <ContactsOutlined />,
     label: (
-      <NavLink to={path.STUDENT_VIEW_CLASS} className="text-white">
+      <NavLink to={path.USER_VIEW_CLASS} className="text-white">
         Class
       </NavLink>
     ),
@@ -125,25 +129,49 @@ export const menuNavbarItemsMentor = [
   {
     key: 'group',
     icon: <TeamOutlined />,
-    label: 'Group',
+    label: (
+      <NavLink to={path.LIST_GROUP} className="text-white">
+        Group
+      </NavLink>
+    ),
+    className: 'text-white text-lg'
+  },
+  {
+    key: 'schedule',
+    icon: <ClockCircleOutlined />,
+    label: 'Schedule',
+    className: 'text-white text-lg'
+  },
+  {
+    key: 'mentor',
+    icon: <SolutionOutlined />,
+    label: (
+      <NavLink to={path.USER_VIEW_MENTOR} className="text-white">
+        Mentor
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {
     key: 'notification',
-    icon: <AppstoreOutlined />,
+    icon: <NotificationOutlined />,
     label: 'Notification',
     className: 'text-white text-lg'
   },
   {
-    key: 'activity',
-    icon: <AppstoreOutlined />,
-    label: 'Activity',
+    key: 'meeting',
+    icon: <ScheduleOutlined />,
+    label: 'Meeting',
     className: 'text-white text-lg'
   },
   {
-    key: 'point',
-    icon: <TransactionOutlined />,
-    label: 'History point',
+    key: 'booking',
+    icon: <ReconciliationOutlined />,
+    label: (
+      <NavLink to={path.STUDENT_BOOKING} className="text-white">
+        Booking
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   }
 ];
@@ -160,24 +188,76 @@ export const menuNavbarItemsAdmin = [
     className: 'text-white text-lg'
   },
   {
-    key: 'profile',
-    icon: <UserOutlined />,
-    label: (
-      <NavLink to={path.STUDENT_PROFILE} className="text-white">
-        Profile
-      </NavLink>
-    ),
-    className: 'text-white text-lg'
-  },
-  {
     key: 'users-manager',
     icon: <ContactsOutlined />,
-    label: (
-      <NavLink to={path.ADMIN_USER_MANAGER} className="text-white">
-        Users
-      </NavLink>
-    ),
-    className: 'text-white text-lg'
+    label: 'Users',
+    className: 'text-white text-lg',
+    children: [
+      // Đây là các mục con của Users
+      {
+        key: 'users-student',
+        icon: <UserOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_STUDENT_MANAGER} className="text-white">
+            Student
+          </NavLink>
+        )
+      },
+      {
+        key: 'users-mentor',
+        icon: <UserOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_MENTOR_MANAGER} className="text-white">
+            Mentor
+          </NavLink>
+        )
+      },
+      {
+        key: 'skill-mentor',
+        icon: <HeatMapOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_SKILL_MANAGER} className="text-white">
+            Mentor Skill
+          </NavLink>
+        )
+      }
+    ]
+  },
+  {
+    key: 'university-manager',
+    icon: <BankOutlined />,
+    label: 'University',
+    className: 'text-white text-lg',
+    children: [
+      // Đây là các mục con của
+      {
+        key: 'semester',
+        icon: <GroupOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_SEMESTER_MANAGER} className="text-white">
+            Semester
+          </NavLink>
+        )
+      },
+      {
+        key: 'class',
+        icon: <UngroupOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_CLASS_MANAGER} className="text-white">
+            Class
+          </NavLink>
+        )
+      },
+      {
+        key: 'topic',
+        icon: <BookOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_TOPIC_MANAGER} className="text-white">
+            Topic
+          </NavLink>
+        )
+      }
+    ]
   }
 ];
 
@@ -186,3 +266,17 @@ export const roleForComponent = {
   STUDENT: path.PUBLIC_STUDENT,
   MENTOR: path.PUBLIC_MENTOR
 };
+
+export const colors = [
+  'magenta',
+  'red',
+  'volcano',
+  'orange',
+  'gold',
+  'lime',
+  'green',
+  'cyan',
+  'blue',
+  'geekblue',
+  'purple'
+];

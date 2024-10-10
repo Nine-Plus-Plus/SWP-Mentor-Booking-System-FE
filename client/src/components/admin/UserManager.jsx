@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getAllUsers, deleteUser, updateUser, createUser } from '../../apis/UserServices';
 import { Table, Button, message, Form, Modal, Input } from 'antd';
+import { useLocation } from 'react-router-dom';
 
-function UserList() {
+function MentorManager() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -62,7 +63,8 @@ function UserList() {
     try {
       const updateData = form.getFieldsValue();
       const response = await updateUser(selectedUser.id, updateData, token);
-
+      console.log(response);
+      
       if (response && response.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
         setUsers(users.map(user => (user.id === response.usersDTO.id ? response.usersDTO : user)));
@@ -132,11 +134,6 @@ function UserList() {
       key: 'avatar'
     },
     {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id'
-    },
-    {
       title: 'Username',
       dataIndex: 'username',
       key: 'username'
@@ -145,23 +142,6 @@ function UserList() {
       title: 'Email',
       dataIndex: 'email',
       key: 'email'
-    },
-    {
-      title: 'Date Created',
-      dataIndex: 'dateUpdated',
-      key: 'dateUpdated',
-      render: date => new Date(date).toLocaleDateString()
-    },
-    {
-      title: 'Date Updated',
-      dataIndex: 'dateCreated',
-      key: 'dateCreated',
-      render: date => new Date(date).toLocaleDateString()
-    },
-    {
-      title: 'Role Name',
-      dataIndex: ['role', 'roleName'],
-      key: 'roleName'
     },
     {
       title: 'Birth Date',
@@ -208,10 +188,10 @@ function UserList() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Users List</h1>
+    <div className="min-h-screen bg-gray-100 p-4">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Student List</h1>
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
-        Create User
+        Create Student
       </Button>
       <Table columns={columns} dataSource={users} rowKey="id" pagination={false} />
 
@@ -272,4 +252,4 @@ function UserList() {
   );
 }
 
-export default UserList;
+export default MentorManager;

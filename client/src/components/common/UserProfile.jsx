@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { getMyProfile } from '../../apis/UserServices';
 import CopyAction from './CopyAction';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
 
@@ -65,7 +64,7 @@ function StudentProfile() {
         const token = localStorage.getItem('token');
         if (token) {
           const response = await getMyProfile(token);
-          console.log('API Response:', response); // Kiểm tra log dữ liệu trả về
+
           const user = response.usersDTO || {};
           console.log('User DTO:', user); // Kiểm tra dữ liệu trong `usersDTO`
           setProfile({

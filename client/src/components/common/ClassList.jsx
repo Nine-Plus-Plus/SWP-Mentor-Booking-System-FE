@@ -23,7 +23,7 @@ const ClassList = ({ addGroup }) => {
       <div className=" bg-white flex flex-col gap-5 p-3 rounded-md">
         {!addGroup && (
           <UserItem
-            role={'Mentor'}
+            roleItem={'Mentor'}
             name={'Thầy Lâm'}
             specialized={'DOTNET, React, Spring Boot'}
             gender={'Male'}
@@ -31,7 +31,7 @@ const ClassList = ({ addGroup }) => {
           />
         )}
         <UserItem
-          role={'Student'}
+          roleItem={'Student'}
           name={'Trịnh Quốc Thắng'}
           specialized={'NodeJS'}
           gender={'Male'}
@@ -41,7 +41,7 @@ const ClassList = ({ addGroup }) => {
           isAdded={false}
         />
         <UserItem
-          role={'Student'}
+          roleItem={'Student'}
           name={'Trịnh Quốc Thắng'}
           specialized={'NodeJS'}
           gender={'Male'}
@@ -51,7 +51,7 @@ const ClassList = ({ addGroup }) => {
           isAdded={true}
         />
         <UserItem
-          role={'Student'}
+          roleItem={'Student'}
           name={'Trịnh Quốc Thắng'}
           specialized={'NodeJS'}
           gender={'Male'}
@@ -61,7 +61,7 @@ const ClassList = ({ addGroup }) => {
           isAdded={true}
         />
         <UserItem
-          role={'Student'}
+          roleItem={'Student'}
           name={'Trịnh Quốc Thắng'}
           specialized={'NodeJS'}
           gender={'Male'}
@@ -71,7 +71,7 @@ const ClassList = ({ addGroup }) => {
           isAdded={false}
         />
         <UserItem
-          role={'Student'}
+          roleItem={'Student'}
           name={'Trịnh Quốc Thắng'}
           specialized={'NodeJS'}
           gender={'Male'}
@@ -81,7 +81,7 @@ const ClassList = ({ addGroup }) => {
           isAdded={false}
         />
         <UserItem
-          role={'Student'}
+          roleItem={'Student'}
           name={'Trịnh Quốc Thắng'}
           specialized={'NodeJS'}
           gender={'Male'}

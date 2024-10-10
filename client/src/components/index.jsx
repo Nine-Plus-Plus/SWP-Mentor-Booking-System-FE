@@ -13,10 +13,10 @@ export { default as TopicItem } from './common/TopicItem';
 export { default as ListHistoryPoint } from './common/ListHistoryPoint';
 export { default as ListGroup } from './common/ListGroup';
 export { default as GroupItem } from './common/GroupItem';
+export { default as UserHome } from './common/UserHome';
 // banner
 export { default as Navigation } from './banner/Navigation';
 // student
-export { default as StudentHome } from './student/StudentHome';
 export { default as UserProfile } from './common/UserProfile';
 export { default as MentorList } from './student/MentorList';
 export { default as StudentGroup } from './student/StudentGroup';
@@ -24,5 +24,10 @@ export { default as CreateProject } from './student/CreateProject';
 export { default as Activity } from './student/Activity';
 // admin
 export { default as AdminHome } from './admin/AdminHome';
-export { default as UserManager } from './admin/UserManager';
+export { default as StudentManager } from './admin/StudentManager';
+export { default as MentorManager } from './admin/MentorManager';
+export { default as SkillManager } from './admin/SkillManager';
+export { default as SemesterManager } from './admin/SemesterManager';
+export { default as ClassManager } from './admin/ClassManager';
+export { default as TopicManager } from './admin/TopicManager';
 export { default as UserList } from './admin/UserList';
