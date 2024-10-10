@@ -10,6 +10,8 @@ export const getAllSemester = token =>
           Authorization: `Bearer ${token}`
         }
       });
+      console.log(response);
+
       resolve(response);
     } catch (error) {
       reject(error);
@@ -27,7 +29,8 @@ export const createSemester = (data, token) =>
           Authorization: `Bearer ${token}`
         }
       });
-      resolve(response);
+      //
+      resolve(response.data);
     } catch (error) {
       reject(error);
     }

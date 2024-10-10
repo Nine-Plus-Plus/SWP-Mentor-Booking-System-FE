@@ -1,46 +1,11 @@
 import axiosConfig from '../axiosConfig';
 
-// Phương thức lấy tất cả người dùng
-export const getStudents = token =>
+export const getAllMentors = token =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: 'api/admin/get-all-students',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-// Phương thức lấy người dùng bằng id
-export const getStudentById = (id, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'get',
-        url: `api/admin/get-student-by-id/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-// Phương thức cập nhập người dùng
-
-export const updateStudent = (id, data, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'put',
-        url: `api/admin/update-student-by-id/${id}`,
-        data: data,
+        url: 'api/admin/get-all-mentors',
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -51,33 +16,46 @@ export const updateStudent = (id, data, token) =>
     }
   });
 
-// Phương thức xóa người dùng
-export const deleteStudent = (id, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'delete',
-        url: `api/admin/delete-user/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log(response);
-
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-
-// Phương thức thêm người dùng
-export const createStudent = (data, token) =>
+export const createMentor = (data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'post',
-        url: `api/admin/create-student`,
+        url: 'api/admin/create-mentor',
         data: data,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const updateMentor = (data, id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/admin/update-mentor-by-id/${id}`,
+        data: data,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const deleteMentor = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'delete',
+        url: `api/admin/delete-mentor-by-id/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }

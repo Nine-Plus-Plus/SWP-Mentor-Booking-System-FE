@@ -16,7 +16,7 @@ const SemesterManager = () => {
       try {
         const response = await getAllSemester(token);
         setSemesters(
-          response.data.semesterDTOList.map(semester => ({
+          response?.data?.semesterDTOList?.map(semester => ({
             ...semester,
             dateCreated: dayjs(semester.dateCreated).format('HH:mm DD-MM-YYYY')
           }))
@@ -38,27 +38,40 @@ const SemesterManager = () => {
 
   const handleCreateSemester = async () => {
     const token = localStorage.getItem('token');
-
     try {
-      const values = await form.validateFields();
-      const dataCreate = form.getFieldValue();
+      const values = await form.validateFields(); // Xác thực form
+      const dataCreate = form.getFieldsValue(true); // Lấy tất cả giá trị của form
       console.log(dataCreate);
 
       const response = await createSemester(dataCreate, token);
       console.log(response);
 
-      if (response && response.data.statusCode === 201) {
-        //   setStudents([...students, response.studentsDTOList]);
+      if (response?.statusCode === 200 && response?.semesterDTO) {
+        setSemesters([
+          ...semesters,
+          {
+            ...response.semesterDTO,
+            dateCreated: dayjs(response.semesterDTO.dateCreated).format('HH:mm DD-MM-YYYY')
+          }
+        ]);
         setIsCreateModalVisible(false);
-        message.success('Student created successfully');
+        message.success('Semester created successfully');
       } else {
-        message.error('Failed to create student');
+        message.error('Failed to create semester');
       }
-    } catch (error) {
-      console.error('Create student error:', error);
-      message.error('Failed to create student: ' + error.message);
+    } catch (error2) {
+      console.error('Create semester error:', error2);
+      message.error('Failed to create semester: ' + (error2.message || 'Unknown error'));
     }
   };
+
+  if (loading) {
+    return <div className="text-center text-gray-700">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
 
   const handleDelete = async semesterId => {
     const token = localStorage.getItem('token');
@@ -68,7 +81,7 @@ const SemesterManager = () => {
         message.success('Semester deleted successfully');
         setSemesters(prevSemester => prevSemester.filter(semester => semester.id !== semesterId)); // Cập nhật danh sách người dùng
       } else {
-        message.error('Failed to delete student: ' + response.data.message);
+        message.error('Failed to delete semester: ' + response.data.message);
       }
     } catch (error) {
       console.error('Delete semester error:', error);

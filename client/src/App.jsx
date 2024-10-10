@@ -20,7 +20,8 @@ import {
   SemesterManager,
   ClassManager,
   SkillManager,
-  UserList
+  UserList,
+  TopicManager
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -117,6 +118,7 @@ function App() {
           <Route path={path.ADMIN_SKILL_MANAGER} element={<SkillManager />} />
           <Route path={path.ADMIN_SEMESTER_MANAGER} element={<SemesterManager />} />
           <Route path={path.ADMIN_CLASS_MANAGER} element={<ClassManager />} />
+          <Route path={path.ADMIN_TOPIC_MANAGER} element={<TopicManager />} />
           {/* <Route path={path.ADMIN_USER_MANAGER} element={<UserList />} /> */}
         </Route>
       </Routes>
