@@ -6,20 +6,21 @@ import { useParams } from 'react-router-dom';
 
 function StudentProfile() {
   const param = useParams();
-  console.log(param);
+  console.log('Params:', param);
 
-  const [profile, setProfile] = useState({
-    id: 1809, // Default id if not available
-    photo: '',
-    role: '',
-    fullName: 'Test User',
-    gender: 'male',
-    email: 'test@example.com',
-    phone: '123-456-7890',
-    birthDate: '2000-01-01',
-    dateCreated: '2024-01-01',
-    address: '123 Main St'
-  });
+  // const [profile, setProfile] = useState({
+  //   id: 1809, // Default id if not available
+  //   photo: '',
+  //   role: '',
+  //   fullName: 'Test User',
+  //   gender: 'male',
+  //   email: 'test@example.com',
+  //   phone: '123-456-7890',
+  //   birthDate: '2000-01-01',
+  //   dateCreated: '2024-01-01',
+  //   address: '123 Main St'
+  // });
+  const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDataChanged, setIsDataChanged] = useState(false);
@@ -62,25 +63,31 @@ function StudentProfile() {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        if (token) {
-          const response = await getMyProfile(token);
-
-          const user = response.usersDTO || {};
-          console.log('User DTO:', user); // Kiểm tra dữ liệu trong `usersDTO`
-          setProfile({
-            id: user.id || profile.id,
-            fullName: user.fullName || 'NULL',
-            email: user.email || 'NULL',
-            birthDate: user.birthDate || 'NULL',
-            photo: user.photo || profile.photo,
-            address: user.address || 'NULL',
-            phone: user.phone || 'NULL',
-            gender: user.gender || 'NULL',
-            dateCreated: user.dateCreated || 'NULL'
-          });
-        } else {
+        if (!token) {
           setError('Token không tồn tại');
+          return;
         }
+
+        // Gọi API để lấy profile
+        const response = await getMyProfile(token);
+
+        // Kiểm tra dữ liệu trả về từ API
+        const user = response.usersDTO || {};
+        console.log('User DTO:', user);
+
+        // Cập nhật state với dữ liệu từ API
+        setProfile({
+          id: user.id || 'N/A',
+          userName: user.username || 'N/A',
+          fullName: user.fullName || 'N/A',
+          email: user.email || 'N/A',
+          birthDate: user.birthDate || 'N/A',
+          photo: user.photo || '/public/avatar-default.jpg',
+          address: user.address || 'N/A',
+          phone: user.phone || 'N/A',
+          gender: user.gender || 'N/A',
+          dateCreated: user.dateCreated || 'N/A'
+        });
       } catch (err) {
         console.error('Lỗi khi gọi API:', err);
         setError(err.message || 'Đã xảy ra lỗi');
@@ -121,7 +128,7 @@ function StudentProfile() {
         <div className="flex flex-col items-center mt">
           {/* code edit */}
           <h1 className="text-3xl font-semibold">Student</h1>
-          <h2 className="text-xl font-semibold text-gray-900">{profile.fullName}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{profile.userName}</h2>
           <div className="subtitle-text with-clipboard-copy">
             <span>Student code: {profile.id}</span>
             <CopyAction
