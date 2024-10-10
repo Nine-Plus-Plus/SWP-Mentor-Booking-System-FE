@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { getMyProfile } from '../../apis/UserServices';
 import CopyAction from './CopyAction';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
 
