@@ -1,6 +1,7 @@
 import {
   AreaChartOutlined,
   BankOutlined,
+  BookOutlined,
   ClockCircleOutlined,
   ContactsOutlined,
   GroupOutlined,
@@ -246,6 +247,15 @@ export const menuNavbarItemsAdmin = [
             Class
           </NavLink>
         )
+      },
+      {
+        key: 'topic',
+        icon: <BookOutlined />,
+        label: (
+          <NavLink to={path.ADMIN_TOPIC_MANAGER} className="text-white">
+            Topic
+          </NavLink>
+        )
       }
     ]
   }
@@ -256,3 +266,17 @@ export const roleForComponent = {
   STUDENT: path.PUBLIC_STUDENT,
   MENTOR: path.PUBLIC_MENTOR
 };
+
+export const colors = [
+  'magenta',
+  'red',
+  'volcano',
+  'orange',
+  'gold',
+  'lime',
+  'green',
+  'cyan',
+  'blue',
+  'geekblue',
+  'purple'
+];
