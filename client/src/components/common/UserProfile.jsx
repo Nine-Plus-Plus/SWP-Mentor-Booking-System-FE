@@ -2,14 +2,14 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { getMyProfile } from '../../apis/UserServices';
 import CopyAction from './CopyAction';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 function StudentProfile() {
-  const param = useParams();
-  console.log(param);
+  const { name, id } = useParams();
+  console.log(id);
 
   const [profile, setProfile] = useState({
-    id: 1809, // Default id if not available
+    id: 1809, // Default id if not availableoong 
     photo: '',
     role: '',
     fullName: 'Test User',

@@ -56,7 +56,7 @@ function StudentManager() {
       const token = localStorage.getItem('token');
       try {
         const response = await getClassBySemesterId(selectedSemester, token);
-        setClasses(response.data?.classDTOList);
+        setClasses(response?.classDTOList);
         // Đặt giá trị mặc định là tùy chọn cuối cùng
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
@@ -110,16 +110,21 @@ function StudentManager() {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
-      const updateData = { ...form.getFieldsValue(), birthDate: dayjs(values.birthDate).format('DD-MM-YYYY') };
+      const updateData = {
+        ...form.getFieldsValue(),
+        birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
+        aclass: {
+          id: form.getFieldsValue().classId
+        }
+      };
       console.log(updateData);
 
-      const response = await updateStudent(selectedStudent.id, updateData, token);
+      const response = await updateStudent(selectedStudent.user.id, updateData, token);
+      console.log(response);
 
       if (response && response.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
-        setStudents(
-          students.map(student => (student.id === response.studentsDTOList.id ? response.studentsDTOList : student))
-        );
+        setStudents(students.map(student => (student.id === response.studentsDTO.id ? response.studentsDTO : student)));
         setIsUpdateModalVisible(false);
         message.success('Student updated successfully');
       } else {

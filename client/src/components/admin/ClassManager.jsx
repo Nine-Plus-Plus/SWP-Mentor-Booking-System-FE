@@ -85,10 +85,16 @@ const ClassManager = () => {
       const values = await form.validateFields();
 
       const dataCreate = {
-        ...form.getFieldsValue(true),
-        semester: { id: values.semesterId },
-        mentor: { id: values.mentorId }
+        ...values,
+        semester: { id: values.semesterId }
       };
+
+      // Nếu mentorId không phải là null, thì thêm vào dataCreate
+      if (values.mentorId) {
+        dataCreate.mentor = { id: values.mentorId };
+      }
+
+      console.log(dataCreate);
 
       // Gọi API tạo lớp học
       const response = await createClass(dataCreate, token);
@@ -111,13 +117,16 @@ const ClassManager = () => {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
-      const updateData = form.getFieldsValue();
-      const response = await updateClass(selectedClass.id, updateData, token);
+      const updateData = {
+        ...form.getFieldsValue(),
+        mentor: { id: form.getFieldsValue().mentorId },
+        semester: { id: form.getFieldsValue().semesterId }
+      };
+      console.log(classes);
 
+      const response = await updateClass(selectedClass.id, updateData, token);
       if (response && response?.statusCode === 200) {
-        // setClasses(
-        //   classes.map(classU => (classU.id === response.mentorsDTOList.id ? response.mentorsDTOList : classU))
-        // );
+        setClasses(classes.map(classU => (classU.id === response.classDTO.id ? response.classDTO : classU)));
         setIsUpdateModalVisible(false);
         message.success('Class updated successfully');
       } else {
@@ -153,7 +162,7 @@ const ClassManager = () => {
     form.setFieldsValue({
       className: classU.className,
       semesterId: classU.semester.id,
-      mentorId: classU?.mentor?.id || ''
+      mentorId: classU?.mentor?.mentorCode || ''
     });
     setIsUpdateModalVisible(true);
   };
@@ -280,9 +289,9 @@ const ClassManager = () => {
             <Form.Item label="Mentor" name="mentorId">
               <Select placeholder="Select mentor" style={{ width: '100%' }}>
                 {mentors?.map(mentor => (
-                  <Option key={mentor.id} value={mentor.id}>
+                  <Select.Option key={mentor.id} value={mentor.id}>
                     {mentor.mentorCode}
-                  </Option>
+                  </Select.Option>
                 ))}
               </Select>
             </Form.Item>
@@ -327,9 +336,9 @@ const ClassManager = () => {
             <Form.Item label="Mentor" name="mentorId">
               <Select placeholder="Select mentor" style={{ width: '100%' }}>
                 {mentors?.map(mentor => (
-                  <Option key={mentor.id} value={mentor.id}>
+                  <Select.Option key={mentor.id} value={mentor.id}>
                     {mentor.mentorCode}
-                  </Option>
+                  </Select.Option>
                 ))}
               </Select>
             </Form.Item>

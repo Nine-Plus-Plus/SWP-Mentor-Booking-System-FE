@@ -64,7 +64,7 @@ const MentorManager = () => {
       const createData = {
         ...form.getFieldsValue(),
         birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
-        skills: form.getFieldsValue().skills.map(skillId => ({ id: skillId }))
+        skills: form.getFieldsValue()?.skills ? form.getFieldsValue().skills.map(skillId => ({ id: skillId })) : [] // Nếu không có skills, trả về mảng rỗng
       };
 
       const response = await createMentor(createData, token);
@@ -75,7 +75,7 @@ const MentorManager = () => {
           ...prevMentors,
           {
             ...response.mentorsDTO, // Dữ liệu mentor mới
-            skills: response.mentorsDTO.skills.map(skill => {
+            skills: response.mentorsDTO?.skills.map(skill => {
               // Tìm kỹ năng từ state
               const skillDetail = skills.find(s => s.id === skill.id);
               return skillDetail ? { id: skillDetail.id, skillName: skillDetail.skillName } : skill;
@@ -97,14 +97,20 @@ const MentorManager = () => {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
-      const updateData = { ...form.getFieldsValue(), birthDate: dayjs(values.birthDate).format('YYYY-MM-DD') };
-      const response = await updateMentor(selectedMentor.id, updateData, token);
+      const { skills, ...otherFields } = form.getFieldsValue();
+      const skillsArray = skills.map(skillId => ({ id: skillId }));
+      const updateData = {
+        ...form.getFieldsValue(),
+        birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
+        skills: skillsArray
+      };
+      console.log(updateData);
+
+      const response = await updateMentor(selectedMentor.user.id, updateData, token);
 
       if (response && response.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
-        // setMentors(
-        //   mentors.map(mentor => (mentor.id === response.mentorsDTOList.id ? response.mentorsDTOList : mentor))
-        // );
+        setMentors(mentors.map(mentor => (mentor.id === response.mentorsDTO.id ? response.mentorsDTO : mentor)));
         setIsUpdateModalVisible(false);
         message.success('Mentor updated successfully');
       } else {
@@ -123,7 +129,7 @@ const MentorManager = () => {
 
       if (response && response.statusCode === 200) {
         message.success('Mentor deleted successfully');
-        setMentors(prevMentors => prevMentors.filter(mentor => mentor.id !== mentorId)); // Cập nhật danh sách người dùng
+        setMentors(prevMentors => prevMentors.filter(mentor => mentor.user.id !== mentorId)); // Cập nhật danh sách người dùng
       } else {
         message.error('Failed to delete mentor: ' + response.data.message);
       }
@@ -146,18 +152,18 @@ const MentorManager = () => {
   const showUpdateModal = mentor => {
     setSelectedMentor(mentor);
     form.setFieldsValue({
-      fullName: mentor.fullName,
-      username: mentor.username,
-      email: mentor.email,
-      passsword: mentor.passsword,
-      skillName: mentor.skillName,
+      fullName: mentor.user.fullName,
+      username: mentor.user.username,
+      email: mentor.user.email,
+      skills: mentor.skills.map(skill => skill.id),
+      mentorCode: mentor.mentorCode,
       totalTimeRemain: mentor.totalTimeRemain,
       star: mentor.star,
-      birthDate: mentor.birthDate,
-      address: mentor.address,
-      phone: mentor.phone,
-      gender: mentor.gender,
-      avatar: mentor.avatar
+      birthDate: dayjs(mentor.user.birthDate),
+      address: mentor.user.address,
+      phone: mentor.user.phone,
+      gender: mentor.user.gender,
+      avatar: mentor.user.avatar
     });
     setIsUpdateModalVisible(true);
   };
@@ -185,13 +191,8 @@ const MentorManager = () => {
       key: 'email'
     },
     {
-      title: 'Birth Date',
-      dataIndex: ['user', 'birthDate'],
-      key: 'birthDate'
-    },
-    {
       title: 'Mentor Code',
-      dataIndex: ['mentorCode'],
+      dataIndex: 'mentorCode',
       key: 'mentorCode'
     },
     {
@@ -240,7 +241,7 @@ const MentorManager = () => {
           >
             Update
           </Button>
-          <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.id)}>
+          <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.user.id)}>
             Delete
           </Button>
         </div>
@@ -303,6 +304,18 @@ const MentorManager = () => {
                 {
                   type: 'email',
                   message: 'Please enter a valid email !'
+                }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Mentor Code"
+              name="mentorCode"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your mentor code!'
                 }
               ]}
             >
