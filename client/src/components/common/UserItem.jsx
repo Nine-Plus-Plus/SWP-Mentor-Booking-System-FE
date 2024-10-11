@@ -80,9 +80,6 @@ const UserItem = ({
     }
   };
 
-  const userName = 'thang';
-  const id = '1';
-
   return (
     <div className="border shadow-md rounded-md h-[180px]">
       <div className="h-[179px] flex w-full gap-4">
@@ -191,7 +188,7 @@ const UserItem = ({
                   textSize={'text-sm'}
                   bgHover={'hover:bg-orange-400 hover:text-gray-100'}
                   // fix
-                  to={`${path.USER_PROFILE}/${userName}/${id}`}
+                  to={`${path.USER_PROFILE}/hehe/hihi`}
                 />
               )}
             </div>

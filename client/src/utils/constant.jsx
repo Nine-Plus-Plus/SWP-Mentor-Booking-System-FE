@@ -64,7 +64,11 @@ export const menuNavbarItemsStudent = [
   {
     key: 'notification',
     icon: <NotificationOutlined />,
-    label: 'Notification',
+    label: (
+      <NavLink to={path.USER_LIST_NOTIFICATION} className="text-white">
+        Notification
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {
@@ -155,7 +159,11 @@ export const menuNavbarItemsMentor = [
   {
     key: 'notification',
     icon: <NotificationOutlined />,
-    label: 'Notification',
+    label: (
+      <NavLink to={path.USER_LIST_NOTIFICATION} className="text-white">
+        Notification
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {
