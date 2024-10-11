@@ -14,11 +14,13 @@ export { default as ListHistoryPoint } from './common/ListHistoryPoint';
 export { default as ListGroup } from './common/ListGroup';
 export { default as GroupItem } from './common/GroupItem';
 export { default as UserHome } from './common/UserHome';
+export { default as MentorList } from './common/MentorList';
+export { default as ListNotification } from './common/ListNotification';
+export { default as NotificationItem } from './common/NotificationItem';
 // banner
 export { default as Navigation } from './banner/Navigation';
 // student
 export { default as UserProfile } from './common/UserProfile';
-export { default as MentorList } from './student/MentorList';
 export { default as StudentGroup } from './student/StudentGroup';
 export { default as CreateProject } from './student/CreateProject';
 export { default as Activity } from './student/Activity';
