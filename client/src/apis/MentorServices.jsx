@@ -33,17 +33,19 @@ export const createMentor = (data, token) =>
     }
   });
 
-export const updateMentor = (data, id, token) =>
+export const updateMentor = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
-        method: 'post',
-        url: `api/admin/update-mentor-by-id/${id}`,
+        method: 'put',
+        url: `api/admin/update-mentor/${id}`,
         data: data,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log(response);
+
       resolve(response.data);
     } catch (error) {
       reject(error);
@@ -55,11 +57,13 @@ export const deleteMentor = (id, token) =>
     try {
       const response = await axiosConfig({
         method: 'delete',
-        url: `api/admin/delete-mentor-by-id/${id}`,
+        url: `api/admin/delete-user/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log(response);
+
       resolve(response.data);
     } catch (error) {
       reject(error);

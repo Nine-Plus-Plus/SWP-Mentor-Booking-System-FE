@@ -39,7 +39,7 @@ export const updateStudent = (id, data, token) =>
     try {
       const response = await axiosConfig({
         method: 'put',
-        url: `api/admin/update-student-by-id/${id}`,
+        url: `api/admin/update-student/${id}`,
         data: data,
         headers: {
           Authorization: `Bearer ${token}`

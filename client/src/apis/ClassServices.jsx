@@ -39,7 +39,7 @@ export const updateClass = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
-        method: 'post',
+        method: 'put',
         url: `api/admin/update-class/${id}`,
         data: data,
         headers: {
