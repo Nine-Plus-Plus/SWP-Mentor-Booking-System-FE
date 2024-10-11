@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { getMyProfile } from '../../apis/UserServices';
 import CopyAction from './CopyAction';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 function StudentProfile() {
   const param = useParams();

@@ -1,117 +1,87 @@
 import axiosConfig from '../axiosConfig';
 
-export const StudentLogin = payload =>
+export const getClassBySemesterId = (semesterId, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/admin/get-classes-by-semester/${semesterId}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const createClass = (data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'post',
-        url: '/api/auth/login',
-        data: payload
-      });
-      resolve(response);
-    } catch (error) {
-      reject(error);
-    }
-  });
-
-// Phương thức lấy profile từ token
-export const getMyProfile = token =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'get',
-        url: '/api/user/get-my-profile',
+        url: 'api/admin/create-class',
+        data: data,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log(response.data);
+      //
       resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-// Phương thức lấy tất cả người dùng
-export const getAllUsers = token =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'get',
-        url: 'api/admin/get-all-users',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response);
-      console.log(response);
-    } catch (error) {
-      reject(error);
-    }
-  });
-// Phương thức lấy người dùng bằng id
-export const getUserById = (id, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'get',
-        url: `api/admin/get-user-by-id/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-// Phương thức cập nhập người dùng
-
-export const updateUser = (id, data, token) =>
+export const updateClass = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'put',
-        url: `api/admin/update-user/${id}`,
+        url: `api/admin/update-class/${id}`,
         data: data,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log(response);
+      //
       resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-// Phương thức xóa người dùng
-export const deleteUser = (id, token) =>
+export const deleteClass = (id, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'delete',
-        url: `api/admin/delete-user/${id}`,
+        url: `api/admin/delete-class/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      //
       resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-// Phương thức thêm người dùng
-export const createUser = (data, token) =>
+export const getMentorNoClass = token =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
-        method: 'post',
-        url: `api/admin/create-user`,
-        data: data,
+        method: 'get',
+        url: `api/admin/unassigned-mentors`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      //
       resolve(response.data);
     } catch (error) {
       reject(error);

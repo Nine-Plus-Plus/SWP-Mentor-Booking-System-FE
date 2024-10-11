@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getStudents, getStudentById, updateStudent, deleteStudent, createStudent } from '../../apis/StudentServices';
 import { Table, Button, message, Form, Modal, Input, Radio, Select, DatePicker } from 'antd';
 import dayjs from 'dayjs';
+import { getAllSemester } from '../../apis/SemesterServices';
+import { getClassBySemesterId } from '../../apis/ClassServices';
 
 function StudentManager() {
   const [students, setStudents] = useState([]);
@@ -10,6 +12,10 @@ function StudentManager() {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [semesters, setSemesters] = useState([]);
+  const [selectedSemester, setSelectedSemester] = useState(null);
+  const [classes, setClasses] = useState([]);
+  const [selectedClass, setSelectedClass] = useState(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -17,7 +23,9 @@ function StudentManager() {
       const token = localStorage.getItem('token');
       try {
         const response = await getStudents(token);
-        setStudents(response.data.studentsDTOList);
+        console.log(response);
+
+        setStudents(response.studentsDTOList);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -28,6 +36,38 @@ function StudentManager() {
     fetchStudents();
   }, []);
 
+  useEffect(() => {
+    const fetchSemesters = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await getAllSemester(token);
+        setSemesters(response.data?.semesterDTOList);
+      } catch (err) {
+        setError(err?.message || 'Đã xảy ra lỗi');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSemesters();
+  }, []);
+
+  useEffect(() => {
+    const fetchClassBySemesterId = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await getClassBySemesterId(selectedSemester, token);
+        setClasses(response?.classDTOList);
+        // Đặt giá trị mặc định là tùy chọn cuối cùng
+      } catch (err) {
+        setError(err?.message || 'Đã xảy ra lỗi');
+      } finally {
+        setLoading(false);
+      }
+    };
+    setLoading(false);
+    fetchClassBySemesterId();
+  }, [selectedSemester]);
+
   // Delete student
   const handleDelete = async studentId => {
     const token = localStorage.getItem('token');
@@ -36,7 +76,7 @@ function StudentManager() {
 
       if (response && response.statusCode === 200) {
         message.success('Student deleted successfully');
-        setStudents(prevStudents => prevStudents.filter(student => student.id !== studentId)); // Cập nhật danh sách người dùng
+        setStudents(prevStudents => prevStudents.filter(student => student.user.id !== studentId)); // Cập nhật danh sách người dùng
       } else {
         message.error('Failed to delete student: ' + response.data.message);
       }
@@ -50,19 +90,19 @@ function StudentManager() {
   const showUpdateModal = student => {
     setSelectedStudent(student);
     form.setFieldsValue({
-      fullName: student.fullName,
-      username: student.username,
-      email: student.email,
-      passsword: student.passsword,
-      expire: student.expire,
-      semester: student.semester,
-      class: student.class,
-      birthDate: student.birthDate,
-      address: student.address,
-      phone: student.phone,
-      gender: student.gender,
-      avatar: student.avatar
+      fullName: student.user.fullName,
+      username: student.user.username,
+      email: student.user.email,
+      expertise: student.expertise,
+      semesterId: student.aclass.semester.id,
+      classId: student.aclass.id,
+      birthDate: dayjs(student.user.birthDate),
+      address: student.user.address,
+      phone: student.user.phone,
+      gender: student.user.gender,
+      avatar: student.user.avatar
     });
+    setSelectedSemester(form.getFieldValue().semesterId);
     setIsUpdateModalVisible(true);
   };
 
@@ -70,14 +110,21 @@ function StudentManager() {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
-      const updateData = { ...form.getFieldsValue(), birthDate: dayjs(values.birthDate).format('DD-MM-YYYY') };
-      const response = await updateStudent(selectedStudent.id, updateData, token);
+      const updateData = {
+        ...form.getFieldsValue(),
+        birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
+        aclass: {
+          id: form.getFieldsValue().classId
+        }
+      };
+      console.log(updateData);
+
+      const response = await updateStudent(selectedStudent.user.id, updateData, token);
+      console.log(response);
 
       if (response && response.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
-        setStudents(
-          students.map(student => (student.id === response.studentsDTOList.id ? response.studentsDTOList : student))
-        );
+        setStudents(students.map(student => (student.id === response.studentsDTO.id ? response.studentsDTO : student)));
         setIsUpdateModalVisible(false);
         message.success('Student updated successfully');
       } else {
@@ -105,18 +152,25 @@ function StudentManager() {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
-      const createData = { ...form.getFieldsValue(), birthDate: dayjs(values.birthDate).format('DD-MM-YYYY') };
-      const response = await createStudent(createData, token);
+      const createData = {
+        ...form.getFieldsValue(),
+        birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
+        aclass: {
+          id: form.getFieldsValue().classId
+        }
+      };
 
-      if (response && response.statusCode === 200) {
-        setStudents([...students, response.studentsDTOList]);
+      const response = await createStudent(createData, token);
+      console.log(response);
+
+      if (response && response?.statusCode === 200) {
+        setStudents([...students, response.studentsDTO]);
         setIsCreateModalVisible(false);
         message.success('Student created successfully');
       } else {
         message.error('Failed to create student');
       }
     } catch (error) {
-      console.error('Create student error:', error);
       message.error('Failed to create student: ' + error.message);
     }
   };
@@ -143,47 +197,47 @@ function StudentManager() {
     },
     {
       title: 'Avarta',
-      dataIndex: 'avatar',
+      dataIndex: ['user', 'avatar'],
       key: 'avatar'
     },
     {
       title: 'Full Name',
-      dataIndex: 'fullName',
+      dataIndex: ['user', 'fullName'],
       key: 'fullName'
     },
     {
       title: 'Email',
-      dataIndex: 'email',
+      dataIndex: ['user', 'email'],
       key: 'email'
     },
     {
       title: 'Birth Date',
-      dataIndex: 'birthDate',
+      dataIndex: ['user', 'birthDate'],
       key: 'birthDate'
     },
     {
       title: 'Semester',
-      dataIndex: 'semester',
+      dataIndex: ['aclass', 'semester', 'semesterName'],
       key: 'semester'
     },
     {
       title: 'Class',
-      dataIndex: 'class',
+      dataIndex: ['aclass', 'className'],
       key: 'class'
     },
     {
-      title: 'Expire',
-      dataIndex: 'expire',
-      key: 'expire'
+      title: 'Expertise',
+      dataIndex: 'expertise',
+      key: 'expertise'
     },
     {
       title: 'Phone',
-      dataIndex: 'phone',
+      dataIndex: ['user', 'phone'],
       key: 'phone'
     },
     {
       title: 'Gender',
-      dataIndex: 'gender',
+      dataIndex: ['user', 'gender'],
       key: 'gender'
     },
     {
@@ -198,7 +252,7 @@ function StudentManager() {
           >
             Update
           </Button>
-          <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.id)}>
+          <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.user.id)}>
             Delete
           </Button>
         </div>
@@ -266,35 +320,30 @@ function StudentManager() {
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
-            >
-              <Input.Password />
-            </Form.Item>
             <Form.Item label="Birth Date" name="birthDate">
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
               label="Semester"
-              name="semester"
+              name="semesterId"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your semester!'
+                  message: 'Please select a semester!'
                 }
               ]}
             >
-              <Select placeholder="Select your class">
-                <Select.Option value="classA">Class A</Select.Option>
-                <Select.Option value="classB">Class B</Select.Option>
-                <Select.Option value="classC">Class C</Select.Option>
+              <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
+                {semesters?.map(semester => (
+                  <Select.Option key={semester.id} value={semester.id}>
+                    {semester.semesterName}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
             <Form.Item
               label="Class"
-              name="class"
+              name="classId"
               rules={[
                 {
                   required: true,
@@ -302,19 +351,21 @@ function StudentManager() {
                 }
               ]}
             >
-              <Select placeholder="Select your class">
-                <Select.Option value="semester1">Semester 1</Select.Option>
-                <Select.Option value="semester2">Semester 2</Select.Option>
-                <Select.Option value="semester3">Semester 3</Select.Option>
+              <Select placeholder="Select Class">
+                {classes?.map(classU => (
+                  <Select.Option key={classU.id} value={classU.id}>
+                    {classU.className}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
             <Form.Item
-              label="Expire"
-              name="expire"
+              label="Expertise"
+              name="expertise"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your expire!'
+                  message: 'Please input your expertise!'
                 }
               ]}
             >
@@ -328,8 +379,8 @@ function StudentManager() {
             </Form.Item>
             <Form.Item label="Gender" name="gender">
               <Radio.Group>
-                <Radio value="male">Male</Radio>
-                <Radio value="female">Female</Radio>
+                <Radio value="MALE">Male</Radio>
+                <Radio value="FEMALE">Female</Radio>
               </Radio.Group>
             </Form.Item>
             <Form.Item label="Avatar" name="avatar">
@@ -347,10 +398,10 @@ function StudentManager() {
         onCancel={handleCancelCreate}
       >
         <div className="max-h-96 overflow-y-auto p-5">
-          <Form form={form} layout="vertical" initialValues={{ gender: 'male' }}>
+          <Form form={form} layout="vertical" initialValues={{ gender: 'MALE' }}>
             <Form.Item
               label="FullName"
-              name="FullName"
+              name="fullName"
               rules={[
                 {
                   required: true,
@@ -416,12 +467,12 @@ function StudentManager() {
               <Input />
             </Form.Item>
             <Form.Item
-              label="Expire"
-              name="expire"
+              label="Expertise"
+              name="expertise"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your expire!'
+                  message: 'Please input your expertise!'
                 }
               ]}
             >
@@ -429,23 +480,25 @@ function StudentManager() {
             </Form.Item>
             <Form.Item
               label="Semester"
-              name="semester"
+              name="semesterId"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your semester!'
+                  message: 'Please select a semester!'
                 }
               ]}
             >
-              <Select placeholder="Select your class">
-                <Select.Option value="classA">Class A</Select.Option>
-                <Select.Option value="classB">Class B</Select.Option>
-                <Select.Option value="classC">Class C</Select.Option>
+              <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
+                {semesters?.map(semester => (
+                  <Select.Option key={semester.id} value={semester.id}>
+                    {semester.semesterName}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
             <Form.Item
               label="Class"
-              name="class"
+              name="classId"
               rules={[
                 {
                   required: true,
@@ -453,10 +506,12 @@ function StudentManager() {
                 }
               ]}
             >
-              <Select placeholder="Select your class">
-                <Select.Option value="semester1">Semester 1</Select.Option>
-                <Select.Option value="semester2">Semester 2</Select.Option>
-                <Select.Option value="semester3">Semester 3</Select.Option>
+              <Select placeholder="Select Class">
+                {classes?.map(classU => (
+                  <Select.Option key={classU.id} value={classU.id}>
+                    {classU.className}
+                  </Select.Option>
+                ))}
               </Select>
             </Form.Item>
             <Form.Item label="Address" name="address">
@@ -476,8 +531,8 @@ function StudentManager() {
               ]}
             >
               <Radio.Group>
-                <Radio value="male">Male</Radio>
-                <Radio value="female">Female</Radio>
+                <Radio value="MALE">Male</Radio>
+                <Radio value="FEMALE">Female</Radio>
               </Radio.Group>
             </Form.Item>
             <Form.Item label="Avatar" name="avatar">

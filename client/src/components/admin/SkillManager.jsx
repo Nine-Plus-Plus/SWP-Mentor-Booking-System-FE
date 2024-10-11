@@ -1,9 +1,10 @@
-import { Button, Form, Input, Table } from 'antd';
+import { Button, Form, Input, message, Modal, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { getAllSkill } from '../../apis/SkillServices';
+import { createSkill, deleteSkill, getAllSkill, updateSkill } from '../../apis/SkillServices';
 
 const SkillManager = () => {
   const [skills, setSkills] = useState([]);
+  ///
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
@@ -17,13 +18,6 @@ const SkillManager = () => {
       try {
         const response = await getAllSkill(token);
         setSkills(response.data.skillsDTOList);
-        setSkills(
-          response.data.skillsDTOList.map(skill => ({
-            ...skill,
-            dateCreated: dayjs(skill.dateCreated).format('HH:mm DD-MM-YYYY'),
-            dateUpdate: dayjs(skill.dateCreated).format('HH:mm DD-MM-YYYY')
-          }))
-        );
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -34,10 +28,101 @@ const SkillManager = () => {
   }, []);
 
   const showCreateModal = () => {
-    setSelectedSkill(null); // Không chọn user nào vì đang tạo mới
-    form.resetFields(); // Xóa các giá trị trong form
-    setIsCreateModalVisible(true); // Hiển thị modal tạo người dùng
+    setSelectedSkill(null);
+    form.resetFields();
+    setIsCreateModalVisible(true);
   };
+
+  const handleCreateSkill = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const values = await form.validateFields();
+      const createData = form.getFieldValue();
+      const response = await createSkill(createData, token);
+      console.log(response);
+
+      if (response && response.statusCode === 200) {
+        setSkills([...skills, response.skillsDTO]);
+        setIsCreateModalVisible(false);
+        message.success('Skill created successfully');
+      } else {
+        message.error('Failed to create skill');
+      }
+    } catch (error) {
+      message.error('Failed to create skill: ' + error.message);
+    }
+  };
+
+  // Update skill
+  const showUpdateModal = skill => {
+    setSelectedSkill(skill);
+    form.setFieldsValue({
+      skillName: skill.skillName,
+      skillDescription: skill.skillDescription
+    });
+    setIsUpdateModalVisible(true);
+  };
+
+  const handleDelete = async idSkill => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await deleteSkill(idSkill, token);
+
+      if (response && response.statusCode === 200) {
+        message.success('Skill deleted successfully');
+        setSkills(prevSkill => prevSkill.filter(skill => skill.id !== idSkill)); // Cập nhật danh sách người dùng
+      } else {
+        message.error('Failed to delete skill: ' + response.data.message);
+      }
+    } catch (error) {
+      console.error('Delete skill error:', error);
+      message.error('Failed to delete skill: ' + error.message);
+    }
+  };
+
+  const handleUpdate = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const values = await form.validateFields();
+      const updateData = form.getFieldValue();
+      const response = await updateSkill(selectedSkill.id, updateData, token);
+      console.log(response);
+
+      if (response && response.statusCode === 200) {
+        // Cập nhật lại danh sách kỹ năng với thông tin mới
+        console.log(response);
+
+        setSkills(prevSkills =>
+          prevSkills.map(skill => (skill.id === response.skillsDTO.id ? response.skillsDTO : skill))
+        );
+        setIsUpdateModalVisible(false);
+        message.success('Skill updated successfully');
+      } else {
+        message.error('Failed to update skill');
+      }
+    } catch (error) {
+      console.error('Update skill error:', error);
+      message.error('Failed to update skill: ' + error.message);
+    }
+  };
+
+  const handleCancelCreate = () => {
+    form.resetFields();
+    setIsCreateModalVisible(false);
+  };
+
+  const handleCancelUpdate = () => {
+    form.resetFields();
+    setIsUpdateModalVisible(false);
+  };
+
+  if (loading) {
+    return <div className="text-center text-gray-700">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
 
   const columns = [
     {
@@ -52,7 +137,7 @@ const SkillManager = () => {
       key: 'skillName'
     },
     {
-      title: 'Email',
+      title: 'Skill Description',
       dataIndex: 'skillDescription',
       key: 'skillDescription'
     },
@@ -85,7 +170,7 @@ const SkillManager = () => {
       <Table columns={columns} bordered dataSource={skills} rowKey="id" pagination={{ pageSize: 10 }} />
 
       {/* Modal for updating skill */}
-      {/* <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
+      <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
         <div className="max-h-96 overflow-y-auto p-5">
           <Form form={form} layout="vertical">
             <Form.Item
@@ -114,10 +199,10 @@ const SkillManager = () => {
             </Form.Item>
           </Form>
         </div>
-      </Modal> */}
+      </Modal>
 
       {/* Modal for creating skill */}
-      {/* <Modal title="Create Skill" open={isCreateModalVisible} onOk={handleCreateSkill} onCancel={handleCancelCreate}>
+      <Modal title="Create Skill" open={isCreateModalVisible} onOk={handleCreateSkill} onCancel={handleCancelCreate}>
         <div className="max-h-96 overflow-y-auto p-5">
           <Form form={form} layout="vertical">
             <Form.Item
@@ -146,7 +231,7 @@ const SkillManager = () => {
             </Form.Item>
           </Form>
         </div>
-      </Modal> */}
+      </Modal>
     </div>
   );
 };

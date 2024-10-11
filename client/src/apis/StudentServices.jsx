@@ -11,8 +11,7 @@ export const getStudents = token =>
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response);
-      resolve(response);
+      resolve(response.data);
     } catch (error) {
       reject(error);
     }
@@ -40,7 +39,7 @@ export const updateStudent = (id, data, token) =>
     try {
       const response = await axiosConfig({
         method: 'put',
-        url: `api/admin/update-student-by-id/${id}`,
+        url: `api/admin/update-student/${id}`,
         data: data,
         headers: {
           Authorization: `Bearer ${token}`
@@ -58,11 +57,13 @@ export const deleteStudent = (id, token) =>
     try {
       const response = await axiosConfig({
         method: 'delete',
-        url: `api/admin/delete-student-by-id/${id}`,
+        url: `api/admin/delete-user/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log(response);
+
       resolve(response.data);
     } catch (error) {
       reject(error);

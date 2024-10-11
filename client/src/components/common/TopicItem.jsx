@@ -169,7 +169,7 @@ const TopicItem = ({ setPayloadProject, setShowTopic }) => {
 
   return (
     <div className="border shadow-md rounded-md">
-      <Table dataSource={data} pagination={{ pageSize: 5 }} scroll={{ x: '1000px' }}>
+      <Table dataSource={data} pagination={{ pageSize: 5 }} scroll={{ x: '1000px' }} >
         <Column title="ID" dataIndex="id" key="id" className="whitespace-pre-line text-left align-top" />
         <Column
           title="Topic Name"

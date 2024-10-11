@@ -1,77 +1,43 @@
 import axiosConfig from '../axiosConfig';
 
-export const StudentLogin = payload =>
+export const getAllTopic = token =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-all-topics`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getTopicByIdSemester = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-topic-by-semester-id/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const createTopic = (data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'post',
-        url: '/api/auth/login',
-        data: payload
-      });
-      resolve(response);
-    } catch (error) {
-      reject(error);
-    }
-  });
-
-// Phương thức lấy profile từ token
-export const getMyProfile = token =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'get',
-        url: '/api/user/get-my-profile',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-
-// Phương thức lấy tất cả người dùng
-export const getAllUsers = token =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'get',
-        url: 'api/admin/get-all-users',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response);
-      console.log(response);
-    } catch (error) {
-      reject(error);
-    }
-  });
-// Phương thức lấy người dùng bằng id
-export const getUserById = (id, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'get',
-        url: `api/admin/get-user-by-id/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-// Phương thức cập nhập người dùng
-
-export const updateUser = (id, data, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'put',
-        url: `api/admin/update-user/${id}`,
+        url: `api/admin/create-topic`,
         data: data,
         headers: {
           Authorization: `Bearer ${token}`
@@ -83,13 +49,12 @@ export const updateUser = (id, data, token) =>
     }
   });
 
-// Phương thức xóa người dùng
-export const deleteUser = (id, token) =>
+export const deleteTopic = (id, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'delete',
-        url: `api/admin/delete-user/${id}`,
+        url: `api/admin/delete-topic/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -100,14 +65,13 @@ export const deleteUser = (id, token) =>
     }
   });
 
-// Phương thức thêm người dùng
-export const createUser = (data, token) =>
+export const updateTopic = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
-        method: 'post',
-        url: `api/admin/create-user`,
+        method: 'put',
         data: data,
+        url: `api/admin/update-topic/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
