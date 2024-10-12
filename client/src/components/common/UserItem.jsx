@@ -22,7 +22,8 @@ const UserItem = ({
   sameClass,
   setCountMember,
   countMember,
-  isAdded
+  isAdded,
+  idUser
 }) => {
   const { FaStar, FaStarHalf } = icons;
   const navigate = useNavigate();
@@ -188,7 +189,7 @@ const UserItem = ({
                   textSize={'text-sm'}
                   bgHover={'hover:bg-orange-400 hover:text-gray-100'}
                   // fix
-                  to={`${path.USER_PROFILE}/hehe/hihi`}
+                  to={`${path.USER_PROFILE}/${roleItem}/${idUser}`}
                 />
               )}
             </div>

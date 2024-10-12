@@ -87,3 +87,24 @@ export const createStudent = (data, token) =>
       reject(error);
     }
   });
+
+export const getStudentByIdAndSearch = (classId, name, expertise, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-student-by-name-or-expertise/`,
+        params: {
+          classId: classId,
+          name: name,
+          expertise: expertise
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
