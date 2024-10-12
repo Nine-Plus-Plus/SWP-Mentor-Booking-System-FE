@@ -1,15 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { getMyProfile } from '../../apis/UserServices';
+import { getMyProfile, getProfileById } from '../../apis/UserServices';
 import CopyAction from './CopyAction';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../store/useUserStore';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 function StudentProfile() {
-
-  const param = useParams();
-  console.log('Params:', param);
-
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,8 +15,6 @@ function StudentProfile() {
   const { name, id } = useParams();
 
   let roleProfile = name ? name.toUpperCase() : role;
-
-  console.log('Params:', name, id);
 
   // Xử lý cuộn trang
   const handleContentScrolled = useCallback(reachedTop => {
@@ -69,7 +63,7 @@ function StudentProfile() {
         }
 
         // Gọi API để lấy profile
-        const response = await getMyProfile(token);
+        const response = id ? await getProfileById(id, token) : await getMyProfile(token);
 
         console.log('Role:', roleProfile);
         const user = roleProfile === 'MENTOR' ? response.mentorsDTO : response.studentsDTO;
@@ -135,10 +129,10 @@ function StudentProfile() {
         </div>
         <div className="flex flex-col items-center mt">
           <h1 className="text-3xl font-semibold">{roleProfile}</h1>
-          <h2 className="text-xl font-semibold text-gray-900">{profile.userName}</h2>
+          <h2 className="text-xl text-gray-900">{profile.fullName}</h2>
           <div className="subtitle-text with-clipboard-copy">
             <span>
-            {capitalizeFirstLetter(roleProfile)} Code: {profile.code}
+              {capitalizeFirstLetter(roleProfile)} Code: {profile.code}
             </span>
             <CopyAction
               className="copy-clipboard-button"
