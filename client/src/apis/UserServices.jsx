@@ -30,6 +30,21 @@ export const getMyProfile = token =>
       reject(error);
     }
   });
+export const getProfileById = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `/api/user/view-user-detail-by-id/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
 
 // Phương thức lấy tất cả người dùng
 export const getAllUsers = token =>
