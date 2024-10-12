@@ -14,11 +14,10 @@ const PublicStudent = () => {
         const response = await getMyProfile(token);
         console.log(response);
 
-        setUserData(response);
+        setUserData(response.studentsDTO);
       } catch (err) {
-        setError(err?.message || 'Đã xảy ra lỗi');
+        console.log(err?.message || 'Đã xảy ra lỗi');
       } finally {
-        setLoading(false);
       }
     };
 
