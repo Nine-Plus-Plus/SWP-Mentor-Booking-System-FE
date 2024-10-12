@@ -7,6 +7,7 @@ import path from '../../utils/path';
 import { SoundTwoTone } from '@ant-design/icons';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/useUserStore';
+import { faTurkishLiraSign } from '@fortawesome/free-solid-svg-icons';
 
 const UserItem = ({
   avatar,
@@ -21,7 +22,8 @@ const UserItem = ({
   sameClass,
   setCountMember,
   countMember,
-  isAdded
+  isAdded,
+  idUser
 }) => {
   const { FaStar, FaStarHalf } = icons;
   const navigate = useNavigate();
@@ -187,7 +189,7 @@ const UserItem = ({
                   textSize={'text-sm'}
                   bgHover={'hover:bg-orange-400 hover:text-gray-100'}
                   // fix
-                  to={`${path.USER_PROFILE}/hehe/haha`}
+                  to={`${path.USER_PROFILE}/${roleItem}/${idUser}`}
                 />
               )}
             </div>

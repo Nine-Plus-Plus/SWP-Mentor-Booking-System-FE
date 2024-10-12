@@ -39,7 +39,7 @@ export const updateStudent = (id, data, token) =>
     try {
       const response = await axiosConfig({
         method: 'put',
-        url: `api/admin/update-student-by-id/${id}`,
+        url: `api/admin/update-student/${id}`,
         data: data,
         headers: {
           Authorization: `Bearer ${token}`
@@ -78,6 +78,27 @@ export const createStudent = (data, token) =>
         method: 'post',
         url: `api/admin/create-student`,
         data: data,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getStudentByIdAndSearch = (classId, name, expertise, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-student-by-name-or-expertise/`,
+        params: {
+          classId: classId,
+          name: name,
+          expertise: expertise
+        },
         headers: {
           Authorization: `Bearer ${token}`
         }

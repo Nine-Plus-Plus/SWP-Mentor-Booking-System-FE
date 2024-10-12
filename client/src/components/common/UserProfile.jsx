@@ -1,29 +1,20 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { getMyProfile } from '../../apis/UserServices';
+import { getMyProfile, getProfileById } from '../../apis/UserServices';
 import CopyAction from './CopyAction';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
+import { useUserStore } from '../../store/useUserStore';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 function StudentProfile() {
-  const param = useParams();
-  console.log(param);
-
-  const [profile, setProfile] = useState({
-    id: 1809, // Default id if not available
-    photo: '',
-    role: '',
-    fullName: 'Test User',
-    gender: 'male',
-    email: 'test@example.com',
-    phone: '123-456-7890',
-    birthDate: '2000-01-01',
-    dateCreated: '2024-01-01',
-    address: '123 Main St'
-  });
+  const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { role } = useUserStore();
   const [isDataChanged, setIsDataChanged] = useState(false);
   const [isContentScrolled, setIsContentScrolled] = useState(false);
+  const { name, id } = useParams();
+
+  let roleProfile = name ? name.toUpperCase() : role;
 
   // Xử lý cuộn trang
   const handleContentScrolled = useCallback(reachedTop => {
@@ -58,29 +49,47 @@ function StudentProfile() {
     setTimeout(() => setIsCopied(false), 1000); // Hide the success message after 1 seconds
   };
 
+  const capitalizeFirstLetter = string => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        if (token) {
-          const response = await getMyProfile(token);
-
-          const user = response.usersDTO || {};
-          console.log('User DTO:', user); // Kiểm tra dữ liệu trong `usersDTO`
-          setProfile({
-            id: user.id || profile.id,
-            fullName: user.fullName || 'NULL',
-            email: user.email || 'NULL',
-            birthDate: user.birthDate || 'NULL',
-            photo: user.photo || profile.photo,
-            address: user.address || 'NULL',
-            phone: user.phone || 'NULL',
-            gender: user.gender || 'NULL',
-            dateCreated: user.dateCreated || 'NULL'
-          });
-        } else {
+        if (!token) {
           setError('Token không tồn tại');
+          return;
         }
+
+        // Gọi API để lấy profile
+        const response = id ? await getProfileById(id, token) : await getMyProfile(token);
+
+        console.log('Role:', roleProfile);
+        const user = roleProfile === 'MENTOR' ? response.mentorsDTO : response.studentsDTO;
+        // Kiểm tra dữ liệu trả về từ API
+        console.log('User DTO:', user);
+
+        // Cập nhật state với dữ liệu từ API
+        setProfile({
+          // code: user.mentorCode || user.studentCode || 'N/A',
+          code: roleProfile == 'MENTOR' ? user.mentorCode : user.studentCode,
+          userName: user.user.username || 'N/A',
+          fullName: user.user.fullName || 'N/A',
+          email: user.user.email || 'N/A',
+          birthDate: user.user.birthDate || 'N/A',
+          photo: user.user.avarta || '/public/avatar-default.jpg',
+          address: user.user.address || 'N/A',
+          phone: user.user.phone || 'N/A',
+          gender: user.user.gender || 'N/A',
+          point: roleProfile === 'MENTOR' ? user.star : user.point,
+          expertise:
+            roleProfile === 'MENTOR'
+              ? user.skills.map(skill => skill.skillName).join(', ') // Kết hợp các skillName với dấu phẩy và khoảng trắng
+              : user.expertise,
+          className: roleProfile === 'MENTOR' ? user.assignedClass.className : user.aclass.className,
+          timeRemain: user.totalTimeRemain || 'N/A'
+        });
       } catch (err) {
         console.error('Lỗi khi gọi API:', err);
         setError(err.message || 'Đã xảy ra lỗi');
@@ -119,15 +128,16 @@ function StudentProfile() {
           </div>
         </div>
         <div className="flex flex-col items-center mt">
-          {/* code edit */}
-          <h1 className="text-3xl font-semibold">Student</h1>
-          <h2 className="text-xl font-semibold text-gray-900">{profile.fullName}</h2>
+          <h1 className="text-3xl font-semibold">{roleProfile}</h1>
+          <h2 className="text-xl text-gray-900">{profile.fullName}</h2>
           <div className="subtitle-text with-clipboard-copy">
-            <span>Student code: {profile.id}</span>
+            <span>
+              {capitalizeFirstLetter(roleProfile)} Code: {profile.code}
+            </span>
             <CopyAction
               className="copy-clipboard-button"
               stylingMode="text"
-              onClick={copyToClipboard(profile.id)} // Sử dụng profile.id
+              onClick={copyToClipboard(profile.code)} // Sử dụng profile.id
               activeStateEnabled={false}
               focusStateEnabled={false}
               hoverStateEnabled={false}
@@ -175,7 +185,7 @@ function StudentProfile() {
         </div>
         {/* Basic Info */}
         <div className="bg-white p-8 rounded-lg shadow-lg w-3/5">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Student Infomation</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">{capitalizeFirstLetter(roleProfile)} Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-gray-700 text-sm font-medium">Full Name</label>
@@ -208,47 +218,72 @@ function StudentProfile() {
               <label className="block text-gray-700 text-sm font-medium">Class</label>
               <input
                 type="text"
-                value={'SE18B02'}
+                value={profile.className}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />
             </div>
+
+            {/* Nếu là mentor thì hiển thị Time Remain */}
+            {roleProfile === 'MENTOR' && (
+              <div>
+                <label className="block text-gray-700 text-sm font-medium">Time Remain</label>
+                <input
+                  type="text"
+                  value={profile.timeRemain}
+                  readOnly
+                  className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
+                />
+              </div>
+            )}
+
             <div>
-              <label className="block text-gray-700 text-sm font-medium">Expertise</label>
+              <label className="block text-gray-700 text-sm font-medium">
+                {roleProfile === 'MENTOR' ? 'Star' : 'Point'}
+              </label>
               <input
                 type="text"
-                value={'NodeJS'}
+                value={profile.point}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />
             </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">Point</label>
+
+            <div className={roleProfile === 'MENTOR' ? 'md:col-span-2' : ''}>
+              <label className="block text-gray-700 text-sm font-medium">
+                {roleProfile === 'MENTOR' ? 'Skill' : 'Expertise'}
+              </label>
               <input
                 type="text"
-                value={profile.dateCreated}
+                value={profile.expertise}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />
             </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">Group Project</label>
-              <input
-                type="text"
-                value={'Nine ++'}
-                readOnly
-                className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-medium">Role In Group</label>
-              <input
-                type="text"
-                value={'Member'}
-                readOnly
-                className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
-              />
-            </div>
+
+            {/* Nếu là student thì hiển thị Group Project và Role In Group */}
+            {roleProfile === 'STUDENT' && (
+              <>
+                <div>
+                  <label className="block text-gray-700 text-sm font-medium">Group Project</label>
+                  <input
+                    type="text"
+                    value={'Chưa tạo'}
+                    readOnly
+                    className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-medium">Role In Group</label>
+                  <input
+                    type="text"
+                    value={'Chưa tạo'}
+                    readOnly
+                    className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

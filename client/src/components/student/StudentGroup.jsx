@@ -19,7 +19,7 @@ const StudentGroup = () => {
               htmlType={'button'}
               textSize={'text-xl'}
               bgHover={'hover:bg-main-2'}
-              fullWidth={'w-1/5'}
+              fullWidth={'w-2/6'}
               to={path.STUDENT_CREATE_GROUP}
             />
           </div>

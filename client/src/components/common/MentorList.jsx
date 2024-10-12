@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, UserItem } from '../index';
 
 const MentorList = () => {
+  const [searchPayload, setSearchPayload] = useState({
+    name: '',
+    skill: '',
+    date: ''
+  });
+  console.log(searchPayload);
+
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
-      <Search searchFor={'mentor'} />
+      <Search searchFor={'mentor'} setPayload={setSearchPayload} />
       <div className="p-3 bg-white rounded-md flex flex-col gap-5">
         <UserItem
           roleItem={'Mentor'}

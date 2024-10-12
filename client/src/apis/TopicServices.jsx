@@ -1,11 +1,11 @@
 import axiosConfig from '../axiosConfig';
 
-export const getClassBySemesterId = (semesterId, token) =>
+export const getAllTopic = token =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: `api/admin/get-classes-by-semester/${semesterId}`,
+        url: `api/user/get-all-topics`,
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -16,72 +16,66 @@ export const getClassBySemesterId = (semesterId, token) =>
     }
   });
 
-export const createClass = (data, token) =>
+export const getTopicByIdSemester = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-topic-by-semester-id/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const createTopic = (data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'post',
-        url: 'api/admin/create-class',
+        url: `api/admin/create-topic`,
         data: data,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response.data);
-      //
       resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-export const updateClass = (id, data, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'put',
-        url: `api/admin/update-class/${id}`,
-        data: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log(response);
-      //
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-
-export const deleteClass = (id, token) =>
+export const deleteTopic = (id, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'delete',
-        url: `api/admin/delete-class/${id}`,
+        url: `api/admin/delete-topic/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      //
       resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-export const getMentorNoClass = token =>
+export const updateTopic = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
-        method: 'get',
-        url: `api/admin/unassigned-mentors`,
+        method: 'put',
+        data: data,
+        url: `api/admin/update-topic/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      //
       resolve(response.data);
     } catch (error) {
       reject(error);
