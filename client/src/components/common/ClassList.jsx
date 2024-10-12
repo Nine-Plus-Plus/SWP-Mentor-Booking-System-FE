@@ -4,10 +4,20 @@ import { toast } from 'react-toastify';
 import path from '../../utils/path';
 import Search from './Search';
 import UserItem from './UserItem';
+import { useUserStore } from '../../store/useUserStore';
 
 const ClassList = ({ addGroup }) => {
   const [countMember, setCountMember] = useState(0);
+  const [searchPayload, setSearchPayload] = useState({
+    name: '',
+    expertise: '',
+  });
+
+  console.log(searchPayload);
+
   const navigate = useNavigate();
+  const { userData } = useUserStore();
+  console.log(userData);
 
   useEffect(() => {
     if (countMember >= 4) {
@@ -18,7 +28,7 @@ const ClassList = ({ addGroup }) => {
 
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
-      <Search />
+      <Search setPayload={setSearchPayload} />
       {addGroup && <p className="text-2xl font-semibold text-red-500">Limit member: {countMember}/4</p>}
       <div className=" bg-white flex flex-col gap-5 p-3 rounded-md">
         {!addGroup && (

@@ -6,18 +6,10 @@ import { useUserStore } from '../../store/useUserStore';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 function StudentProfile() {
-  // const [profile, setProfile] = useState({
-  //   id: 1809, // Default id if not available
-  //   photo: '',
-  //   role: '',
-  //   fullName: 'Test User',
-  //   gender: 'male',
-  //   email: 'test@example.com',
-  //   phone: '123-456-7890',
-  //   birthDate: '2000-01-01',
-  //   dateCreated: '2024-01-01',
-  //   address: '123 Main St'
-  // });
+
+  const param = useParams();
+  console.log('Params:', param);
+
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -81,7 +73,6 @@ function StudentProfile() {
 
         console.log('Role:', roleProfile);
         const user = roleProfile === 'MENTOR' ? response.mentorsDTO : response.studentsDTO;
-
         // Kiểm tra dữ liệu trả về từ API
         console.log('User DTO:', user);
 

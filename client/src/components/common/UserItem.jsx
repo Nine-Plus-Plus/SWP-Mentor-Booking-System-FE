@@ -80,9 +80,6 @@ const UserItem = ({
     }
   };
 
-  const userName = 'thang';
-  const id = '1';
-
   return (
     <div className="border shadow-md rounded-md h-[180px]">
       <div className="h-[179px] flex w-full gap-4">

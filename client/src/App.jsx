@@ -21,7 +21,8 @@ import {
   ClassManager,
   SkillManager,
   UserList,
-  TopicManager
+  TopicManager,
+  ListNotification
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -70,6 +71,7 @@ function App() {
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
           <Route path={path.STUDENT_BOOKING} element={<Activity />} />
           <Route path={path.STUDENT_GROUP} element={<StudentGroup />} />
+          <Route path={path.USER_LIST_NOTIFICATION} element={<ListNotification />} />
           <Route path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}`} element={<CreateProject />} />
           <Route
             path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}/${path.USER_PROFILE_NAME_ID}`}
@@ -97,6 +99,7 @@ function App() {
           <Route path={path.LIST_GROUP} element={<ListGroup />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
+          <Route path={path.USER_LIST_NOTIFICATION} element={<ListNotification />} />
           <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
         </Route>
