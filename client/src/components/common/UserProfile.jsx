@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { getMyProfile } from '../../apis/UserServices';
 import CopyAction from './CopyAction';
 import { toast } from 'react-toastify';
+import { useUserStore } from '../../store/useUserStore';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 function StudentProfile() {
@@ -23,6 +24,7 @@ function StudentProfile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {role} = useUserStore();
   const [isDataChanged, setIsDataChanged] = useState(false);
   const [isContentScrolled, setIsContentScrolled] = useState(false);
 
@@ -70,23 +72,28 @@ function StudentProfile() {
 
         // Gọi API để lấy profile
         const response = await getMyProfile(token);
+        
+        console.log('Role:',role);
+        const user = (role == 'MENTOR'? (response.mentorsDTO) : (response.studentsDTO));
+    
 
-        // Kiểm tra dữ liệu trả về từ API
-        const user = response.usersDTO || {};
+        // Kiểm tra dữ liệu trả về từ API        
         console.log('User DTO:', user);
 
         // Cập nhật state với dữ liệu từ API
         setProfile({
-          id: user.id || 'N/A',
-          userName: user.username || 'N/A',
-          fullName: user.fullName || 'N/A',
-          email: user.email || 'N/A',
-          birthDate: user.birthDate || 'N/A',
-          photo: user.photo || '/public/avatar-default.jpg',
-          address: user.address || 'N/A',
-          phone: user.phone || 'N/A',
-          gender: user.gender || 'N/A',
-          dateCreated: user.dateCreated || 'N/A'
+          code: user.mentorCode || user.studentCode || 'N/A',
+          userName: user.user.username || 'N/A',
+          fullName: user.user.fullName || 'N/A',
+          email: user.user.email || 'N/A',
+          birthDate: user.user.birthDate || 'N/A',
+          photo: user.user.avarta || '/public/avatar-default.jpg',
+          address: user.user.address || 'N/A',
+          phone: user.user.phone || 'N/A',
+          gender: user.user.gender || 'N/A',
+          dateCreated: user.user.dateCreated || 'N/A',
+          expertise: user.expertise || 'N/A',
+          className: user.user.className || user.assignedClass.className || 'N/A'
         });
       } catch (err) {
         console.error('Lỗi khi gọi API:', err);
@@ -130,11 +137,11 @@ function StudentProfile() {
           <h1 className="text-3xl font-semibold">Student</h1>
           <h2 className="text-xl font-semibold text-gray-900">{profile.userName}</h2>
           <div className="subtitle-text with-clipboard-copy">
-            <span>Student code: {profile.id}</span>
+            <span>Student code: {profile.code}</span>
             <CopyAction
               className="copy-clipboard-button"
               stylingMode="text"
-              onClick={copyToClipboard(profile.id)} // Sử dụng profile.id
+              onClick={copyToClipboard(profile.code)} // Sử dụng profile.id
               activeStateEnabled={false}
               focusStateEnabled={false}
               hoverStateEnabled={false}
@@ -215,7 +222,7 @@ function StudentProfile() {
               <label className="block text-gray-700 text-sm font-medium">Class</label>
               <input
                 type="text"
-                value={'SE18B02'}
+                value={profile.className}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />
@@ -224,7 +231,7 @@ function StudentProfile() {
               <label className="block text-gray-700 text-sm font-medium">Expertise</label>
               <input
                 type="text"
-                value={'NodeJS'}
+                value={profile.expertise}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />
@@ -242,7 +249,7 @@ function StudentProfile() {
               <label className="block text-gray-700 text-sm font-medium">Group Project</label>
               <input
                 type="text"
-                value={'Nine ++'}
+                value={'Chưa tạo'}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />
@@ -251,7 +258,7 @@ function StudentProfile() {
               <label className="block text-gray-700 text-sm font-medium">Role In Group</label>
               <input
                 type="text"
-                value={'Member'}
+                value={'Chưa tạo'}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />
