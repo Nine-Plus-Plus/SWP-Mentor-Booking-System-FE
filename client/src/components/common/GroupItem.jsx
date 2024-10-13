@@ -5,7 +5,7 @@ import { useUserStore } from '../../store/useUserStore';
 const GroupItem = ({ idGroup, groupName, idTopic, totalPoint, projectName, totalMember, process, className }) => {
   const { role } = useUserStore();
   return (
-    <div className="h-[25vh] border shadow-md rounded-md p-3 w-full">
+    <div className=" border shadow-md rounded-md p-3 w-full">
       <h1 className="font-bold text-xl text-main-1"> Group name: {groupName}</h1>
       <div className="flex p-2 justify-between">
         <div className="flex flex-col gap-2 text-md">
