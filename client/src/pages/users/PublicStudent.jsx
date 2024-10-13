@@ -6,7 +6,7 @@ import { getMyProfile } from '../../apis/UserServices';
 import { useUserStore } from '../../store/useUserStore';
 
 const PublicStudent = () => {
-  const { setUserData, setCurrent, userData } = useUserStore();
+  const { setUserData, setCurrent, userData, setMentorOffClass } = useUserStore();
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
@@ -15,6 +15,7 @@ const PublicStudent = () => {
         console.log(response);
 
         setUserData(response.studentsDTO);
+        setMentorOffClass(response.usersDTO);
         const name = response.studentsDTO.user.fullName.split(' ');
         setCurrent(name.length > 0 ? name[name.length - 1] : response.studentsDTO.user.fullName);
       } catch (err) {
