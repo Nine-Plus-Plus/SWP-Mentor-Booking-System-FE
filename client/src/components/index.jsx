@@ -17,6 +17,7 @@ export { default as UserHome } from './common/UserHome';
 export { default as MentorList } from './common/MentorList';
 export { default as ListNotification } from './common/ListNotification';
 export { default as NotificationItem } from './common/NotificationItem';
+export { default as Schedule } from './common/Schedule';
 // banner
 export { default as Navigation } from './banner/Navigation';
 // student

@@ -143,7 +143,11 @@ export const menuNavbarItemsMentor = [
   {
     key: 'schedule',
     icon: <ClockCircleOutlined />,
-    label: 'Schedule',
+    label: (
+      <NavLink to={path.MENTOR_SCHEDULE} className="text-white">
+        Schedule
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {

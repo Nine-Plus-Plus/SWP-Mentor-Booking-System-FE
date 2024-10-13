@@ -22,6 +22,7 @@ import {
   SkillManager,
   UserList,
   TopicManager,
+  Schedule,
   ListNotification
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
@@ -98,10 +99,12 @@ function App() {
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
           <Route path={path.LIST_GROUP} element={<ListGroup />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
+          <Route path={path.MENTOR_SCHEDULE} element={<Schedule />} />
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
           <Route path={path.USER_LIST_NOTIFICATION} element={<ListNotification />} />
           <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
+          <Route path={path.STUDENT_BOOKING} element={<Activity />} />
         </Route>
         <Route path="*" element={<Navigate to={path.PUBLIC} replace />} />
 

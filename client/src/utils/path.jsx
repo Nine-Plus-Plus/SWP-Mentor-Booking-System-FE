@@ -29,6 +29,7 @@ const path = {
   // Mentor
   PUBLIC_MENTOR: 'mentor',
   MENTOR_HOME: 'home',
+  MENTOR_SCHEDULE: 'schedule',
 
   // Admin
   PUBLIC_ADMIN: 'admin',
