@@ -68,8 +68,7 @@ const Schedule = () => {
       }
     });
   };
-
-  // Hàm xử lý khi gửi form
+  
   const onFinish = values => {
     const { title, range } = values;
 
