@@ -74,9 +74,8 @@ const MentorManager = () => {
         setMentors(prevMentors => [
           ...prevMentors,
           {
-            ...response.mentorsDTO, // Dữ liệu mentor mới
+            ...response.mentorsDTO,
             skills: response.mentorsDTO?.skills.map(skill => {
-              // Tìm kỹ năng từ state
               const skillDetail = skills.find(s => s.id === skill.id);
               return skillDetail ? { id: skillDetail.id, skillName: skillDetail.skillName } : skill;
             })

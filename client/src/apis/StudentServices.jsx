@@ -62,8 +62,6 @@ export const deleteStudent = (id, token) =>
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response);
-
       resolve(response.data);
     } catch (error) {
       reject(error);

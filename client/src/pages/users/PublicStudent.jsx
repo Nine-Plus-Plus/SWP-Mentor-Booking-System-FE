@@ -6,7 +6,7 @@ import { getMyProfile } from '../../apis/UserServices';
 import { useUserStore } from '../../store/useUserStore';
 
 const PublicStudent = () => {
-  const { setUserData } = useUserStore();
+  const { setUserData, setCurrent, userData } = useUserStore();
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
@@ -15,6 +15,8 @@ const PublicStudent = () => {
         console.log(response);
 
         setUserData(response.studentsDTO);
+        const name = response.studentsDTO.user.fullName.split(' ');
+        setCurrent(name.length > 0 ? name[name.length - 1] : response.studentsDTO.user.fullName);
       } catch (err) {
         console.log(err?.message || 'Đã xảy ra lỗi');
       } finally {

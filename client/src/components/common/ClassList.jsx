@@ -6,6 +6,7 @@ import Search from './Search';
 import UserItem from './UserItem';
 import { useUserStore } from '../../store/useUserStore';
 import { getStudentByIdAndSearch } from '../../apis/StudentServices';
+import { capitalizeFirstLetter } from '../../utils/commonFunction';
 
 const ClassList = ({ addGroup }) => {
   const [countMember, setCountMember] = useState(0);
@@ -22,14 +23,16 @@ const ClassList = ({ addGroup }) => {
   const { userData } = useUserStore();
 
   useEffect(() => {
+    console.log(userData);
+
     const fetchStudentByIdAndSearch = async () => {
       const token = localStorage.getItem('token');
 
       try {
         const response = await getStudentByIdAndSearch(
-          userData.aclass.id,
-          searchPayload.name || undefined,
-          searchPayload.expertise || undefined,
+          userData?.aclass.id,
+          searchPayload?.name || undefined,
+          searchPayload?.expertise || undefined,
           token
         );
         if (response && response.statusCode === 200) setStudents(response.studentsDTOList);
@@ -39,8 +42,8 @@ const ClassList = ({ addGroup }) => {
       }
     };
     fetchStudentByIdAndSearch();
-    console.log(students);
   }, [userData, searchPayload]);
+  console.log(students);
 
   useEffect(() => {
     if (countMember >= 4) {
@@ -64,18 +67,18 @@ const ClassList = ({ addGroup }) => {
           />
         )}
         {students.length === 0 ? (
-          <p className="text-red-500">Không có sinh viên nào được tìm thấy.</p>
+          <p className="text-red-500">No students were found.</p>
         ) : (
           students.map(student => (
             <UserItem
               key={student.id}
-              roleItem={student.user.role.roleName}
-              specialized={student.expertise}
-              name={student.user.fullName}
-              studentCode={student.studentCode}
-              gender={student.user.gender}
+              roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
+              specialized={student?.expertise}
+              name={student?.user?.fullName}
+              studentCode={student?.studentCode}
+              gender={student?.user?.gender}
               isAdded={false}
-              idUser={student.user.id}
+              idUser={student?.user?.id}
             />
           ))
         )}

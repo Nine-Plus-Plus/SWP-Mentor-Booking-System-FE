@@ -27,8 +27,6 @@ const Navigation = ({ children, menuNavbar }) => {
 
   useEffect(() => {
     const subPath = location.pathname.split('/');
-    console.log(subPath);
-    console.log(subPath.includes('profile-user'));
 
     if (
       subPath[subPath.length - 1] === 'student' ||
@@ -37,7 +35,6 @@ const Navigation = ({ children, menuNavbar }) => {
     )
       setSearchFor('');
     else setSearchFor(subPath.pop());
-    console.log(subPath);
   }, [location.pathname]);
 
   const handleLogOut = () => {
