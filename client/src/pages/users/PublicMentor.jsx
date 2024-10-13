@@ -7,7 +7,7 @@ import { getMyProfile } from '../../apis/UserServices';
 import { getClassByIdMentor } from '../../apis/MentorServices';
 
 const PublicMentor = () => {
-  const { setUserData, setCurrent, userData } = useUserStore();
+  const { setUserData, setCurrent} = useUserStore();
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');

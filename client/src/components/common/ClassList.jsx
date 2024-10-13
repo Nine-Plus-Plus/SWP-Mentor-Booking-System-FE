@@ -18,9 +18,9 @@ const ClassList = ({ addGroup }) => {
     expertise: ''
   });
 
-  console.log(searchPayload);
   const navigate = useNavigate();
-  const { userData } = useUserStore();
+  const { userData, mentorOffClass } = useUserStore();
+  console.log(mentorOffClass);
 
   useEffect(() => {
     console.log(userData);
@@ -60,10 +60,12 @@ const ClassList = ({ addGroup }) => {
         {!addGroup && (
           <UserItem
             roleItem={'Mentor'}
-            name={'Thầy Lâm'}
+            name={mentorOffClass?.fullName}
             specialized={'DOTNET, React, Spring Boot'}
-            gender={'Male'}
-            star={4.5}
+            gender={mentorOffClass?.gender}
+            star={mentorOffClass?.star}
+            sameClass={true}
+            idUser={mentorOffClass?.id}
           />
         )}
         {students.length === 0 ? (
