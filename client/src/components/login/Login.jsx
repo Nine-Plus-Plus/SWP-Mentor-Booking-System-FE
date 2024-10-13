@@ -39,7 +39,7 @@ const Login = () => {
       setIsLoading(false);
       if (response && response.data.token) {
         ///// set token
-        setModal(response.data.token, response.data.role, 'Wyn', true);
+        setModal(response.data.token, response.data.role, '', true);
         console.log(response);
 
         navigate(roleForComponent[role]);
@@ -58,8 +58,7 @@ const Login = () => {
     const { name, value } = e.target;
     setPayload(prev => ({
       ...prev,
-      [name]: value,
-
+      [name]: value
     }));
   };
 

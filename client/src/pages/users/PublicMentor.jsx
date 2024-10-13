@@ -4,17 +4,23 @@ import { menuNavbarItemsMentor } from '../../utils/constant';
 import { Outlet } from 'react-router-dom';
 import { useUserStore } from '../../store/useUserStore';
 import { getMyProfile } from '../../apis/UserServices';
+import { getClassByIdMentor } from '../../apis/MentorServices';
 
 const PublicMentor = () => {
-  const { setUserData } = useUserStore();
+  const { setUserData, setCurrent, userData } = useUserStore();
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getMyProfile(token);
-        console.log(response);
+        const mentorsDTO = {
+          ...response.mentorsDTO,
+          aclass: response?.mentorsDTO?.assignedClass
+        };
 
-        setUserData(response.mentorsDTO);
+        setUserData(mentorsDTO);
+        const name = mentorsDTO?.user?.fullName.split(' ');
+        setCurrent(name.length > 0 ? name[name.length - 1] : mentorsDTO.user.fullName);
       } catch (err) {
       } finally {
       }

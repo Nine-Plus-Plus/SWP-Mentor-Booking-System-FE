@@ -69,3 +69,41 @@ export const deleteMentor = (id, token) =>
       reject(error);
     }
   });
+
+export const getClassByIdMentor = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-class-by-mentor/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAllMentorByNameSkillDate = (name, skill, token) =>
+  new Promise(async (resolve, reject) => {
+    console.log(name, skill, token);
+
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-mentor-by-name-skills/`,
+        params: {
+          name: name,
+          skillIds: skill
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });

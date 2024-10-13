@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import Button from '../common/Button';
 import path from '../../utils/path';
 import ListGroup from '../common/ListGroup';
+import { useUserStore } from '../../store/useUserStore';
 
 const StudentGroup = () => {
   const [haveGroup, setHaveGroup] = useState(true);
   // className = 'p-3 bg-white rounded-md flex flex-col gap-5 ';
+  const { userData } = useUserStore();
+  console.log(userData?.group);
+
   return (
     <div>
       {
