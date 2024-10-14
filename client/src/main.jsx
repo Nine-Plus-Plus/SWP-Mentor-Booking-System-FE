@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '@mobiscroll/react/dist/css/mobiscroll.min.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-circular-progressbar/dist/styles.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>

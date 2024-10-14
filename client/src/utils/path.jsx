@@ -24,6 +24,7 @@ const path = {
   STUDENT_BOOKING: 'booking',
   STUDENT_GROUP: 'group',
   STUDENT_CREATE_GROUP: 'create-group',
+  STUDENT_PROGRESS: 'progress',
   STUDENT_HISTORY_POINT: 'history-point',
 
   // Mentor

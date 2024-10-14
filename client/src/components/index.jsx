@@ -25,6 +25,7 @@ export { default as UserProfile } from './common/UserProfile';
 export { default as StudentGroup } from './student/StudentGroup';
 export { default as CreateProject } from './student/CreateProject';
 export { default as Activity } from './student/Activity';
+export { default as Progress} from './student/Progress';
 // admin
 export { default as AdminHome } from './admin/AdminHome';
 export { default as StudentManager } from './admin/StudentManager';

@@ -94,7 +94,11 @@ export const menuNavbarItemsStudent = [
   {
     key: 'progress',
     icon: <AreaChartOutlined />,
-    label: 'Process',
+    label: (
+      <NavLink to={path.STUDENT_PROGRESS} className="text-white">
+        Progress
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {
