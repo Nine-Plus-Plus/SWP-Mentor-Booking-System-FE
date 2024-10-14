@@ -57,17 +57,18 @@ const ClassList = ({ addGroup }) => {
       <Search setPayload={setSearchPayload} />
       {addGroup && <p className="text-2xl font-semibold text-red-500">Limit member: {countMember}/4</p>}
       <div className=" bg-white flex flex-col gap-5 p-3 rounded-md">
-        {!addGroup && (
-          <UserItem
-            roleItem={'Mentor'}
-            name={mentorOffClass?.fullName}
-            specialized={'DOTNET, React, Spring Boot'}
-            gender={mentorOffClass?.gender}
-            star={mentorOffClass?.star}
-            sameClass={true}
-            idUser={mentorOffClass?.id}
-          />
-        )}
+        {!addGroup ||
+          (role === 'MENTOR' && (
+            <UserItem
+              roleItem={'Mentor'}
+              name={mentorOffClass?.fullName}
+              specialized={'DOTNET, React, Spring Boot'}
+              gender={mentorOffClass?.gender}
+              star={mentorOffClass?.star}
+              sameClass={true}
+              idUser={mentorOffClass?.id}
+            />
+          ))}
         {students.length === 0 ? (
           <p className="text-red-500">No students were found.</p>
         ) : (
