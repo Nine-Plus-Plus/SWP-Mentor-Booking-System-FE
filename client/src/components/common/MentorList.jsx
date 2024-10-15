@@ -3,6 +3,7 @@ import { Search, UserItem } from '../index';
 import { getAllMentorByNameSkillDate } from '../../apis/MentorServices';
 import { capitalizeFirstLetter, convertSkillArray } from '../../utils/commonFunction';
 import { useUserStore } from '../../store/useUserStore';
+import dayjs from 'dayjs';
 
 const MentorList = () => {
   const [error, setError] = useState(null);
@@ -14,20 +15,40 @@ const MentorList = () => {
     date: ''
   });
 
+  console.log(searchPayload);
+
   useEffect(() => {
     const fetchMentorByCondition = async () => {
       const token = localStorage.getItem('token');
       try {
-        const skills = searchPayload?.skill?.length ? searchPayload.skill.join(',') : undefined;
-        const name = searchPayload?.name || undefined;
+        const skills = searchPayload?.skill?.length > 0 ? searchPayload.skill.join(',') : undefined;
+        const name = searchPayload?.name || '';
+        const availableFrom = searchPayload?.date[0]?.format('DD-MM-YYYY HH:mm') || undefined;
+        const availableTo = searchPayload?.date[1]?.format('DD-MM-YYYY HH:mm') || undefined;
+        console.log(name, skills, availableFrom, availableTo);
 
-        const response = await getAllMentorByNameSkillDate(
-          name,
-          skills,
-          // dateFrom || undefined,
-          // dateTo || undefined,
-          token
-        );
+        const response = await getAllMentorByNameSkillDate(name, skills, availableFrom, availableTo, token);
+        console.log(response);
+        if (response && response.statusCode === 200) setMentors(response.mentorsDTOList);
+        else setMentors([]);
+      } catch (error) {
+        setError(error.message || 'Đã xảy ra lỗi');
+      }
+    };
+    fetchMentorByCondition();
+  }, []);
+
+  useEffect(() => {
+    const fetchMentorByCondition = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const skills = searchPayload?.skill?.length > 0 ? searchPayload.skill.join(',') : undefined;
+        const name = searchPayload?.name || '';
+        const availableFrom = searchPayload?.date[0]?.format('DD-MM-YYYY HH:mm') || undefined;
+        const availableTo = searchPayload?.date[1]?.format('DD-MM-YYYY HH:mm') || undefined;
+        console.log(name, skills, availableFrom, availableTo);
+
+        const response = await getAllMentorByNameSkillDate(name, skills, availableFrom, availableTo, token);
         console.log(response);
         if (response && response.statusCode === 200) setMentors(response.mentorsDTOList);
         else setMentors([]);
@@ -54,8 +75,10 @@ const MentorList = () => {
               gender={mentor?.user?.gender}
               star={mentor?.star}
               sameClass={mentor?.assignedClass?.id === userData?.aclass?.id}
-              showSchedule={true}
+              schedule={mentor?.mentorSchedules}
+              showSchedule={mentor?.mentorSchedules?.length > 0 ? true : false}
               idUser={mentor?.user?.id}
+              code={mentor?.mentorCode}
             />
           ))
         )}
