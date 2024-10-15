@@ -86,9 +86,9 @@ export const getClassByIdMentor = (id, token) =>
     }
   });
 
-export const getAllMentorByNameSkillDate = (name, skill, token) =>
+export const getAllMentorByNameSkillDate = (name, skill, availableFrom, availableTo, token) =>
   new Promise(async (resolve, reject) => {
-    console.log(name, skill, token);
+    console.log(name, skill, availableFrom, availableTo, token);
 
     try {
       const response = await axiosConfig({
@@ -96,7 +96,9 @@ export const getAllMentorByNameSkillDate = (name, skill, token) =>
         url: `api/user/get-mentor-by-name-skills/`,
         params: {
           name: name,
-          skillIds: skill
+          skillIds: skill,
+          availableFrom: availableFrom,
+          availableTo: availableTo
         },
         headers: {
           Authorization: `Bearer ${token}`

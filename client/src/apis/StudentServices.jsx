@@ -68,18 +68,28 @@ export const deleteStudent = (id, token) =>
     }
   });
 
-// Phương thức thêm người dùng
 export const createStudent = (data, token) =>
   new Promise(async (resolve, reject) => {
     try {
+      const formData = new FormData();
+      console.log(data.student);
+
+      formData.append('student', new Blob([JSON.stringify(data.student)], { type: 'application/json' }));
+      formData.append('avatarFile', data.avatarFile);
+      for (const [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
       const response = await axiosConfig({
         method: 'post',
         url: `api/admin/create-student`,
-        data: data,
+        data: formData,
         headers: {
           Authorization: `Bearer ${token}`
+          // Không cần chỉ định 'Content-Type' cho FormData
         }
       });
+
       resolve(response.data);
     } catch (error) {
       reject(error);
