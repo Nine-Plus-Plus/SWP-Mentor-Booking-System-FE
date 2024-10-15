@@ -23,7 +23,8 @@ import {
   UserList,
   TopicManager,
   Schedule,
-  ListNotification
+  ListNotification,
+  Progress
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -83,6 +84,7 @@ function App() {
           <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_NAME_ID} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
+          <Route path={path.STUDENT_PROGRESS} element={<Progress/>}/>
           <Route path={path.STUDENT_HISTORY_POINT} element={<ListHistoryPoint />} />
         </Route>
 
