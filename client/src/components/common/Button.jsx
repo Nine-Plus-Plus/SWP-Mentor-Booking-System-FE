@@ -21,7 +21,7 @@ const Button = ({
         type={htmlType}
         className={`${textColor} ${bgColor} w-full
             flex items-center justify-center gap-1 cursor-pointer ${textSize}
-            p-2 rounded-lg hover:underline px-12 font-semibold ${bgHover} `}
+            p-2 rounded-lg hover:underline px-9 font-semibold ${bgHover} `}
         onClick={onClick}
       >
         {IcBefore && <IcBefore />}
@@ -34,7 +34,7 @@ const Button = ({
       type={htmlType}
       className={`${textColor} ${bgColor} ${fullWidth} 
             flex items-center justify-center gap-1 cursor-pointer ${textSize}
-            p-2 rounded-lg hover:underline px-12 ${acHover} font-semibold ${bgHover} `}
+            p-2 rounded-lg hover:underline px-9 ${acHover} font-semibold ${bgHover} `}
       onClick={onClick}
     >
       {IcBefore && <IcBefore />}

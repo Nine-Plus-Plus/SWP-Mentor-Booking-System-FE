@@ -64,9 +64,10 @@ function StudentProfile() {
 
         // Gọi API để lấy profile
         const response = id ? await getProfileById(id, token) : await getMyProfile(token);
+        console.log(response);
 
         console.log('Role:', roleProfile);
-        const user = roleProfile === 'MENTOR' ? response.mentorsDTO : response.studentsDTO;
+        const user = roleProfile === 'MENTOR' ? response?.mentorsDTO : response?.studentsDTO;
         // Kiểm tra dữ liệu trả về từ API
         console.log('User DTO:', user);
 
@@ -87,7 +88,7 @@ function StudentProfile() {
               ? user?.skills?.map(skill => skill.skillName).join(', ') 
               : user?.expertise,
           className: roleProfile === 'MENTOR' ? user?.assignedClass?.className : user?.aclass?.className,
-          timeRemain: user.totalTimeRemain || 'N/A'
+          timeRemain: user?.totalTimeRemain || 'N/A'
         });
       } catch (err) {
         console.error('Lỗi khi gọi API:', err);
@@ -114,13 +115,13 @@ function StudentProfile() {
       <div className="bg-white rounded-lg shadow-lg mb-6 w-[80vw] relative flex flex-col pb-2">
         <div className="h-[calc(20vh+100px)]">
           <img
-            src={profile.photo || '/public/cover.jpg'}
+            src={profile?.photo || '/public/cover.jpg'}
             alt="Profile"
             className="w-full object-cover h-[20vh] rounded-tl-md rounded-tr-md"
           />
           <div className="flex items-center justify-center absolute inset-0 mt-[10vh] mx-auto bg-white w-[170px] rounded-full z-[999] h-[170px]">
             <img
-              src={profile.photo || '/public/avatar-default.jpg'}
+              src={profile?.photo || '/public/avatar-default.jpg'}
               alt="cover"
               className="w-[150px] h-[150px] rounded-full object-cover"
             />
@@ -128,7 +129,7 @@ function StudentProfile() {
         </div>
         <div className="flex flex-col items-center mt">
           <h1 className="text-3xl font-semibold">{roleProfile}</h1>
-          <h2 className="text-xl text-gray-900">{profile.fullName}</h2>
+          <h2 className="text-xl text-gray-900">{profile?.fullName}</h2>
           <div className="subtitle-text with-clipboard-copy">
             <span>
               {capitalizeFirstLetter(roleProfile)} Code: {profile.code}

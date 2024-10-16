@@ -16,6 +16,22 @@ export const getAllTopic = token =>
     }
   });
 
+export const getAllTopicUnchosenClass = (classID, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-unchosen-topics-in-class/${classID}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 export const getTopicByIdSemester = (id, token) =>
   new Promise(async (resolve, reject) => {
     try {

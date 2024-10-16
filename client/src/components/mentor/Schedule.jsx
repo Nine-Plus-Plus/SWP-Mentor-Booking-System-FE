@@ -170,7 +170,7 @@ const Schedule = () => {
   return (
     <div className="p-5">
       <h1 className="text-2xl font-bold mb-4">Schedule</h1>
-      <Calendar
+      {/* <Calendar
         localizer={localizer}
         events={events}
         startAccessor="start"
@@ -179,8 +179,24 @@ const Schedule = () => {
         selectable
         onSelectSlot={handleSelect} // Xử lý chọn khoảng thời gian
         onSelectEvent={handleSelectEvent} // Xử lý chọn sự kiện
+      /> */}
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        selectable
+        onSelectSlot={handleSelect}
+        onSelectEvent={handleSelectEvent}
+        eventPropGetter={event => {
+          const now = new Date();
+          if (event.end < now) {
+            return { className: 'bg-gray-500 text-white opacity-50' }; // Sự kiện đã qua sẽ có màu xám và mờ
+          }
+          return {};
+        }}
       />
-
       <Modal
         title={isEditing ? 'Edit Event' : 'New Event'}
         open={isModalVisible}

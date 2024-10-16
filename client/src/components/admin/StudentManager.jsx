@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getStudents, getStudentById, updateStudent, deleteStudent, createStudent } from '../../apis/StudentServices';
 import { Table, Button, message, Form, Modal, Input, Radio, Select, DatePicker } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getAllSemester } from '../../apis/SemesterServices';
 import { getClassBySemesterId } from '../../apis/ClassServices';
+import Dragger from 'antd/es/upload/Dragger';
 
 function StudentManager() {
   const [students, setStudents] = useState([]);
@@ -17,6 +19,11 @@ function StudentManager() {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
   const [form] = Form.useForm();
+  const [uploadedAvatar, setUploadedAvatar] = useState(null); // Lưu URL ảnh sau khi upload
+  const [fileList, setFileList] = useState([]);
+  useEffect(() => {
+    console.log(uploadedAvatar);
+  }, [fileList]);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -152,21 +159,26 @@ function StudentManager() {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
+      const { avatar, ...studentValues } = values;
       const createData = {
-        ...form.getFieldsValue(),
-        birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
-        aclass: {
-          id: form.getFieldsValue().classId
-        }
+        student: {
+          ...studentValues,
+          birthDate: dayjs(studentValues.birthDate).format('YYYY-MM-DD'),
+          aclass: {
+            id: studentValues.classId
+          }
+        },
+        avatarFile: uploadedAvatar // Đây là file avatar
       };
 
       const response = await createStudent(createData, token);
       console.log(response);
 
-      if (response && response?.statusCode === 200) {
+      if (response && response.statusCode === 200) {
         setStudents([...students, response.studentsDTO]);
         setIsCreateModalVisible(false);
         message.success('Student created successfully');
+        setUploadedAvatar(null);
       } else {
         message.error('Failed to create student');
       }
@@ -196,9 +208,16 @@ function StudentManager() {
       render: (text, record, index) => index + 1
     },
     {
-      title: 'Avarta',
+      title: 'Avatar',
       dataIndex: ['user', 'avatar'],
-      key: 'avatar'
+      key: 'avatar',
+      render: avatar => (
+        <img
+          src={avatar}
+          alt="Avatar"
+          className="w-[7vw] h-50" // Thêm các class Tailwind CSS cho kích thước và kiểu dáng
+        />
+      )
     },
     {
       title: 'Full Name',
@@ -383,8 +402,31 @@ function StudentManager() {
                 <Radio value="FEMALE">Female</Radio>
               </Radio.Group>
             </Form.Item>
-            <Form.Item label="Avatar" name="avatar">
-              <Input />
+            <Form.Item label="Avatar">
+              <Dragger
+                accept="image/*"
+                beforeUpload={file => {
+                  setUploadedAvatar(file);
+                  return false; // Ngăn không cho upload file tự động
+                }}
+                fileList={fileList}
+                onChange={info => {
+                  if (info.fileList.length > 0) {
+                    setFileList(info.fileList.slice(-1));
+                  }
+                }}
+                onRemove={file => {
+                  // Xóa file khi người dùng nhấp vào nút xóa
+                  setFileList(fileList.filter(item => item.uid !== file.uid));
+                  return true; // Trả về true để xác nhận việc xóa
+                }}
+              >
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                <p className="ant-upload-hint">Support for a single upload.</p>
+              </Dragger>
             </Form.Item>
           </Form>
         </div>
@@ -536,7 +578,32 @@ function StudentManager() {
               </Radio.Group>
             </Form.Item>
             <Form.Item label="Avatar" name="avatar">
-              <Input />
+              <div>
+                <Dragger
+                  accept="image/*"
+                  beforeUpload={file => {
+                    setUploadedAvatar(file);
+                    return false; // Ngăn không cho upload file tự động
+                  }}
+                  fileList={fileList}
+                  onChange={info => {
+                    if (info.fileList.length > 0) {
+                      setFileList(info.fileList.slice(-1));
+                    }
+                  }}
+                  onRemove={file => {
+                    // Xóa file khi người dùng nhấp vào nút xóa
+                    setFileList(fileList.filter(item => item.uid !== file.uid));
+                    return true; // Trả về true để xác nhận việc xóa
+                  }}
+                >
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                  <p className="ant-upload-hint">Support for a single upload.</p>
+                </Dragger>
+              </div>
             </Form.Item>
           </Form>
         </div>

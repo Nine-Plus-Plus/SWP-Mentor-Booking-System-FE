@@ -6,7 +6,7 @@ import Search from './Search';
 import UserItem from './UserItem';
 import { useUserStore } from '../../store/useUserStore';
 import { getStudentByIdAndSearch } from '../../apis/StudentServices';
-import { capitalizeFirstLetter } from '../../utils/commonFunction';
+import { capitalizeFirstLetter, convertSkillArray } from '../../utils/commonFunction';
 
 const ClassList = ({ addGroup }) => {
   const [countMember, setCountMember] = useState(0);
@@ -19,8 +19,8 @@ const ClassList = ({ addGroup }) => {
   });
 
   const navigate = useNavigate();
-  const { userData, mentorOffClass } = useUserStore();
-  console.log(mentorOffClass);
+  const { userData, mentorOfClass, role } = useUserStore();
+  console.log(mentorOfClass);
 
   useEffect(() => {
     console.log(userData);
@@ -57,21 +57,22 @@ const ClassList = ({ addGroup }) => {
       <Search setPayload={setSearchPayload} />
       {addGroup && <p className="text-2xl font-semibold text-red-500">Limit member: {countMember}/4</p>}
       <div className=" bg-white flex flex-col gap-5 p-3 rounded-md">
-        {!addGroup && (
+        {!addGroup && mentorOfClass && role === 'STUDENT' && (
           <UserItem
             roleItem={'Mentor'}
-            name={mentorOffClass?.fullName}
-            specialized={'DOTNET, React, Spring Boot'}
-            gender={mentorOffClass?.gender}
-            star={mentorOffClass?.star}
+            name={mentorOfClass?.mentorInf?.fullName}
+            specialized={convertSkillArray(mentorOfClass?.mentorSkill)}
+            gender={mentorOfClass?.mentorInf?.gender}
+            star={userData?.aclass?.mentor?.star}
             sameClass={true}
-            idUser={mentorOffClass?.id}
+            idUser={mentorOfClass?.mentorInf?.id}
+            code={userData?.aclass?.mentor?.mentorCode}
           />
         )}
-        {students.length === 0 ? (
+        {students?.length === 0 ? (
           <p className="text-red-500">No students were found.</p>
         ) : (
-          students.map(student => (
+          students?.map(student => (
             <UserItem
               key={student.id}
               roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
@@ -81,6 +82,7 @@ const ClassList = ({ addGroup }) => {
               gender={student?.user?.gender}
               isAdded={false}
               idUser={student?.user?.id}
+              code={student?.studentCode}
             />
           ))
         )}
