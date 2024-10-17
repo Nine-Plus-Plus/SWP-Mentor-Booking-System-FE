@@ -87,7 +87,6 @@ const Schedule = () => {
 
   // Hàm xử lý khi chọn sự kiện
   const handleSelectEvent = event => {
-    console.log(event);
     if (event.title !== 'AVAILABLE') {
       toast.error('You can not change this event');
       return;
