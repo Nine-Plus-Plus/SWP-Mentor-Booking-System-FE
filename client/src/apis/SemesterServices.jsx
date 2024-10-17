@@ -36,6 +36,24 @@ export const createSemester = (data, token) =>
     }
   });
 
+export const updateSemester = (id, data, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'put',
+        url: `api/admin/update-semester/${id}`,
+        data: data,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      //
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 export const deleteSemester = (id, token) =>
   new Promise(async (resolve, reject) => {
     try {

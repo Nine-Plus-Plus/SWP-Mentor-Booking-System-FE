@@ -101,7 +101,6 @@ const UserItem = ({
           handleCreateBooking(bookingData, convertDateMeeting(selectMeeting));
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           Swal.fire('Cancelled', 'Cancelled this booking!', 'error');
-          setSelectMeeting('');
         }
       });
     } else {

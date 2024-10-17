@@ -33,7 +33,7 @@ function BookingList() {
       }
     };
     fetchAllActiveBooking();
-  }, [userData?.id, , filter, fullData?.groupDTO?.id]);
+  }, [userData?.id, filter, fullData?.groupDTO?.id]);
 
   return (
     <div>

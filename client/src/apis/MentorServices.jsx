@@ -18,11 +18,16 @@ export const getAllMentors = token =>
 
 export const createMentor = (data, token) =>
   new Promise(async (resolve, reject) => {
+    const formData = new FormData();
+    console.log(data.mentor);
+    formData.append('mentor', new Blob([JSON.stringify(data.mentor)], { type: 'application/json' }));
+    formData.append('avatarFile', data.avatarFile);
+
     try {
       const response = await axiosConfig({
         method: 'post',
         url: 'api/admin/create-mentor',
-        data: data,
+        data: formData,
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -35,11 +40,15 @@ export const createMentor = (data, token) =>
 
 export const updateMentor = (id, data, token) =>
   new Promise(async (resolve, reject) => {
+    const formData = new FormData();
+    console.log(data.mentor);
+    formData.append('mentor', new Blob([JSON.stringify(data.mentor)], { type: 'application/json' }));
+    formData.append('avatarFile', data.avatarFile);
     try {
       const response = await axiosConfig({
         method: 'put',
         url: `api/admin/update-mentor/${id}`,
-        data: data,
+        data: formData,
         headers: {
           Authorization: `Bearer ${token}`
         }

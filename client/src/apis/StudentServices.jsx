@@ -37,10 +37,14 @@ export const getStudentById = (id, token) =>
 export const updateStudent = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {
+      const formData = new FormData();
+      console.log(data.student);
+      formData.append('student', new Blob([JSON.stringify(data.student)], { type: 'application/json' }));
+      formData.append('avatarFile', data.avatarFile);
       const response = await axiosConfig({
         method: 'put',
         url: `api/admin/update-student/${id}`,
-        data: data,
+        data: formData,
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -76,9 +80,6 @@ export const createStudent = (data, token) =>
 
       formData.append('student', new Blob([JSON.stringify(data.student)], { type: 'application/json' }));
       formData.append('avatarFile', data.avatarFile);
-      for (const [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
 
       const response = await axiosConfig({
         method: 'post',
