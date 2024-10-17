@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { getAllProjects } from '../../apis/ProjectServices';
 import { getAllTasks, createTask, deleteTask, updateTask } from '../../apis/ProjectTaskServices';
 import { useUserStore } from '../../store/useUserStore';
+import { parseStringStatus } from '../../utils/commonFunction';
 
 const ProgressChart = ({ percentage }) => {
   return (
@@ -28,17 +29,19 @@ const ProgressChart = ({ percentage }) => {
 
 export const Progress = () => {
   const [tasks, setTasks] = useState([]);
-  const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newTask, setNewTask] = useState({ taskName: '', description: '', status: 'Not Start' });
   const [openCreateTaskModal, setOpenCreateTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState('Not Start');
   const [showAllTasks, setShowAllTasks] = useState(false);
   const [form] = Form.useForm();
   const { fullData } = useUserStore();
 
+  const dbStatus = {
+    NOTSTARTED: 'Not Start',
+    DONE: 'Done',
+    INPROGRESS: 'In Progress'
+  };
   useEffect(() => {
     const fetchTask = async () => {
       const token = localStorage.getItem('token');
@@ -58,24 +61,7 @@ export const Progress = () => {
     };
 
     fetchTask();
-
-    console.log('Test tasks: ', tasks);
-  }, []);
-
-  useEffect(() => {
-    const fetchProject = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await getAllProjects(token);
-        setProject(response?.projectsDTOList);
-      } catch (error) {
-        setError(error.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProject();
-  }, []);
+  }, [fullData]);
 
   const showCreateModal = () => {
     setOpenCreateTaskModal(true);
@@ -84,25 +70,20 @@ export const Progress = () => {
   const handleCreateTask = async () => {
     const token = localStorage.getItem('token');
     try {
-      const value = await form.validateFields();
+      const values = await form.validateFields();
       const createData = {
-        // ...form.getFieldValue()
-        // taskName: value??.taskName,
-        // description: value??.description,
-        // status: value?.status,
-        ...form.getFieldsValue(),
+        ...values,
+        status: parseStringStatus(values.status),
         projects: {
           id: fullData?.groupDTO?.project?.id
         }
       };
-
       const response = await createTask(createData, token);
-      console.log('Task created: ', response);
-
+      console.log(response);
       if (response?.statusCode === 200) {
-        setTasks([...tasks, response?.projectTasksDTO]);
-
+        setTasks([...tasks, response?.projectTasksDTOList[0]]);
         setOpenCreateTaskModal(false);
+        form.resetFields();
         message.success('Project Task created successfully');
       } else {
         message.error('Failed to create Project Task');
@@ -111,31 +92,23 @@ export const Progress = () => {
       console.error('Create Project Task error: ', error);
       message.error('Failed to create Project Task: ' + error.message);
     }
-    // if (newTask?.taskName && newTask?.description) {
-    //   setTasks([...tasks, { ...newTask, id: tasks?.length + 1 }]);
-    //   setNewTask({ taskName: '', description: '', status: 'Not Start' });
-    //   setOpenCreateTaskModal(false);
-    //   toast.success('Task Createed successfully!', {
-    //     autoClose: 500,
-    //   });
-    // }
   };
 
-  const DeleteTask = async taskId => {
+  const deleteTaskLeader = async taskId => {
     try {
       const token = localStorage.getItem('token');
       const response = await deleteTask(taskId, token);
-
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
+        setTasks(prevTask => prevTask.filter(task => task.id !== taskId));
+        setOpenCreateTaskModal(false);
         Swal.fire({
           title: 'Delete Successful!',
           text: `Your task has been deleted.`,
           icon: 'success',
           confirmButtonText: 'OK',
-          timer: 3000, // Đóng sau 3 giây
-          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+          timer: 1000,
+          timerProgressBar: true
         });
-        setStatus('CONFIRMED');
       } else toast.error(response?.message);
     } catch (error) {
       toast.error(error);
@@ -143,7 +116,7 @@ export const Progress = () => {
     }
   };
 
-  const handleDeleteTask = async taskId  => {
+  const handleDeleteTask = async taskId => {
     Swal.fire({
       title: 'Are you sure?',
       html: `Are you sure delete this task?`,
@@ -152,100 +125,43 @@ export const Progress = () => {
       confirmButtonText: 'Yes, delete it',
       cancelButtonText: 'No!',
       reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
-    }).then (result => {
+    }).then(result => {
       if (result.isConfirmed) {
-        DeleteTask(taskId);
+        deleteTaskLeader(taskId);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Delete', 'Delete Task!', 'error');
       }
     });
-  }
-
-  //   Swal.fire({
-  //     title: 'Are you sure?',
-  //     text: 'You won’t be able to revert this!',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#d33',
-  //     cancelButtonColor: '#3085d6',
-  //     confirmButtonText: 'Yes, delete it!'
-  //   }).then(result => {
-  //     if (result.isConfirmed) {
-
-  //       Swal.fire('Deleted!', 'Your task has been deleted.', 'success');
-  //       setSelectedTask(null);
-  //       setOpenCreateTaskModal(false);
-  //     }
-  //   });
-  // };
-
-  // const handleDeleteTask = async taskId => {
-  //   const token = localStorage.getItem('token');
-  //   try {
-  //     const response = await deleteTask(taskId, token);
-  //     Swal.fire({
-  //       title: 'Are you sure?',
-  //       text: 'You won’t be able to revert this!',
-  //       icon: 'warning',
-  //       showCancelButton: true,
-  //       confirmButtonColor: '#d33',
-  //       cancelButtonColor: '#3085d6',
-  //       confirmButtonText: 'Yes, delete it!'
-  //     }).then(result => {
-  //       if (result.isConfirmed) {
-  //         if (response && response.statusCode === 200) {
-  //           Swal.fire('Deleted!', 'Your task has been deleted.', 'success');
-  //           setTasks(tasks?.filter(task => task.id !== taskId));
-  //           setSelectedTask(null);
-  //           setOpenCreateTaskModal(false);
-  //         } else {
-  //           message.error('Failed to delete Project task: ' + response.data.message);
-  //           message.error('statusCode: ' + response.statusCode);
-  //         }
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.error('Delete Project task error:', error);
-  //     message.error('Failed to delete Project task: ' + error.message);
-  //   }
-  // };
-
-  const calculateCompletionPercentage = () => {
-    const completedTasks = tasks?.filter(task => task?.status === 'Done')?.length;
-    return tasks?.length > 0 ? ((completedTasks / tasks?.length) * 100).toFixed(2) : 0.0;
   };
 
   const handleTaskClick = task => {
     setSelectedTask(task);
-    setSelectedStatus(task?.status);
+    form.setFieldsValue({
+      taskName: task.taskName,
+      description: task.description,
+      status: dbStatus[task.status]
+    });
     setOpenCreateTaskModal(true);
   };
 
   const handleUpdateTask = async () => {
     const token = localStorage.getItem('token');
-    // if (selectedTask) {
-    //   setTasks(tasks.map(task => (task.id === selectedTask.id ? { ...selectedTask, status: selectedStatus } : task)));
-    //   setSelectedTask(null);
-    //   setOpenCreateTaskModal(false);
-    //   toast.success('Task updated successfully!', {
-    //     autoClose: 500
-    //   });
-    // }
     try {
-      const value = await form.validateFields();
-      const updateData = {
-        ...form.getFieldsValue(),
-        projects: {
-          id: fullData?.groupDTO?.project?.id
-        }
-      };
-      console.log('Updata data: ', updateData);
+      const values = await form.validateFields();
+      const updateData = { ...values, status: parseStringStatus(values.status) };
+      console.log('Update data: ', updateData);
       const response = await updateTask(selectedTask.id, updateData, token);
+      console.log(response);
 
-      if (response && response.statusCode === 200) {
-        setTasks(tasks.map(task => (task.id === response.projectTasksDTO.id ? response.projectTasksDTO : task)));
+      if (response?.statusCode === 200) {
+        setTasks(
+          tasks.map(task =>
+            task.id === response?.projectTasksDTOList[0]?.id ? response?.projectTasksDTOList[0] : task
+          )
+        );
+        form.resetFields();
         setOpenCreateTaskModal(false);
-        message.success('Mentor updated successfully');
+        message.success('Project task updated successfully');
       } else {
         message.error('Failed to update Project Task');
       }
@@ -263,6 +179,11 @@ export const Progress = () => {
 
   const toggleViewAll = () => {
     setShowAllTasks(!showAllTasks);
+  };
+
+  const calculateCompletionPercentage = () => {
+    const completedTasks = tasks?.filter(task => task?.status === 'DONE')?.length;
+    return tasks?.length > 0 ? ((completedTasks / tasks?.length) * 100).toFixed(2) : 0.0;
   };
 
   return (
@@ -285,7 +206,7 @@ export const Progress = () => {
             <p className="text-right text-green-500 font-medium">High Priority</p>
           </div>
           <p className="text-2xl font-semibold">
-            {tasks?.filter(task => task?.status === 'Done')?.length}/{tasks?.length} Completed
+            {tasks?.filter(task => task?.status === 'DONE')?.length}/{tasks?.length} Completed
           </p>
         </div>
 
@@ -296,7 +217,7 @@ export const Progress = () => {
             <p className="text-right text-yellow-500 font-medium">In Progress</p>
           </div>
           <p className="text-2xl font-semibold">
-            {tasks?.filter(task => task?.status === 'In Progress')?.length}/{tasks?.length} Running
+            {tasks?.filter(task => task?.status === 'INPROGRESS')?.length}/{tasks?.length} Running
           </p>
         </div>
       </div>
@@ -322,21 +243,21 @@ export const Progress = () => {
                     <div className="flex space-x-4 mt-4">
                       <div
                         className={`flex flex-col items-center w-full ${
-                          task?.status === 'Not Start' ? 'bg-gray-400 text-white rounded-lg' : ''
+                          task?.status === 'NOTSTARTED' ? 'bg-gray-400 text-white rounded-lg' : ''
                         }`}
                       >
                         Not Start
                       </div>
                       <div
                         className={`flex flex-col items-center w-full ${
-                          task?.status === 'In Progress' ? 'bg-yellow-500 text-white rounded-lg' : ''
+                          task?.status === 'INPROGRESS' ? 'bg-yellow-500 text-white rounded-lg' : ''
                         }`}
                       >
                         In Progress
                       </div>
                       <div
                         className={`flex flex-col items-center w-full ${
-                          task?.status === 'Done' ? 'bg-green-500 text-white rounded-lg' : ''
+                          task?.status === 'DONE' ? 'bg-green-500 text-white rounded-lg' : ''
                         }`}
                       >
                         Done
@@ -366,6 +287,7 @@ export const Progress = () => {
             title={selectedTask ? 'Edit Task' : 'Create Task'}
             open={openCreateTaskModal}
             onCancel={() => {
+              form.resetFields();
               setOpenCreateTaskModal(false);
               setSelectedTask(null);
             }}
@@ -373,6 +295,7 @@ export const Progress = () => {
               <Button
                 key="cancel"
                 onClick={() => {
+                  form.resetFields();
                   setOpenCreateTaskModal(false);
                   setSelectedTask(null);
                 }}
@@ -389,9 +312,9 @@ export const Progress = () => {
               </Button>
             ]}
           >
-            <Form form={form} layout="vertical">
+            <Form form={form} layout="vertical" initialValues={{ status: 'Not start' }}>
               <Form.Item
-                label="TaskName"
+                label="Task Name"
                 name="taskName"
                 rules={[
                   {
@@ -400,16 +323,7 @@ export const Progress = () => {
                   }
                 ]}
               >
-                <Input
-                // value={selectedTask ? selectedTask?.taskName : newTask?.taskName}
-                // onChange={e => {
-                //   if (selectedTask) {
-                //     setSelectedTask({ ...selectedTask, taskName: e.target.value });
-                //   } else {
-                //     setNewTask({ ...newTask, taskName: e.target.value });
-                //   }
-                // }}
-                />
+                <Input />
               </Form.Item>
               <Form.Item
                 label="Description"
@@ -421,29 +335,20 @@ export const Progress = () => {
                   }
                 ]}
               >
-                <Input.TextArea
-                // value={selectedTask ? selectedTask?.description : newTask?.description}
-                // onChange={e => {
-                //   if (selectedTask) {
-                //     setSelectedTask({ ...selectedTask, description: e.target.value });
-                //   } else {
-                //     setNewTask({ ...newTask, description: e.target.value });
-                //   }
-                // }}
-                />
+                <Input.TextArea rows={4} />
               </Form.Item>
-              <Form.Item label="Status">
-                <Select
-                  value={selectedTask ? selectedStatus : newTask.status}
-                  onChange={value => {
-                    if (selectedTask) {
-                      setSelectedStatus(value);
-                    } else {
-                      setNewTask({ ...newTask, status: value });
-                    }
-                  }}
-                >
-                  <Select.Option value="Not Start">Not Start</Select.Option>
+              <Form.Item
+                label="Status"
+                name="status"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input task description!'
+                  }
+                ]}
+              >
+                <Select>
+                  <Select.Option value="Not Started">Not Start</Select.Option>
                   <Select.Option value="In Progress">In Progress</Select.Option>
                   <Select.Option value="Done">Done</Select.Option>
                 </Select>

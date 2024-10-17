@@ -38,3 +38,10 @@ export const formatDate = date => {
   const dayFormat = dayjs(date).format('YYYY-MM-DD HH:mm');
   return dayFormat;
 };
+
+export const parseStringStatus = string => {
+  const stringWithoutSpaces = string.replace(/\s+/g, '');
+  console.log(stringWithoutSpaces);
+
+  return stringWithoutSpaces.toUpperCase();
+};
