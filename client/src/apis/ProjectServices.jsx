@@ -16,3 +16,21 @@ export const createProject = (data, token) =>
       reject(error);
     }
   });
+
+  export const getAllProjects = token =>
+    new Promise(async (resolve, reject) => {
+      try {
+        const response = await axiosConfig({
+          method: 'get',
+          url: 'api/user/get-all-projects',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log(response);
+  
+        resolve(response?.data);
+      } catch (error) {
+        reject(error);
+      }
+    });

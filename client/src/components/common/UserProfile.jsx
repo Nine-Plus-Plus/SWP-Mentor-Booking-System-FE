@@ -72,8 +72,7 @@ function StudentProfile() {
         console.log('User DTO:', user);
 
         // Cập nhật state với dữ liệu từ API
-        setProfile({
-          // code: user.mentorCode || user.studentCode || 'N/A',
+        setProfile({          
           code: roleProfile == 'MENTOR' ? user?.mentorCode : user?.studentCode,
           userName: user?.user?.username || 'N/A',
           fullName: user?.user?.fullName || 'N/A',
@@ -86,7 +85,7 @@ function StudentProfile() {
           point: roleProfile === 'MENTOR' ? user?.star : user?.point,
           expertise:
             roleProfile === 'MENTOR'
-              ? user?.skills?.map(skill => skill.skillName).join(', ') // Kết hợp các skillName với dấu phẩy và khoảng trắng
+              ? user?.skills?.map(skill => skill.skillName).join(', ') 
               : user?.expertise,
           className: roleProfile === 'MENTOR' ? user?.assignedClass?.className : user?.aclass?.className,
           timeRemain: user?.totalTimeRemain || 'N/A'

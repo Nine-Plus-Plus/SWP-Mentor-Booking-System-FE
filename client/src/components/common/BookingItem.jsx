@@ -209,7 +209,7 @@ export const BookingItem = ({
           <p>Point Manner: {point}</p>
           <p>Total member: {totalMember}/5</p>
         </div>
-        <div className="flex flex-col items-center justify-center gap-y-3 w-1/3">
+        <div className="flex flex-col items-end justify-center gap-y-3 w-1/3 ">
           {roleProfile === 'mentor' ? (
             <>
               {status === 'PENDING' ? (
@@ -264,7 +264,7 @@ export const BookingItem = ({
                   className="w-full min-w-[120px]"
                 />
               ) : (
-                <div className="flex flex-col w-full gap-3">
+                <div className="flex flex-col gap-3">
                   <Button
                     text={'Rejected'}
                     textColor={'text-white'}
