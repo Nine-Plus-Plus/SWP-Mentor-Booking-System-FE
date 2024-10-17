@@ -21,9 +21,6 @@ function StudentManager() {
   const [form] = Form.useForm();
   const [uploadedAvatar, setUploadedAvatar] = useState(null); // Lưu URL ảnh sau khi upload
   const [fileList, setFileList] = useState([]);
-  useEffect(() => {
-    console.log(uploadedAvatar);
-  }, [fileList]);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -96,6 +93,12 @@ function StudentManager() {
   // Update student
   const showUpdateModal = student => {
     setSelectedStudent(student);
+    const avatarFile = {
+      uid: '-1', // Đặt một uid duy nhất cho file
+      name: 'avatar.png', // Tên file (có thể thay đổi nếu cần)
+      status: 'done', // Trạng thái của file
+      url: student.user.avatar || null // Liên kết avatar
+    };
     form.setFieldsValue({
       fullName: student.user.fullName,
       username: student.user.username,
@@ -107,8 +110,10 @@ function StudentManager() {
       address: student.user.address,
       phone: student.user.phone,
       gender: student.user.gender,
-      avatar: student.user.avatar
+      avatar: avatarFile
     });
+    student.user.avatar && setFileList([avatarFile]);
+
     setSelectedSemester(form.getFieldValue().semesterId);
     setIsUpdateModalVisible(true);
   };
@@ -117,22 +122,27 @@ function StudentManager() {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
+      const { avatar, ...studentValues } = values;
       const updateData = {
-        ...form.getFieldsValue(),
-        birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
-        aclass: {
-          id: form.getFieldsValue().classId
-        }
+        student: {
+          ...studentValues,
+          birthDate: dayjs(studentValues.birthDate).format('YYYY-MM-DD'),
+          aclass: {
+            id: studentValues.classId
+          }
+        },
+        avatarFile: uploadedAvatar // Đây là file avatar
       };
       console.log(updateData);
 
       const response = await updateStudent(selectedStudent.user.id, updateData, token);
       console.log(response);
 
-      if (response && response.statusCode === 200) {
+      if (response && response?.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
         setStudents(students.map(student => (student.id === response.studentsDTO.id ? response.studentsDTO : student)));
         setIsUpdateModalVisible(false);
+        setFileList([]);
         message.success('Student updated successfully');
       } else {
         message.error('Failed to update student');
@@ -146,6 +156,7 @@ function StudentManager() {
   const handleCancelUpdate = () => {
     form.resetFields();
     setIsUpdateModalVisible(false);
+    setFileList([]);
   };
 
   // Create Student
@@ -190,6 +201,7 @@ function StudentManager() {
   const handleCancelCreate = () => {
     form.resetFields();
     setIsCreateModalVisible(false);
+    setFileList([]);
   };
 
   if (loading) {
@@ -293,7 +305,7 @@ function StudentManager() {
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Student
       </Button>
-      <Table columns={columns} bordered dataSource={students} rowKey="id" pagination={{ pageSize: 10 }} />
+      <Table columns={columns} bordered dataSource={students} rowKey="id" pagination={{ pageSize: 10 }} sticky />
 
       {/* Modal for updating student */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
@@ -402,31 +414,33 @@ function StudentManager() {
                 <Radio value="FEMALE">Female</Radio>
               </Radio.Group>
             </Form.Item>
-            <Form.Item label="Avatar">
-              <Dragger
-                accept="image/*"
-                beforeUpload={file => {
-                  setUploadedAvatar(file);
-                  return false; // Ngăn không cho upload file tự động
-                }}
-                fileList={fileList}
-                onChange={info => {
-                  if (info.fileList.length > 0) {
-                    setFileList(info.fileList.slice(-1));
-                  }
-                }}
-                onRemove={file => {
-                  // Xóa file khi người dùng nhấp vào nút xóa
-                  setFileList(fileList.filter(item => item.uid !== file.uid));
-                  return true; // Trả về true để xác nhận việc xóa
-                }}
-              >
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                <p className="ant-upload-hint">Support for a single upload.</p>
-              </Dragger>
+            <Form.Item label="Avatar" name="avatar">
+              <div>
+                <Dragger
+                  accept="image/*"
+                  beforeUpload={file => {
+                    setUploadedAvatar(file);
+                    return false; // Ngăn không cho upload file tự động
+                  }}
+                  fileList={fileList}
+                  onChange={info => {
+                    if (info.fileList.length > 0) {
+                      setFileList(info.fileList.slice(-1));
+                    }
+                  }}
+                  onRemove={file => {
+                    // Xóa file khi người dùng nhấp vào nút xóa
+                    setFileList(fileList.filter(item => item.uid !== file.uid));
+                    return true; // Trả về true để xác nhận việc xóa
+                  }}
+                >
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                  <p className="ant-upload-hint">Support for a single upload.</p>
+                </Dragger>
+              </div>
             </Form.Item>
           </Form>
         </div>

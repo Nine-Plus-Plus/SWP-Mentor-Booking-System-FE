@@ -17,7 +17,7 @@ const PublicMentor = () => {
           ...response.mentorsDTO,
           aclass: response?.mentorsDTO?.assignedClass
         };
-
+        console.log(mentorsDTO);
         setUserData(mentorsDTO);
         const name = mentorsDTO?.user?.fullName.split(' ');
         setCurrent(name.length > 0 ? name[name.length - 1] : mentorsDTO.user.fullName);

@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom';
 import React, { useState } from 'react';
 import Button from './Button';
 import clsx from 'clsx';
+import { acceptBooking, cancelBookingMentor, cancelBookingStudent, rejectBooking } from '../../apis/BookingServices';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 export const BookingItem = ({
   className,
@@ -15,27 +18,171 @@ export const BookingItem = ({
   dateCreated,
   totalMember,
   group,
-  project
+  project,
+  idGroup,
+  idBooking
 }) => {
   const { role } = useUserStore();
-  const { name } = useParams();
-  const [status, setStatus] = useState(initialStatus); 
 
-  const roleProfile = name ? name.toUpperCase() : role.toLowerCase(); 
-
+  const [status, setStatus] = useState(initialStatus);
+  const roleProfile = role.toLowerCase();
   const userData = useUserStore(); // Lấy userData từ store
   const sameGroup = mentor?.assignedClass?.className === userData?.aclass?.className; // Kiểm tra xem mentor có cùng group không
+  const token = localStorage.getItem('token');
+
+  const acceptByMentor = async id => {
+    try {
+      const response = await acceptBooking(id, token);
+      console.log(response);
+      if (response && response?.statusCode === 200) {
+        Swal.fire({
+          title: 'Accept Successful!',
+          text: `Your booking has been booked successfully.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Đóng sau 3 giây
+          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+        });
+        setStatus('CONFIRMED');
+      } else toast.error(response?.message);
+    } catch (error) {
+      toast.error(error);
+      console.log(error);
+    }
+  };
+  const rejectByMentor = async id => {
+    try {
+      const response = await rejectBooking(id, token);
+      console.log(response);
+      if (response && response?.statusCode === 200) {
+        Swal.fire({
+          title: 'Reject Successful!',
+          text: `Your booking has been reject successfully.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Đóng sau 3 giây
+          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+        });
+        setStatus('REJECTED');
+      } else toast.error(response?.message);
+    } catch (error) {
+      toast.error(error);
+      console.log(error);
+    }
+  };
+
+  const cancelByMentor = async id => {
+    try {
+      const response = await cancelBookingMentor(id, token);
+      console.log(response);
+      if (response && response?.statusCode === 200) {
+        Swal.fire({
+          title: 'Cancel Successful!',
+          text: `Your booking has been cancel successfully.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Đóng sau 3 giây
+          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+        });
+        setStatus('CANCELED');
+      } else toast.error(response?.message);
+    } catch (error) {
+      toast.error(error);
+      console.log(error);
+    }
+  };
+
+  const cancelByStudent = async id => {
+    try {
+      const response = await cancelBookingStudent(id, token);
+      console.log(response);
+      if (response && response?.statusCode === 200) {
+        Swal.fire({
+          title: 'Cancel Successful!',
+          text: `Your booking has been cancel successfully.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Đóng sau 3 giây
+          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+        });
+        setStatus('CANCELED');
+      } else toast.error(response?.message);
+    } catch (error) {
+      toast.error(error);
+      console.log(error);
+    }
+  };
 
   const handleAccept = () => {
-    setStatus('accepted');
+    Swal.fire({
+      title: 'Are you sure?',
+      html: `Are you sure accept this booking?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, accept it',
+      cancelButtonText: 'No, cancel!',
+      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+    }).then(result => {
+      if (result.isConfirmed) {
+        acceptByMentor(idBooking);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Cancelled accept booking!', 'error');
+      }
+    });
   };
 
   const handleReject = () => {
-    setStatus('rejected');
+    Swal.fire({
+      title: 'Are you sure?',
+      html: `Are you sure reject this booking?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, accept it',
+      cancelButtonText: 'No, cancel!',
+      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+    }).then(result => {
+      if (result.isConfirmed) {
+        rejectByMentor(idBooking);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Cancelled reject booking!', 'error');
+      }
+    });
   };
 
-  const handleCancel = () => {
-    setStatus('pending');
+  const handleCancelMentor = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      html: `Are you sure cancel this booking?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel it',
+      cancelButtonText: 'No!',
+      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+    }).then(result => {
+      if (result.isConfirmed) {
+        cancelByMentor(idBooking);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+      }
+    });
+  };
+
+  const handleCancelStudent = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      html: `Are you sure cancel this booking?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel it',
+      cancelButtonText: 'No!',
+      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+    }).then(result => {
+      if (result.isConfirmed) {
+        cancelByStudent(idBooking);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+      }
+    });
   };
 
   return (
@@ -43,16 +190,12 @@ export const BookingItem = ({
       {/* Tiêu đề với chữ tô đậm */}
       <h1 className="font-bold text-xl text-main-1">
         {roleProfile === 'mentor' ? (
-          <span className={clsx(sameGroup && 'bg-yellow-400 p-1 rounded-md')}>
-            Group: {group}
-          </span>
+          <span className={clsx(sameGroup && 'bg-yellow-400 p-1 rounded-md')}>Group: {group}</span>
         ) : (
-          <span className={clsx(roleProfile === 'mentor' && 'text-red-500')}>
-            mentor: {mentor}
-          </span>
+          <span className={clsx(roleProfile === 'mentor' && 'text-red-500')}>Booking Mentor: {mentor}</span>
         )}
       </h1>
-      
+
       <div className="flex p-2 justify-between">
         <div className="flex flex-col gap-2 text-md">
           <p>Day Booking: {dateCreated}</p>
@@ -60,8 +203,8 @@ export const BookingItem = ({
           <p>Group: {group}</p>
           <p>Project: {project}</p>
         </div>
-        <div className="flex flex-col gap-2 pl-20 text-md">
-          <p>Booking Schedule: {schedule}</p>
+        <div className="flex flex-col gap-2 text-md">
+          <p> Schedule: {schedule}</p>
           <p>Student Booking: {studentBook}</p>
           <p>Point Manner: {point}</p>
           <p>Total member: {totalMember}/5</p>
@@ -69,15 +212,15 @@ export const BookingItem = ({
         <div className="flex flex-col items-end justify-center gap-y-3 w-1/3 ">
           {roleProfile === 'mentor' ? (
             <>
-              {status === 'pending' ? (
-                <div className="flex flex-col gap-3">
+              {status === 'PENDING' ? (
+                <div className="flex flex-col w-full gap-3">
                   <Button
                     text={'Accept'}
                     textColor={'text-white'}
                     bgColor={'bg-green-500'}
                     bgHover={'hover:bg-green-400'}
                     htmlType={'button'}
-                    onClick={handleAccept} 
+                    onClick={handleAccept}
                     className="w-full min-w-[120px]"
                   />
                   <Button
@@ -86,12 +229,12 @@ export const BookingItem = ({
                     bgColor={'bg-red-500'}
                     bgHover={'hover:bg-red-400'}
                     htmlType={'button'}
-                    onClick={handleReject} 
-                    className="w-full min-w-[120px]" 
+                    onClick={handleReject}
+                    className="w-full min-w-[120px]"
                   />
                 </div>
-              ) : status === 'accepted' ? (
-                <div className="flex flex-col gap-3">
+              ) : status === 'CONFIRMED' ? (
+                <div className="flex flex-col w-full gap-3">
                   <Button
                     text={'Accepted'}
                     textColor={'text-white'}
@@ -99,7 +242,7 @@ export const BookingItem = ({
                     bgHover={'hover:bg-green-400'}
                     htmlType={'button'}
                     acHover={'hover:cursor-not-allowed'}
-                    className="w-full min-w-[120px]" 
+                    className="w-full min-w-[120px]"
                   />
                   <Button
                     text={'Cancel'}
@@ -107,10 +250,19 @@ export const BookingItem = ({
                     bgColor={'bg-gray-500'}
                     bgHover={'hover:bg-gray-400'}
                     htmlType={'button'}
-                    onClick={handleCancel}
-                    className="w-full min-w-[120px]" 
+                    onClick={handleCancelMentor}
+                    className="w-full min-w-[120px]"
                   />
                 </div>
+              ) : status === 'CANCELLED' ? (
+                <Button
+                  text={'Canceled'}
+                  textColor={'text-white'}
+                  bgColor={'bg-gray-500'}
+                  bgHover={'hover:bg-gray-400 hover:cursor-not-allowed'}
+                  htmlType={'button'}
+                  className="w-full min-w-[120px]"
+                />
               ) : (
                 <div className="flex flex-col gap-3">
                   <Button
@@ -127,10 +279,9 @@ export const BookingItem = ({
             </>
           ) : (
             <>
-            {/* role Student */}
-              {status === 'pending' ? (
+              {status === 'PENDING' ? (
                 <Button
-                  text={'Pending'}
+                  text={'PENDING'}
                   textColor={'text-white'}
                   bgColor={'bg-yellow-500'}
                   bgHover={'hover:bg-yellow-400'}
@@ -138,15 +289,36 @@ export const BookingItem = ({
                   acHover={'hover:cursor-not-allowed'}
                   className="w-full min-w-[120px]"
                 />
-              ) : status === 'accepted' ? (
+              ) : status === 'CONFIRMED' ? (
+                <div className="flex flex-col w-full gap-3">
+                  <Button
+                    text={'Accepted'}
+                    textColor={'text-white'}
+                    bgColor={'bg-green-500'}
+                    bgHover={'hover:bg-green-400'}
+                    htmlType={'button'}
+                    className="w-full min-w-[120px]"
+                    acHover={'hover:cursor-not-allowed'}
+                  />
+                  <Button
+                    text={'Cancel'}
+                    textColor={'text-white'}
+                    bgColor={'bg-gray-500'}
+                    bgHover={'hover:bg-gray-400'}
+                    htmlType={'button'}
+                    className="w-full min-w-[120px]"
+                    acHover={'hover:cursor-pointer'}
+                    onClick={handleCancelStudent}
+                  />
+                </div>
+              ) : status === 'CANCELLED' ? (
                 <Button
-                  text={'Accepted'}
+                  text={'Canceled'}
                   textColor={'text-white'}
-                  bgColor={'bg-green-500'}
-                  bgHover={'hover:bg-green-400'}
+                  bgColor={'bg-gray-500'}
+                  bgHover={'hover:bg-gray-400 hover:cursor-not-allowed'}
                   htmlType={'button'}
                   className="w-full min-w-[120px]"
-                  acHover={'hover:cursor-not-allowed'}
                 />
               ) : (
                 <Button

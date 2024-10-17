@@ -3,11 +3,12 @@ import { Button } from '../index';
 import path from '../../utils/path';
 import { getAllSkill } from '../../apis/SkillServices';
 import { DatePicker, Select } from 'antd';
+import { useUserStore } from '../../store/useUserStore';
 
 const Search = ({ searchFor, setPayload }) => {
   const { RangePicker } = DatePicker;
   const [skills, setSkills] = useState([]);
-
+  const { role } = useUserStore();
   useEffect(() => {
     const fetchAllSkill = async () => {
       const token = localStorage.getItem('token');
@@ -53,7 +54,7 @@ const Search = ({ searchFor, setPayload }) => {
 
       {searchFor !== 'mentor' && (
         <input
-          className="rounded-md w-3/5 text-lg p-1"
+          className="rounded-md w-1/5 text-lg p-1"
           type="input"
           placeholder="Expertise"
           name="expertise"
@@ -74,7 +75,7 @@ const Search = ({ searchFor, setPayload }) => {
           ))}
         </Select>
       )}
-      {searchFor === 'mentor' && (
+      {searchFor === 'mentor' && role === 'STUDENT' && (
         <RangePicker
           showTime={{
             format: 'HH:mm'
@@ -84,15 +85,17 @@ const Search = ({ searchFor, setPayload }) => {
         />
       )}
 
-      <Button
-        text={'Search'}
-        textColor={'text-white'}
-        bgColor={'bg-main-1'}
-        bgHover={'hover:bg-main-2'}
-        fullWidth={'w-1/12'}
-        htmlType={'button'}
-        onClick={handleSubmit}
-      />
+      {
+        <Button
+          text={'Search'}
+          textColor={'text-white'}
+          bgColor={'bg-main-1'}
+          bgHover={'hover:bg-main-2'}
+          fullWidth={'w-1/12'}
+          htmlType={'button'}
+          onClick={handleSubmit}
+        />
+      }
     </div>
   );
 };

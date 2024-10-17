@@ -5,6 +5,8 @@ import { getAllSemester } from '../../apis/SemesterServices';
 import { getAllSkill } from '../../apis/SkillServices';
 import dayjs from 'dayjs';
 import { colors } from '../../utils/constant';
+import Dragger from 'antd/es/upload/Dragger';
+import { InboxOutlined } from '@ant-design/icons';
 
 const MentorManager = () => {
   const [mentors, setMentors] = useState([]);
@@ -16,6 +18,8 @@ const MentorManager = () => {
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [form] = Form.useForm();
   const { Option } = Select;
+  const [uploadedAvatar, setUploadedAvatar] = useState(null); // Lưu URL ảnh sau khi upload
+  const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
     const fetchMentors = async () => {
@@ -61,12 +65,18 @@ const MentorManager = () => {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
-      const createData = {
-        ...form.getFieldsValue(),
-        birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
-        skills: form.getFieldsValue()?.skills ? form.getFieldsValue().skills.map(skillId => ({ id: skillId })) : [] // Nếu không có skills, trả về mảng rỗng
-      };
+      const { avatar, ...mentorValue } = values;
 
+      const { skills, ...otherFields } = mentorValue;
+      const skillsArray = skills.map(skillId => ({ id: skillId }));
+      const createData = {
+        mentor: {
+          ...otherFields,
+          birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
+          skills: skillsArray
+        },
+        avatarFile: uploadedAvatar
+      };
       const response = await createMentor(createData, token);
       console.log(response);
 
@@ -83,6 +93,7 @@ const MentorManager = () => {
         ]);
         setIsCreateModalVisible(false);
         message.success('Mentor created successfully');
+        setFileList([]);
       } else {
         message.error('Failed to create mentor');
       }
@@ -96,21 +107,27 @@ const MentorManager = () => {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
-      const { skills, ...otherFields } = form.getFieldsValue();
+      const { avatar, ...mentorValue } = values;
+
+      const { skills, ...otherFields } = mentorValue;
       const skillsArray = skills.map(skillId => ({ id: skillId }));
       const updateData = {
-        ...form.getFieldsValue(),
-        birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
-        skills: skillsArray
+        mentor: {
+          ...otherFields,
+          birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
+          skills: skillsArray
+        },
+        avatarFile: uploadedAvatar
       };
       console.log(updateData);
 
       const response = await updateMentor(selectedMentor.user.id, updateData, token);
 
-      if (response && response.statusCode === 200) {
+      if (response && response?.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
-        setMentors(mentors.map(mentor => (mentor.id === response.mentorsDTO.id ? response.mentorsDTO : mentor)));
+        setMentors(mentors?.map(mentor => (mentor.id === response.mentorsDTO.id ? response.mentorsDTO : mentor)));
         setIsUpdateModalVisible(false);
+        setFileList([]);
         message.success('Mentor updated successfully');
       } else {
         message.error('Failed to update mentor');
@@ -141,15 +158,23 @@ const MentorManager = () => {
   const handleCancelCreate = () => {
     form.resetFields();
     setIsCreateModalVisible(false);
+    setFileList([]);
   };
 
   const handleCancelUpdate = () => {
     form.resetFields();
     setIsUpdateModalVisible(false);
+    setFileList([]);
   };
 
   const showUpdateModal = mentor => {
     setSelectedMentor(mentor);
+    const avatarFile = {
+      uid: '-1', // Đặt một uid duy nhất cho file
+      name: 'avatar.png', // Tên file (có thể thay đổi nếu cần)
+      status: 'done', // Trạng thái của file
+      url: mentor.user.avatar || null // Liên kết avatar
+    };
     form.setFieldsValue({
       fullName: mentor.user.fullName,
       username: mentor.user.username,
@@ -162,8 +187,9 @@ const MentorManager = () => {
       address: mentor.user.address,
       phone: mentor.user.phone,
       gender: mentor.user.gender,
-      avatar: mentor.user.avatar
+      avatar: avatarFile
     });
+    mentor.user.avatar && setFileList([avatarFile]);
     setIsUpdateModalVisible(true);
   };
 
@@ -175,9 +201,16 @@ const MentorManager = () => {
       render: (text, record, index) => index + 1
     },
     {
-      title: 'Avarta',
+      title: 'Avatar',
       dataIndex: ['user', 'avatar'],
-      key: 'avatar'
+      key: 'avatar',
+      render: avatar => (
+        <img
+          src={avatar}
+          alt="Avatar"
+          className="w-[7vw] h-50" // Thêm các class Tailwind CSS cho kích thước và kiểu dáng
+        />
+      )
     },
     {
       title: 'Full Name',
@@ -409,7 +442,32 @@ const MentorManager = () => {
               </Radio.Group>
             </Form.Item>
             <Form.Item label="Avatar" name="avatar">
-              <Input />
+              <div>
+                <Dragger
+                  accept="image/*"
+                  beforeUpload={file => {
+                    setUploadedAvatar(file);
+                    return false; // Ngăn không cho upload file tự động
+                  }}
+                  fileList={fileList}
+                  onChange={info => {
+                    if (info.fileList.length > 0) {
+                      setFileList(info.fileList.slice(-1));
+                    }
+                  }}
+                  onRemove={file => {
+                    // Xóa file khi người dùng nhấp vào nút xóa
+                    setFileList(fileList.filter(item => item.uid !== file.uid));
+                    return true; // Trả về true để xác nhận việc xóa
+                  }}
+                >
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                  <p className="ant-upload-hint">Support for a single upload.</p>
+                </Dragger>
+              </div>
             </Form.Item>
           </Form>
         </div>
@@ -517,7 +575,32 @@ const MentorManager = () => {
               </Radio.Group>
             </Form.Item>
             <Form.Item label="Avatar" name="avatar">
-              <Input />
+              <div>
+                <Dragger
+                  accept="image/*"
+                  beforeUpload={file => {
+                    setUploadedAvatar(file);
+                    return false; // Ngăn không cho upload file tự động
+                  }}
+                  fileList={fileList}
+                  onChange={info => {
+                    if (info.fileList.length > 0) {
+                      setFileList(info.fileList.slice(-1));
+                    }
+                  }}
+                  onRemove={file => {
+                    // Xóa file khi người dùng nhấp vào nút xóa
+                    setFileList(fileList.filter(item => item.uid !== file.uid));
+                    return true; // Trả về true để xác nhận việc xóa
+                  }}
+                >
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                  <p className="ant-upload-hint">Support for a single upload.</p>
+                </Dragger>
+              </div>
             </Form.Item>
           </Form>
         </div>

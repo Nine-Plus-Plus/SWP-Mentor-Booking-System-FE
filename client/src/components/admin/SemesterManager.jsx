@@ -1,6 +1,6 @@
-import { Button, Table, Form, Modal, Input, message } from 'antd';
+import { Button, Table, Form, Modal, Input, message, DatePicker } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { createSemester, deleteSemester, getAllSemester } from '../../apis/SemesterServices';
+import { createSemester, deleteSemester, getAllSemester, updateSemester } from '../../apis/SemesterServices';
 import dayjs from 'dayjs';
 
 const SemesterManager = () => {
@@ -8,6 +8,8 @@ const SemesterManager = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [selectedSemester, setSelectedSemester] = useState(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -39,21 +41,21 @@ const SemesterManager = () => {
   const handleCreateSemester = async () => {
     const token = localStorage.getItem('token');
     try {
-      const values = await form.validateFields(); // Xác thực form
-      const dataCreate = form.getFieldsValue(true); // Lấy tất cả giá trị của form
+      const values = await form.validateFields();
+      const { dateStart, dateEnd } = values;
+
+      const dataCreate = {
+        ...values,
+        dateStart: dayjs(dateStart).format('DD-MM-YYYY'),
+        dateEnd: dayjs(dateEnd).format('DD-MM-YYYY')
+      };
       console.log(dataCreate);
 
       const response = await createSemester(dataCreate, token);
       console.log(response);
 
       if (response?.statusCode === 200 && response?.semesterDTO) {
-        setSemesters([
-          ...semesters,
-          {
-            ...response.semesterDTO,
-            dateCreated: dayjs(response.semesterDTO.dateCreated).format('HH:mm DD-MM-YYYY')
-          }
-        ]);
+        setSemesters([...semesters, response?.semesterDTO]);
         setIsCreateModalVisible(false);
         message.success('Semester created successfully');
       } else {
@@ -64,6 +66,37 @@ const SemesterManager = () => {
       message.error('Failed to create semester: ' + (error2.message || 'Unknown error'));
     }
   };
+  const handleUpdateSemester = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const values = await form.validateFields();
+      const { dateStart, dateEnd } = values;
+
+      const dataCreate = {
+        ...values,
+        dateStart: dayjs(dateStart).format('DD-MM-YYYY'),
+        dateEnd: dayjs(dateEnd).format('DD-MM-YYYY')
+      };
+      console.log(selectedSemester.id, dataCreate);
+
+      const response = await updateSemester(selectedSemester.id, dataCreate, token);
+      console.log(response);
+
+      if (response && response.statusCode === 200) {
+        // Cập nhật lại danh sách người dùng với thông tin mới
+        setSemesters(
+          semesters.map(semester => (semester.id === response.semesterDTO.id ? response.semesterDTO : semester))
+        );
+        setIsUpdateModalVisible(false);
+        message.success('Semester update successfully');
+      } else {
+        message.error('Failed to update semester');
+      }
+    } catch (error2) {
+      console.error('Update semester error:', error2);
+      message.error('Failed to update semester: ' + (error2.message || 'Unknown error'));
+    }
+  };
 
   if (loading) {
     return <div className="text-center text-gray-700">Loading...</div>;
@@ -72,6 +105,18 @@ const SemesterManager = () => {
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
+
+  const showUpdateModal = semester => {
+    setSelectedSemester(semester);
+
+    // Set values for the form
+    form.setFieldsValue({
+      semesterName: semester.semesterName,
+      dateStart: dayjs(semester.dateStart, 'DD-MM-YYYY') || undefined,
+      dateEnd: dayjs(semester.dateEnd, 'DD-MM-YYYY') || undefined
+    });
+    setIsUpdateModalVisible(true);
+  };
 
   const handleDelete = async semesterId => {
     const token = localStorage.getItem('token');
@@ -92,6 +137,7 @@ const SemesterManager = () => {
   const handleCancelCreate = () => {
     form.resetFields();
     setIsCreateModalVisible(false);
+    setIsUpdateModalVisible(false);
   };
 
   const columns = [
@@ -107,17 +153,28 @@ const SemesterManager = () => {
       key: 'semesterName'
     },
     {
-      title: 'Date Create',
-      dataIndex: 'dateCreated',
-      key: 'dateCreated'
+      title: 'Date Start',
+      dataIndex: 'dateStart',
+      key: 'dateStart'
+    },
+    {
+      title: 'Date End',
+      dataIndex: 'dateEnd',
+      key: 'dateEnd'
     },
     {
       title: 'Actions',
       key: 'actions',
       render: (text, record) => (
-        <Button className="bg-red-500 text-white  w-2/5" onClick={() => handleDelete(record.id)}>
-          Delete
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button
+            className="bg-blue-500 text-white  w-full"
+            onClick={() => showUpdateModal(record)}
+            style={{ marginRight: '10px' }}
+          >
+            Update
+          </Button>
+        </div>
       )
     }
   ];
@@ -150,6 +207,78 @@ const SemesterManager = () => {
               ]}
             >
               <Input />
+            </Form.Item>
+            <Form.Item
+              label="Date start"
+              name="dateStart"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your date semester start!'
+                }
+              ]}
+            >
+              <DatePicker format="DD-MM-YYYY" />
+            </Form.Item>
+            <Form.Item
+              label="Birth end"
+              name="dateEnd"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your date semester start!'
+                }
+              ]}
+            >
+              <DatePicker format="DD-MM-YYYY" />
+            </Form.Item>
+          </Form>
+        </div>
+      </Modal>
+      {/* Modal update */}
+      <Modal
+        title="Update semester"
+        open={isUpdateModalVisible}
+        onOk={handleUpdateSemester}
+        onCancel={handleCancelCreate}
+      >
+        <div className="max-h-96 overflow-y-auto p-5">
+          <Form form={form} layout="vertical">
+            <Form.Item
+              label="Semester Name"
+              name="semesterName"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your semester name!'
+                }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Date start"
+              name="dateStart"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your date semester start!'
+                }
+              ]}
+            >
+              <DatePicker format="DD-MM-YYYY" />
+            </Form.Item>
+            <Form.Item
+              label="Birth end"
+              name="dateEnd"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your date semester end!'
+                }
+              ]}
+            >
+              <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
           </Form>
         </div>

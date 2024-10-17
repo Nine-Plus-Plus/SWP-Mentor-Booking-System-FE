@@ -270,7 +270,7 @@ export const Progress = () => {
       {/* Team Progress Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-8 rounded-lg shadow-lg">
         {/* Total Projects */}
-        <div className="border border-2 border-sky-500 p-4 rounded-2xl shadow-lg bg-white">
+        <div className="border-2 border-sky-500 p-4 rounded-2xl shadow-lg bg-white">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold">Total Task</h3>
             <p className="text-right text-blue-500 font-medium">Excellent Work</p>
@@ -279,7 +279,7 @@ export const Progress = () => {
         </div>
 
         {/* Task Done */}
-        <div className="border border-2 border-emerald-500 p-4 rounded-2xl shadow-lg bg-white">
+        <div className="border-2 border-emerald-500 p-4 rounded-2xl shadow-lg bg-white">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold">Task Done</h3>
             <p className="text-right text-green-500 font-medium">High Priority</p>
@@ -290,7 +290,7 @@ export const Progress = () => {
         </div>
 
         {/* Task in Progress */}
-        <div className="border border-2 border-yellow-500 p-4 rounded-2xl shadow-lg bg-white">
+        <div className="border-2 border-yellow-500 p-4 rounded-2xl shadow-lg bg-white">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold">Task in Progress</h3>
             <p className="text-right text-yellow-500 font-medium">In Progress</p>
@@ -345,7 +345,6 @@ export const Progress = () => {
                   </div>
                 )
             )}
-
             {/* Create Task Button */}
             <div className="border p-6 rounded-lg shadow-lg flex items-center justify-center bg-white">
               <button className="text-blue-500 font-semibold" onClick={showCreateModal}>

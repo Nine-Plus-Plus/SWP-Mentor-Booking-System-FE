@@ -16,6 +16,22 @@ export const getAllGroup = token =>
     }
   });
 
+export const getGroupByClassId = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-groups-in-class/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 export const updateGroup = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {

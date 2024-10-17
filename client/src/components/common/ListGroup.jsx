@@ -1,61 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import GroupItem from './GroupItem';
+import { useUserStore } from '../../store/useUserStore';
+import { getGroupByClassId } from '../../apis/GroupServices';
 
 const ListGroup = () => {
+  const [groups, setGroups] = useState([]);
+  const { userData } = useUserStore();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const fetchGroupClass = async () => {
+      try {
+        const classId = userData?.aclass?.id;
+        const response = await getGroupByClassId(classId, token);
+        console.log(response);
+
+        if (response && response?.statusCode === 200) setGroups(response?.groupDTOList);
+        else setGroups([]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchGroupClass();
+  }, [userData?.aclass?.id]);
+
   return (
     <div className="flex flex-col gap-3 p-3 bg-white rounded-md">
-      <GroupItem
-        idGroup={2}
-        groupName={'Seven Plus Plus'}
-        idTopic={2}
-        totalPoint={100}
-        process={'30%'}
-        totalMember={3}
-        className={'SE18B03'}
-        projectName={'Cá Koi'}
-      />
-      <GroupItem
-        idGroup={2}
-        groupName={'Seven Plus Plus'}
-        idTopic={2}
-        totalPoint={100}
-        process={'30%'}
-        totalMember={3}
-        className={'SE18B03'}
-        projectName={'Cá Koi'}
-      />
-      <GroupItem
-        idGroup={1}
-        groupName={'Nine Plus Plus'}
-        idTopic={1}
-        totalPoint={100}
-        process={'80%'}
-        totalMember={5}
-        className={'SE18B03'}
-        projectName={'Booking'}
-      />
-      <GroupItem
-        idGroup={2}
-        groupName={'Seven Plus Plus'}
-        idTopic={2}
-        totalPoint={100}
-        process={'30%'}
-        totalMember={3}
-        className={'SE18B03'}
-        projectName={'Cá Koi'}
-      />
-      <GroupItem
-        idGroup={3}
-        groupName={'Eight Plus Plus'}
-        idTopic={3}
-        totalPoint={100}
-        process={'20%'}
-        totalMember={5}
-        className={'SE18B03'}
-        projectName={'Thuật toán'}
-      />
+      <h1 className="text-2xl font-semibold"> Class: {userData?.aclass?.className}</h1>
+      <div className="flex flex-col gap-3 p-3 bg-white rounded-md">
+        {groups?.length === 0 ? (
+          <p className="text-red-500">Do not have any group!</p>
+        ) : (
+          groups?.map(group => (
+            <GroupItem
+              key={group?.id}
+              idGroup={group?.id}
+              groupName={group?.groupName}
+              idTopic={group?.project?.topic?.topicName}
+              totalPoint={group?.totalPoint}
+              process={group?.project?.percentage}
+              totalMember={group?.students?.length}
+              projectName={group?.project?.projectName}
+              leader={group?.students?.find(student => student?.groupRole === 'LEADER')?.user?.fullName}
+            />
+          ))
+        )}
+      </div>
     </div>
   );
 };
-
 export default ListGroup;

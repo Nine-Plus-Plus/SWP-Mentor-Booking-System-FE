@@ -1,113 +1,131 @@
 import axiosConfig from '../axiosConfig';
 
-// Phương thức lấy tất cả người dùng
-export const getStudents = token =>
+export const createBooking = (data, token) =>
   new Promise(async (resolve, reject) => {
     try {
-      const response = await axiosConfig({
-        method: 'get',
-        url: 'api/admin/get-all-students',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-// Phương thức lấy người dùng bằng id
-export const getStudentById = (id, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'get',
-        url: `api/admin/get-student-by-id/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-// Phương thức cập nhập người dùng
-
-export const updateStudent = (id, data, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const formData = new FormData();
-      console.log(data.student);
-      formData.append('student', new Blob([JSON.stringify(data.student)], { type: 'application/json' }));
-      formData.append('avatarFile', data.avatarFile);
-      const response = await axiosConfig({
-        method: 'put',
-        url: `api/admin/update-student/${id}`,
-        data: formData,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-
-// Phương thức xóa người dùng
-export const deleteStudent = (id, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'delete',
-        url: `api/admin/delete-user/${id}`,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-
-export const createStudent = (data, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const formData = new FormData();
-      console.log(data.student);
-
-      formData.append('student', new Blob([JSON.stringify(data.student)], { type: 'application/json' }));
-      formData.append('avatarFile', data.avatarFile);
-
       const response = await axiosConfig({
         method: 'post',
-        url: `api/admin/create-student`,
-        data: formData,
+        url: `api/student/create-booking`,
+        data: data,
         headers: {
           Authorization: `Bearer ${token}`
-          // Không cần chỉ định 'Content-Type' cho FormData
         }
       });
-
       resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-export const getStudentByIdAndSearch = (classId, name, expertise, token) =>
+export const getAllActiveBooking = token =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: `api/user/get-student-by-name-or-expertise/`,
+        url: `api/user/get-all-active-bookings`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAllBookingForMentorByStatus = (mentorId, status, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-bookings-by-mentor-id/`,
         params: {
-          classId: classId,
-          name: name,
-          expertise: expertise
+          mentorId: mentorId,
+          status: status
         },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAllBookingForGroupByStatus = (groupId, status, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-bookings-by-group-id/`,
+        params: {
+          groupId: groupId,
+          status: status
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const acceptBooking = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/mentor/accept-booking/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+export const rejectBooking = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/mentor/reject-booking/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const cancelBookingMentor = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/mentor/cancel-booking/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const cancelBookingStudent = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/student/cancel-booking/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
