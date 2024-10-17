@@ -1,71 +1,66 @@
 import axiosConfig from '../axiosConfig';
 
-export const getAllSemester = token =>
+export const getAllTasks = token =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: 'api/admin/get-all-semesters',
+        url: 'api/user/get-all-tasks',
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response);
-
-      resolve(response);
+      resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-export const createSemester = (data, token) =>
+export const createTask = (data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'post',
-        url: 'api/admin/create-semester',
+        url: 'api/student/create-task',
         data: data,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      //
       resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-export const updateSemester = (id, data, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'put',
-        url: `api/admin/update-semester/${id}`,
-        data: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      //
-      resolve(response.data);
-    } catch (error) {
-      reject(error);
-    }
-  });
-
-export const deleteSemester = (id, token) =>
+export const deleteTask = (id, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'delete',
-        url: `api/admin/delete-semester/${id}`,
+        url: `api/student/delete-task/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response);
-      resolve(response);
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const updateTask = (id, data, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'put',
+        url: `api/student/update-task/${id}`,
+        data: data,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
     } catch (error) {
       reject(error);
     }

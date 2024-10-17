@@ -9,11 +9,10 @@ import {
   OTPInput,
   ForgotPass,
   AdminHome,
-  Activity,
+  BookingList,
   UserProfile,
   StudentGroup,
   ListGroup,
-  CreateProject,
   ListHistoryPoint,
   StudentManager,
   MentorManager,
@@ -22,7 +21,9 @@ import {
   SkillManager,
   UserList,
   TopicManager,
-  ListNotification
+  Schedule,
+  ListNotification,
+  Progress
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -69,19 +70,15 @@ function App() {
           <Route path={path.STUDENT_MEETING} element={<Meeting />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
-          <Route path={path.STUDENT_BOOKING} element={<Activity />} />
+          <Route path={path.USER_BOOKING} element={<BookingList />} />
           <Route path={path.STUDENT_GROUP} element={<StudentGroup />} />
           <Route path={path.USER_LIST_NOTIFICATION} element={<ListNotification />} />
-          <Route path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}`} element={<CreateProject />} />
-          <Route
-            path={`${path.STUDENT_GROUP}/${path.STUDENT_CREATE_GROUP}/${path.USER_PROFILE_NAME_ID}`}
-            element={<UserProfile />}
-          />
           {/* <Route path={`${path.STUDENT_GROUP}/${path.LIST_GROUP}`} element={<ListGroup />} /> */}
           <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_NAME_ID} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
+          <Route path={path.STUDENT_PROGRESS} element={<Progress />} />
           <Route path={path.STUDENT_HISTORY_POINT} element={<ListHistoryPoint />} />
         </Route>
 
@@ -98,10 +95,12 @@ function App() {
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
           <Route path={path.LIST_GROUP} element={<ListGroup />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
+          <Route path={path.MENTOR_SCHEDULE} element={<Schedule />} />
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
           <Route path={path.USER_LIST_NOTIFICATION} element={<ListNotification />} />
           <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
+          <Route path={path.USER_BOOKING} element={<BookingList />} />
         </Route>
         <Route path="*" element={<Navigate to={path.PUBLIC} replace />} />
 

@@ -128,14 +128,14 @@ const UserHome = () => {
         </div>
 
         <div className="bg-white p-8 rounded-2xl shadow-lg w-1/3">
-          <div className="flex flex-col items-center items-center text-center">
+          <div className="flex flex-col items-center text-center">
             <h2 className="font-bold text-xl pb-5">Easy & Fast</h2>
             <p>Choose mentors and book sessions in just few steps. Search fast with our helpful filter.</p>
           </div>
         </div>
 
         <div className="bg-white p-8 rounded-2xl shadow-lg w-1/3">
-          <div className="flex flex-col items-center items-center text-center">
+          <div className="flex flex-col items-center text-center">
             <h2 className="font-bold text-xl pb-5">Upgrade Your Skills</h2>
             <p>Find your topic and gain knowlege, then improve your skill with our experienced mentors.</p>
           </div>

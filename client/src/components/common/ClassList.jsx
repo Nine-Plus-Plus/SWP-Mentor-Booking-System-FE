@@ -6,6 +6,7 @@ import Search from './Search';
 import UserItem from './UserItem';
 import { useUserStore } from '../../store/useUserStore';
 import { getStudentByIdAndSearch } from '../../apis/StudentServices';
+import { capitalizeFirstLetter, convertSkillArray } from '../../utils/commonFunction';
 
 const ClassList = ({ addGroup }) => {
   const [countMember, setCountMember] = useState(0);
@@ -17,19 +18,21 @@ const ClassList = ({ addGroup }) => {
     expertise: ''
   });
 
-  console.log(searchPayload);
   const navigate = useNavigate();
-  const { userData } = useUserStore();
+  const { userData, mentorOfClass, role } = useUserStore();
+  console.log(mentorOfClass);
 
   useEffect(() => {
+    console.log(userData);
+
     const fetchStudentByIdAndSearch = async () => {
       const token = localStorage.getItem('token');
 
       try {
         const response = await getStudentByIdAndSearch(
-          userData.aclass.id,
-          searchPayload.name || undefined,
-          searchPayload.expertise || undefined,
+          userData?.aclass.id,
+          searchPayload?.name || undefined,
+          searchPayload?.expertise || undefined,
           token
         );
         if (response && response.statusCode === 200) setStudents(response.studentsDTOList);
@@ -39,8 +42,8 @@ const ClassList = ({ addGroup }) => {
       }
     };
     fetchStudentByIdAndSearch();
-    console.log(students);
   }, [userData, searchPayload]);
+  console.log(students);
 
   useEffect(() => {
     if (countMember >= 4) {
@@ -54,28 +57,32 @@ const ClassList = ({ addGroup }) => {
       <Search setPayload={setSearchPayload} />
       {addGroup && <p className="text-2xl font-semibold text-red-500">Limit member: {countMember}/4</p>}
       <div className=" bg-white flex flex-col gap-5 p-3 rounded-md">
-        {!addGroup && (
+        {!addGroup && mentorOfClass && role === 'STUDENT' && (
           <UserItem
             roleItem={'Mentor'}
-            name={'Thầy Lâm'}
-            specialized={'DOTNET, React, Spring Boot'}
-            gender={'Male'}
-            star={4.5}
+            name={mentorOfClass?.mentorInf?.fullName}
+            specialized={convertSkillArray(mentorOfClass?.mentorSkill)}
+            gender={mentorOfClass?.mentorInf?.gender}
+            star={userData?.aclass?.mentor?.star}
+            sameClass={true}
+            idUser={mentorOfClass?.mentorInf?.id}
+            code={userData?.aclass?.mentor?.mentorCode}
           />
         )}
-        {students.length === 0 ? (
-          <p className="text-red-500">Không có sinh viên nào được tìm thấy.</p>
+        {students?.length === 0 ? (
+          <p className="text-red-500">No students were found.</p>
         ) : (
-          students.map(student => (
+          students?.map(student => (
             <UserItem
               key={student.id}
-              roleItem={student.user.role.roleName}
-              specialized={student.expertise}
-              name={student.user.fullName}
-              studentCode={student.studentCode}
-              gender={student.user.gender}
+              roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
+              specialized={student?.expertise}
+              name={student?.user?.fullName}
+              studentCode={student?.studentCode}
+              gender={student?.user?.gender}
               isAdded={false}
-              idUser={student.user.id}
+              idUser={student?.user?.id}
+              code={student?.studentCode}
             />
           ))
         )}

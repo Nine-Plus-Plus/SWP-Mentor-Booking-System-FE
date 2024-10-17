@@ -11,14 +11,15 @@ import {
 } from '@ant-design/icons';
 import icons from '../../utils/icon';
 import path from '../../utils/path';
-import { toast } from 'react-toastify';
 import { useUserStore } from '../../store/useUserStore';
 import Swal from 'sweetalert2';
+import Loading from '../common/Loading';
 
 const Navigation = ({ children, menuNavbar }) => {
   const { Header, Sider } = Layout;
   const { IoIosNotifications } = icons;
   const [notificationCount, setNotificationCount] = useState(3);
+  const [loading, setLoading] = useState(false);
   const { resetUserStore, role, current } = useUserStore();
   const [collapsed, setCollapsed] = useState(false);
   const { Content } = Layout;
@@ -27,8 +28,6 @@ const Navigation = ({ children, menuNavbar }) => {
 
   useEffect(() => {
     const subPath = location.pathname.split('/');
-    console.log(subPath);
-    console.log(subPath.includes('profile-user'));
 
     if (
       subPath[subPath.length - 1] === 'student' ||
@@ -37,8 +36,14 @@ const Navigation = ({ children, menuNavbar }) => {
     )
       setSearchFor('');
     else setSearchFor(subPath.pop());
-    console.log(subPath);
   }, [location.pathname]);
+
+  const handleClick = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 200);
+  };
 
   const handleLogOut = () => {
     // Hiển thị hộp thoại xác nhận đăng xuất
@@ -127,6 +132,7 @@ const Navigation = ({ children, menuNavbar }) => {
           mode="inline"
           items={menuNavbar}
           theme={role === 'ADMIN' ? 'dark' : 'light'}
+          onClick={() => handleClick()}
         />
       </Sider>
       <Layout className="relative">
@@ -181,10 +187,13 @@ const Navigation = ({ children, menuNavbar }) => {
 
         {/* Component con */}
         <Content className="p-2 overflow-auto h-[calc(100vh-8vh)] w-full">
-          {/* <div className="w-full h-full flex flex-col break-words"> */}
-          {/* {searchFor && <Search searchFor={searchFor} />} */}
-          {children}
-          {/* </div> */}
+          <div>
+            {loading ? (
+              <Loading /> // Hiển thị component loading
+            ) : (
+              children // Không cần dấu ngoặc nhọn ở đây
+            )}
+          </div>
         </Content>
       </Layout>
     </Layout>

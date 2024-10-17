@@ -1,71 +1,66 @@
 import axiosConfig from '../axiosConfig';
 
-export const getAllSemester = token =>
+export const getAllGroup = token =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: 'api/admin/get-all-semesters',
+        url: `api/admin/get-classes-by-semester/${semesterId}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response);
-
-      resolve(response);
-    } catch (error) {
-      reject(error);
-    }
-  });
-
-export const createSemester = (data, token) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await axiosConfig({
-        method: 'post',
-        url: 'api/admin/create-semester',
-        data: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      //
       resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-export const updateSemester = (id, data, token) =>
+export const getGroupByClassId = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-groups-in-class/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const updateGroup = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'put',
-        url: `api/admin/update-semester/${id}`,
         data: data,
+        url: `api/student/update-group/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      //
       resolve(response.data);
     } catch (error) {
       reject(error);
     }
   });
 
-export const deleteSemester = (id, token) =>
+export const createGroup = (data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
-        method: 'delete',
-        url: `api/admin/delete-semester/${id}`,
+        method: 'post',
+        data: data,
+        url: `api/student/create-group`,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response);
-      resolve(response);
+      resolve(response.data);
     } catch (error) {
       reject(error);
     }

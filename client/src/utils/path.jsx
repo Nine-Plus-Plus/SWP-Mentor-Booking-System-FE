@@ -16,19 +16,21 @@ const path = {
   USER_LIST_NOTIFICATION: 'list-notification',
   USER_VIEW_MENTOR: 'view-mentor',
   USER_VIEW_CLASS: 'view-class',
+  USER_BOOKING: 'booking',
 
   // Student
   PUBLIC_STUDENT: 'student',
   STUDENT_HOME: 'home',
   STUDENT_MEETING: 'meeting',
-  STUDENT_BOOKING: 'booking',
   STUDENT_GROUP: 'group',
   STUDENT_CREATE_GROUP: 'create-group',
+  STUDENT_PROGRESS: 'progress',
   STUDENT_HISTORY_POINT: 'history-point',
 
   // Mentor
   PUBLIC_MENTOR: 'mentor',
   MENTOR_HOME: 'home',
+  MENTOR_SCHEDULE: 'schedule',
 
   // Admin
   PUBLIC_ADMIN: 'admin',
