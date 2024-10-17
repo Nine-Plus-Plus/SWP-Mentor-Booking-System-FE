@@ -60,17 +60,17 @@ export const BookingItem = ({
           <p>Group: {group}</p>
           <p>Project: {project}</p>
         </div>
-        <div className="flex flex-col gap-2 text-md">
+        <div className="flex flex-col gap-2 pl-20 text-md">
           <p>Booking Schedule: {schedule}</p>
           <p>Student Booking: {studentBook}</p>
           <p>Point Manner: {point}</p>
           <p>Total member: {totalMember}/5</p>
         </div>
-        <div className="flex flex-col items-center justify-center gap-y-3 w-1/3">
+        <div className="flex flex-col items-end justify-center gap-y-3 w-1/3 ">
           {roleProfile === 'mentor' ? (
             <>
               {status === 'pending' ? (
-                <div className="flex flex-col w-full gap-3">
+                <div className="flex flex-col gap-3">
                   <Button
                     text={'Accept'}
                     textColor={'text-white'}
@@ -91,7 +91,7 @@ export const BookingItem = ({
                   />
                 </div>
               ) : status === 'accepted' ? (
-                <div className="flex flex-col w-full gap-3">
+                <div className="flex flex-col gap-3">
                   <Button
                     text={'Accepted'}
                     textColor={'text-white'}
@@ -112,7 +112,7 @@ export const BookingItem = ({
                   />
                 </div>
               ) : (
-                <div className="flex flex-col w-full gap-3">
+                <div className="flex flex-col gap-3">
                   <Button
                     text={'Rejected'}
                     textColor={'text-white'}
@@ -127,6 +127,7 @@ export const BookingItem = ({
             </>
           ) : (
             <>
+            {/* role Student */}
               {status === 'pending' ? (
                 <Button
                   text={'Pending'}
