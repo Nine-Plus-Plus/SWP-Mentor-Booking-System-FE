@@ -2,7 +2,17 @@ import React from 'react';
 import Button from './Button';
 import { useUserStore } from '../../store/useUserStore';
 
-const GroupItem = ({ idGroup, groupName, idTopic, totalPoint, projectName, totalMember, process, className }) => {
+const GroupItem = ({
+  idGroup,
+  groupName,
+  idTopic,
+  totalPoint,
+  projectName,
+  totalMember,
+  process,
+  className,
+  leader
+}) => {
   const { role } = useUserStore();
   return (
     <div className=" border shadow-md rounded-md p-3 w-full">
@@ -11,11 +21,11 @@ const GroupItem = ({ idGroup, groupName, idTopic, totalPoint, projectName, total
         <div className="flex flex-col gap-2 text-md">
           <p>Project Name: {projectName}</p>
           <p>Topic: {idTopic}</p>
-          <p>Class: {className}</p>
+          <p>Leader: {leader}</p>
         </div>
         <div className="flex flex-col gap-2 text-md">
-          <p>Process: {process}</p>
-          <p>Total Point: {totalPoint}</p>
+          <p>Process: {process}%</p>
+          <p>Total Point: {totalPoint} FUP</p>
           <p>Total member: {totalMember}/5</p>
         </div>
         <div className="flex justify-center h-full flex-col gap-3 w-1/5">
@@ -25,7 +35,7 @@ const GroupItem = ({ idGroup, groupName, idTopic, totalPoint, projectName, total
             bgColor={'bg-yellow-500'}
             bgHover={'hover:bg-yellow-400'}
             htmlType={'button'}
-            fullWidth={'w-full'}
+            fullWidth={'w-4/5'}
             onClick={() => {}}
           />
           {role === 'MENTOR' && totalMember < 5 && (
@@ -35,7 +45,7 @@ const GroupItem = ({ idGroup, groupName, idTopic, totalPoint, projectName, total
               bgColor={'bg-green-500'}
               bgHover={'hover:bg-green-400'}
               htmlType={'button'}
-              fullWidth={'w-full'}
+              fullWidth={'w-4/5'}
               onClick={() => {}}
             />
           )}
@@ -47,7 +57,7 @@ const GroupItem = ({ idGroup, groupName, idTopic, totalPoint, projectName, total
                 bgColor={'bg-green-500'}
                 bgHover={'hover:bg-green-400'}
                 htmlType={'button'}
-                fullWidth={'w-full'}
+                fullWidth={'w-4/5'}
                 onClick={() => {}}
               />
             )
@@ -57,7 +67,7 @@ const GroupItem = ({ idGroup, groupName, idTopic, totalPoint, projectName, total
               textColor={'text-white'}
               bgColor={'bg-red-500'}
               htmlType={'button'}
-              fullWidth={'w-full'}
+              fullWidth={'w-4/5'}
               acHover={'hover:cursor-not-allowed'}
             />
           )}

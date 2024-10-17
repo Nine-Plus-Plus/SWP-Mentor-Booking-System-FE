@@ -88,8 +88,6 @@ export const getClassByIdMentor = (id, token) =>
 
 export const getAllMentorByNameSkillDate = (name, skill, availableFrom, availableTo, token) =>
   new Promise(async (resolve, reject) => {
-    console.log(name, skill, availableFrom, availableTo, token);
-
     try {
       const response = await axiosConfig({
         method: 'get',

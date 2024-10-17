@@ -175,7 +175,7 @@ const MentorManager = () => {
       render: (text, record, index) => index + 1
     },
     {
-      title: 'Avarta',
+      title: 'Avatar',
       dataIndex: ['user', 'avatar'],
       key: 'avatar'
     },

@@ -8,7 +8,9 @@ import { SoundTwoTone } from '@ant-design/icons';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/useUserStore';
 import { faTurkishLiraSign } from '@fortawesome/free-solid-svg-icons';
-import { convertDateMeeting } from '../../utils/commonFunction';
+import { calculatePointDeduction, convertDateMeeting } from '../../utils/commonFunction';
+import { createBooking } from '../../apis/BookingServices';
+import { toast } from 'react-toastify';
 
 const UserItem = ({
   avatar,
@@ -31,7 +33,8 @@ const UserItem = ({
   const navigate = useNavigate();
   const [added, setAdded] = useState(false);
   const [selectMeeting, setSelectMeeting] = useState('');
-  const { role } = useUserStore();
+  const { role, fullData } = useUserStore();
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
 
   const handleStar = star => {
     let stars = [];
@@ -45,11 +48,41 @@ const UserItem = ({
     setAdded(true);
   };
 
+  const handleCreateBooking = async (bookingData, meeting) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await createBooking(bookingData, token);
+      console.log(response);
+      if (response?.statusCode === 200)
+        Swal.fire({
+          title: 'Booking Successful!',
+          text: `Your schedule ${meeting} has been booked successfully.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Đóng sau 3 giây
+          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+        });
+      else
+        Swal.fire({
+          title: 'Booking Failed!',
+          text: `${response?.message}`, // Hiển thị thông báo lỗi
+          icon: 'error',
+          confirmButtonText: 'Try Again'
+        });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const handleBookingClick = () => {
     if (selectMeeting) {
       Swal.fire({
         title: 'Are you sure?',
-        text: `Booking ${selectMeeting}!`,
+        html: `Are you sure to book the meeting?<br><br>Price: ${calculatePointDeduction(
+          selectMeeting?.availableFrom,
+          selectMeeting?.availableTo,
+          fullData?.groupDTO?.students?.length
+        )} FPoint<br><br>Schedule: ${convertDateMeeting(selectMeeting)}`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, booking it',
@@ -57,14 +90,15 @@ const UserItem = ({
         reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
       }).then(result => {
         if (result.isConfirmed) {
-          Swal.fire({
-            title: 'Booking Successful!',
-            text: `Your ${selectMeeting} has been booked successfully.`,
-            icon: 'success',
-            confirmButtonText: 'OK',
-            timer: 3000, // Đóng sau 3 giây
-            timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
-          });
+          const bookingData = {
+            mentorSchedule: {
+              id: selectMeeting.id
+            },
+            group: {
+              id: fullData?.groupDTO?.id
+            }
+          };
+          handleCreateBooking(bookingData, convertDateMeeting(selectMeeting));
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           Swal.fire('Cancelled', 'Cancelled this booking!', 'error');
           setSelectMeeting('');
@@ -137,7 +171,7 @@ const UserItem = ({
                             name="meeting"
                             value={meeting.name}
                             className="mr-2 text-blue-600 focus:ring-blue-500"
-                            onChange={e => setSelectMeeting(e.target.id)}
+                            onChange={() => setSelectMeeting(meeting)}
                           />
                           <label htmlFor={meeting.id}>{convertDateMeeting(meeting, index + 1)}</label>
                         </div>

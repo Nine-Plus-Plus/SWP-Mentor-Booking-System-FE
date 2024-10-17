@@ -4,6 +4,7 @@ import {
   BookOutlined,
   ClockCircleOutlined,
   ContactsOutlined,
+  FundProjectionScreenOutlined,
   GroupOutlined,
   HeatMapOutlined,
   HomeOutlined,
@@ -52,14 +53,30 @@ export const menuNavbarItemsStudent = [
     className: 'text-white text-lg'
   },
   {
-    key: 'group',
-    icon: <TeamOutlined />,
-    label: (
-      <NavLink to={path.STUDENT_GROUP} className="text-white">
-        Group
-      </NavLink>
-    ),
-    className: 'text-white text-lg'
+    key: 'myProject',
+    icon: <FundProjectionScreenOutlined />,
+    className: 'text-white text-lg',
+    label: 'My Project',
+    children: [
+      {
+        key: 'group',
+        icon: <TeamOutlined />,
+        label: (
+          <NavLink to={path.STUDENT_GROUP} className="text-white">
+            Group
+          </NavLink>
+        )
+      },
+      {
+        key: 'progress',
+        icon: <AreaChartOutlined />,
+        label: (
+          <NavLink to={path.STUDENT_PROGRESS} className="text-white">
+            Progress
+          </NavLink>
+        )
+      }
+    ]
   },
   {
     key: 'notification',
@@ -85,18 +102,8 @@ export const menuNavbarItemsStudent = [
     key: 'booking',
     icon: <ReconciliationOutlined />,
     label: (
-      <NavLink to={path.STUDENT_BOOKING} className="text-white">
+      <NavLink to={path.USER_BOOKING} className="text-white">
         Booking
-      </NavLink>
-    ),
-    className: 'text-white text-lg'
-  },
-  {
-    key: 'progress',
-    icon: <AreaChartOutlined />,
-    label: (
-      <NavLink to={path.STUDENT_PROGRESS} className="text-white">
-        Progress
       </NavLink>
     ),
     className: 'text-white text-lg'
@@ -184,7 +191,7 @@ export const menuNavbarItemsMentor = [
     key: 'booking',
     icon: <ReconciliationOutlined />,
     label: (
-      <NavLink to={path.STUDENT_BOOKING} className="text-white">
+      <NavLink to={path.USER_BOOKING} className="text-white">
         Booking
       </NavLink>
     ),

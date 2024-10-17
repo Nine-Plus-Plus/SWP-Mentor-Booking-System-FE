@@ -10,7 +10,6 @@ export const getAllSkill = token =>
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response);
       resolve(response);
     } catch (error) {
       reject(error);
@@ -45,7 +44,6 @@ export const deleteSkill = (id, token) =>
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response);
       //
       resolve(response.data);
     } catch (error) {

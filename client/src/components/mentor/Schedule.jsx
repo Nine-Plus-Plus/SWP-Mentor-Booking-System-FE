@@ -6,11 +6,12 @@ import { Modal, Form, Input, DatePicker, Space, Button } from 'antd';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
-import dayjs from 'dayjs'; // Nhớ import dayjs ở đầu file
+import dayjs from 'dayjs';
 import {
   createSchedule,
   deleteScheduleById,
-  getAllScheduleByIdMentor,
+  getAllScheduleByIdMentorForMentor,
+  setExpired,
   updateSchedule
 } from '../../apis/ScheduleServices';
 import { useUserStore } from '../../store/useUserStore';
@@ -36,14 +37,15 @@ const Schedule = () => {
     const token = localStorage.getItem('token');
     const fetchAllScheduleOfMentor = async () => {
       try {
-        const response = await getAllScheduleByIdMentor(userData.id, token);
+        const response = await getAllScheduleByIdMentorForMentor(userData.id, token);
+        console.log(response);
 
         if (response && response?.statusCode === 200) {
-          const formattedEvents = response.mentorScheduleDTOList.map(schedule => ({
+          const formattedEvents = response?.mentorScheduleDTOList?.map(schedule => ({
             id: schedule.id,
-            title: 'Available',
-            start: dayjs(schedule.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
-            end: dayjs(schedule.availableTo, 'DD-MM-YYYY HH:mm').toDate()
+            title: schedule?.status,
+            start: dayjs(schedule?.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
+            end: dayjs(schedule?.availableTo, 'DD-MM-YYYY HH:mm').toDate()
           }));
           setEvents(formattedEvents);
         } else {
@@ -56,6 +58,21 @@ const Schedule = () => {
 
     fetchAllScheduleOfMentor();
   }, [userData]);
+
+  useEffect(() => {
+    const checkExpiredEvents = () => {
+      const now = new Date();
+      events.forEach(event => {
+        if (event.title === 'AVAILABLE' && event.end < now) {
+          handleSetExpired(event.id);
+        }
+      });
+    };
+
+    const interval = setInterval(checkExpiredEvents, 1000); // Kiểm tra mỗi giây
+
+    return () => clearInterval(interval); // Dọn dẹp interval khi component bị hủy
+  }, [events]);
 
   // Hàm xử lý khi chọn khoảng thời gian mới
   const handleSelect = ({ start, end }) => {
@@ -71,7 +88,10 @@ const Schedule = () => {
   // Hàm xử lý khi chọn sự kiện
   const handleSelectEvent = event => {
     console.log(event);
-
+    if (event.title !== 'AVAILABLE') {
+      toast.error('You can not change this event');
+      return;
+    }
     setIsEditing(true);
     setSelectedEvent(event);
     form.setFieldsValue({
@@ -80,6 +100,32 @@ const Schedule = () => {
     });
     setDateRange([dayjs(event.start), dayjs(event.end)]);
     setIsModalVisible(true);
+  };
+
+  const handleSetExpired = async id => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await setExpired(id, token);
+      console.log(response);
+      const expiredData = {
+        id: response?.mentorScheduleDTO?.id,
+        title: response?.mentorScheduleDTO?.status,
+        start: dayjs(response?.mentorScheduleDTO?.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
+        end: dayjs(response?.mentorScheduleDTO?.availableTo, 'DD-MM-YYYY HH:mm').toDate()
+      };
+      if (response && response?.statusCode === 200) {
+        toast.warning('A schedule was expire!', {
+          autoClose: 2000
+        });
+        setEvents(events?.map(event => (event.id === id ? expiredData : event)));
+
+        // Thêm sự kiện mới vào danh sách
+      }
+    } catch (error) {
+      toast.error('Failed to set expired event: ' + response.data.message, {
+        autoClose: 1000
+      });
+    }
   };
 
   const handleSubmit = async () => {
@@ -115,7 +161,7 @@ const Schedule = () => {
         const response = await updateSchedule(selectedEvent.id, data, token);
         const updated = {
           id: response?.mentorScheduleDTO?.id,
-          title: 'Available',
+          title: 'AVAILABLE',
           start: dayjs(response?.mentorScheduleDTO?.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
           end: dayjs(response?.mentorScheduleDTO?.availableTo, 'DD-MM-YYYY HH:mm').toDate()
         };
@@ -170,16 +216,6 @@ const Schedule = () => {
   return (
     <div className="p-5">
       <h1 className="text-2xl font-bold mb-4">Schedule</h1>
-      {/* <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        selectable
-        onSelectSlot={handleSelect} // Xử lý chọn khoảng thời gian
-        onSelectEvent={handleSelectEvent} // Xử lý chọn sự kiện
-      /> */}
       <Calendar
         localizer={localizer}
         events={events}
@@ -191,8 +227,10 @@ const Schedule = () => {
         onSelectEvent={handleSelectEvent}
         eventPropGetter={event => {
           const now = new Date();
-          if (event.end < now) {
+          if (event.title === 'EXPIRED') {
             return { className: 'bg-gray-500 text-white opacity-50' }; // Sự kiện đã qua sẽ có màu xám và mờ
+          } else if (event.title === 'BOOKED') {
+            return { className: 'bg-green-500 text-white' }; // Sự kiện đã qua sẽ có màu xám và mờ
           }
           return {};
         }}

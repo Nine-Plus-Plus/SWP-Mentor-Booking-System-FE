@@ -10,6 +10,7 @@ import { createGroup, updateGroup } from '../../apis/GroupServices';
 import Swal from 'sweetalert2';
 import { dateFnsLocalizer } from 'react-big-calendar';
 import { createProject } from '../../apis/ProjectServices';
+import { capitalizeFirstLetter } from '../../utils/commonFunction';
 
 const StudentGroup = () => {
   // const [haveGroup, setHaveGroup] = useState(true);
@@ -282,22 +283,9 @@ const StudentGroup = () => {
         <div className="flex flex-col gap-5">
           {/* /// Add student to group */}
           <div className="flex gap-5">
-            <div className="flex flex-col gap-3 p-3 bg-white rounded-md w-5/12 ">
-              <h1 className="text-2xl text-red-600 font-semibold">
-                {inGroup ? 'Add more student to group:' : 'You do not in any group:'}
-              </h1>
-              {inGroup ? (
-                <Button
-                  text={'Add Group'}
-                  textColor={'text-white'}
-                  bgColor={'bg-green-500'}
-                  htmlType={'button'}
-                  textSize={'text-xl'}
-                  bgHover={'hover:bg-green-400'}
-                  fullWidth={'w-7/12'}
-                  onClick={() => {}}
-                />
-              ) : (
+            {!inGroup && (
+              <div className="flex flex-col gap-3 p-3 bg-white rounded-md w-5/12 ">
+                <h1 className="text-2xl text-red-600 font-semibold">You do not in any group:</h1>
                 <Button
                   text={'Create Group'}
                   textColor={'text-white'}
@@ -308,8 +296,8 @@ const StudentGroup = () => {
                   fullWidth={'w-7/12'}
                   onClick={showCreateGroupModal}
                 />
-              )}
-            </div>
+              </div>
+            )}
             {inGroup && !inProject && (
               <div className="flex flex-col gap-3 p-3 bg-white rounded-md w-5/12 ">
                 <h1 className="text-2xl text-red-600 font-semibold">Create a Project</h1>
@@ -336,34 +324,49 @@ const StudentGroup = () => {
 
           {/* Project */}
           {inProject && (
-            <div className="flex flex-col gap-3 p-3 bg-white rounded-md">
-              <div className=" border shadow-md rounded-md p-3 w-full">
+            <div className="flex flex-wrap gap p-3 bg-white rounded-md ">
+              <div className=" border shadow-md rounded-md p-3 w-full gap-6">
                 <h1 className="font-bold text-xl text-main-1"> Project name: {inProject?.projectName}</h1>
-                <div className="flex p-2 justify-between">
-                  <div className="flex flex-col gap-2 text-md w-[60vw]">
+                <div className="flex p-2 justify-between gap-2">
+                  <div className="flex flex-col gap-2 text-md w-[65vw] border-r">
                     <p>Topic: {inProject?.topic?.topicName}</p>
-                    <p>Process: {inProject?.percentage}</p>
+                    <p>Process: {inProject?.percentage}%</p>
                     <p>Description: {inProject?.description}</p>
+                    <ul>
+                      Requirement:
+                      {inProject?.topic?.requirement?.map((req, index) => (
+                        <li key={index} className="p-2 my-1 rounded">
+                          {req}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <div className="flex justify-center h-full flex-col gap-3 w-1/5">
-                    <Button
-                      text={'Create task'}
-                      textColor={'text-white'}
-                      bgColor={'bg-main-1'}
-                      bgHover={'hover:bg-main-2'}
-                      htmlType={'button'}
-                      fullWidth={'w-full'}
-                      onClick={() => {}}
-                    />
+                  <div className="flex flex-col gap-2 text-md w-[60vw]">
+                    {/* <p>Actor: {inProject?.topic?.actor?.join(', ')}</p> */}
+                    <div>Context: {inProject?.topic?.context}</div>
+                    <div>
+                      Actor:{' '}
+                      {inProject?.topic?.actor?.map((actor, index) => (
+                        <span key={index} className="inline-block bg-green-200 text-blue-800 px-1 py-1 rounded-sm mr-2">
+                          {actor}
+                        </span>
+                      ))}
+                    </div>
+                    <ul>
+                      Non-Functional Requirement:
+                      {inProject?.topic?.nonFunctionRequirement?.map((req, index) => (
+                        <li key={index} className="p-2 my-1 rounded">
+                          {req}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
             </div>
           )}
-
-          {/* Group */}
           {inGroup && (
-            <div className="flex flex-col gap-3 p-3 bg-white rounded-md ">
+            <div className="flex flex-col gap-3 p-3 bg-white rounded-md w-full">
               <div className=" border shadow-md rounded-md p-3 w-full">
                 <h1 className="font-bold text-xl text-main-1"> Group name: {inGroup?.groupName}</h1>
                 <div className="flex p-2 justify-between">
@@ -372,7 +375,7 @@ const StudentGroup = () => {
                     <p>Total Point: {inGroup?.totalPoint}</p>
                     <p>Total member: {inGroup?.students?.length}</p>
                   </div>
-                  <div className="flex justify-center h-full flex-col gap-3 w-1/5">
+                  <div className="flex justify-center h-full flex-col gap-3 ">
                     <Button
                       text={'Edit Group'}
                       textColor={'text-white'}
@@ -381,6 +384,15 @@ const StudentGroup = () => {
                       htmlType={'button'}
                       fullWidth={'w-full'}
                       onClick={showUpdateGroupModal}
+                    />
+                    <Button
+                      text={'Add Group'}
+                      textColor={'text-white'}
+                      bgColor={'bg-green-500'}
+                      htmlType={'button'}
+                      bgHover={'hover:bg-green-400'}
+                      fullWidth={'w-full'}
+                      onClick={() => {}}
                     />
                   </div>
                 </div>

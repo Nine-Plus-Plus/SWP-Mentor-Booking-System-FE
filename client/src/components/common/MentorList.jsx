@@ -15,8 +15,6 @@ const MentorList = () => {
     date: ''
   });
 
-  console.log(searchPayload);
-
   useEffect(() => {
     const fetchMentorByCondition = async () => {
       const token = localStorage.getItem('token');
@@ -25,10 +23,8 @@ const MentorList = () => {
         const name = searchPayload?.name || '';
         const availableFrom = searchPayload?.date[0]?.format('DD-MM-YYYY HH:mm') || undefined;
         const availableTo = searchPayload?.date[1]?.format('DD-MM-YYYY HH:mm') || undefined;
-        console.log(name, skills, availableFrom, availableTo);
 
         const response = await getAllMentorByNameSkillDate(name, skills, availableFrom, availableTo, token);
-        console.log(response);
         if (response && response.statusCode === 200) setMentors(response.mentorsDTOList);
         else setMentors([]);
       } catch (error) {
@@ -46,10 +42,7 @@ const MentorList = () => {
         const name = searchPayload?.name || '';
         const availableFrom = searchPayload?.date[0]?.format('DD-MM-YYYY HH:mm') || undefined;
         const availableTo = searchPayload?.date[1]?.format('DD-MM-YYYY HH:mm') || undefined;
-        console.log(name, skills, availableFrom, availableTo);
-
         const response = await getAllMentorByNameSkillDate(name, skills, availableFrom, availableTo, token);
-        console.log(response);
         if (response && response.statusCode === 200) setMentors(response.mentorsDTOList);
         else setMentors([]);
       } catch (error) {

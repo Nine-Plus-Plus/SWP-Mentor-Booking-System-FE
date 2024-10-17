@@ -299,7 +299,6 @@
 // };
 // export default Progress;
 
-
 import React, { useState } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { Modal, Button, Input, Form, List, Select } from 'antd';
@@ -316,7 +315,7 @@ const ProgressChart = ({ percentage }) => {
           textSize: '16px',
           pathColor: `rgba(62, 152, 199, ${percentage / 100})`,
           textColor: '#3e98c7',
-          trailColor: '#d6d6d6',
+          trailColor: '#d6d6d6'
         })}
       />
       <p className="flex justify-center mt-4 text-lg">{percentage}% Completed</p>
@@ -342,12 +341,12 @@ export const Progress = () => {
       setNewTask({ taskName: '', description: '', status: 'Not Start' });
       setOpenAddTaskModal(false);
       toast.success('Task added successfully!', {
-        autoClose: 500,
+        autoClose: 500
       });
     }
   };
 
-  const handleDeleteTask = (taskId) => {
+  const handleDeleteTask = taskId => {
     Swal.fire({
       title: 'Are you sure?',
       text: 'You won’t be able to revert this!',
@@ -355,10 +354,10 @@ export const Progress = () => {
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
+      confirmButtonText: 'Yes, delete it!'
+    }).then(result => {
       if (result.isConfirmed) {
-        setTasks(tasks.filter((task) => task.id !== taskId));
+        setTasks(tasks.filter(task => task.id !== taskId));
         Swal.fire('Deleted!', 'Your task has been deleted.', 'success');
         setSelectedTask(null);
         setOpenAddTaskModal(false);
@@ -367,11 +366,11 @@ export const Progress = () => {
   };
 
   const calculateCompletionPercentage = () => {
-    const completedTasks = tasks.filter((task) => task.status === 'Done').length;
+    const completedTasks = tasks.filter(task => task.status === 'Done').length;
     return tasks.length > 0 ? ((completedTasks / tasks.length) * 100).toFixed(2) : 0.0;
   };
 
-  const handleTaskClick = (task) => {
+  const handleTaskClick = task => {
     setSelectedTask(task);
     setSelectedStatus(task.status);
     setOpenAddTaskModal(true);
@@ -379,15 +378,11 @@ export const Progress = () => {
 
   const handleUpdateTask = () => {
     if (selectedTask) {
-      setTasks(
-        tasks.map((task) =>
-          task.id === selectedTask.id ? { ...selectedTask, status: selectedStatus } : task
-        )
-      );
+      setTasks(tasks.map(task => (task.id === selectedTask.id ? { ...selectedTask, status: selectedStatus } : task)));
       setSelectedTask(null);
       setOpenAddTaskModal(false);
       toast.success('Task updated successfully!', {
-        autoClose: 500,
+        autoClose: 500
       });
     }
   };
@@ -407,7 +402,7 @@ export const Progress = () => {
       {/* Team Progress Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-8 rounded-lg shadow-lg">
         {/* Total Projects */}
-        <div className="border border-2 border-sky-500 p-4 rounded-2xl shadow-lg bg-white">
+        <div className="border-2 border-sky-500 p-4 rounded-2xl shadow-lg bg-white">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold">Total Task</h3>
             <p className="text-right text-blue-500 font-medium">Excellent Work</p>
@@ -416,24 +411,24 @@ export const Progress = () => {
         </div>
 
         {/* Task Done */}
-        <div className="border border-2 border-emerald-500 p-4 rounded-2xl shadow-lg bg-white">
+        <div className="border-2 border-emerald-500 p-4 rounded-2xl shadow-lg bg-white">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold">Task Done</h3>
             <p className="text-right text-green-500 font-medium">High Priority</p>
           </div>
           <p className="text-2xl font-semibold">
-            {tasks.filter((task) => task.status === 'Done').length}/{tasks.length} Completed
+            {tasks.filter(task => task.status === 'Done').length}/{tasks.length} Completed
           </p>
         </div>
 
         {/* Task in Progress */}
-        <div className="border border-2 border-yellow-500 p-4 rounded-2xl shadow-lg bg-white">
+        <div className="border-2 border-yellow-500 p-4 rounded-2xl shadow-lg bg-white">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold">Task in Progress</h3>
             <p className="text-right text-yellow-500 font-medium">In Progress</p>
           </div>
           <p className="text-2xl font-semibold">
-            {tasks.filter((task) => task.status === 'In Progress').length}/{tasks.length} Running
+            {tasks.filter(task => task.status === 'In Progress').length}/{tasks.length} Running
           </p>
         </div>
       </div>
@@ -443,7 +438,7 @@ export const Progress = () => {
         <div className="bg-white p-8 rounded-lg shadow-lg w-2/3">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Project's Task</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {tasks.slice(0, showAllTasks ? tasks.length : 3).map((task) => (
+            {tasks.slice(0, showAllTasks ? tasks.length : 3).map(task => (
               <div
                 key={task.id}
                 className="border p-6 rounded-lg shadow-lg bg-white"
@@ -453,13 +448,25 @@ export const Progress = () => {
                 <p className="text-sm text-gray-400 mb-4">Created: {new Date().toLocaleDateString()}</p>
                 <p className="mb-4 text-ellipsis overflow-hidden whitespace-nowrap">{task.description}</p>
                 <div className="flex space-x-4 mt-4">
-                  <div className={`flex flex-col items-center w-full ${task.status === 'Not Start' ? 'bg-gray-400 text-white rounded-lg' : ''}`}>
+                  <div
+                    className={`flex flex-col items-center w-full ${
+                      task.status === 'Not Start' ? 'bg-gray-400 text-white rounded-lg' : ''
+                    }`}
+                  >
                     Not Start
                   </div>
-                  <div className={`flex flex-col items-center w-full ${task.status === 'In Progress' ? 'bg-yellow-500 text-white rounded-lg' : ''}`}>
+                  <div
+                    className={`flex flex-col items-center w-full ${
+                      task.status === 'In Progress' ? 'bg-yellow-500 text-white rounded-lg' : ''
+                    }`}
+                  >
                     In Progress
                   </div>
-                  <div className={`flex flex-col items-center w-full ${task.status === 'Done' ? 'bg-green-500 text-white rounded-lg' : ''}`}>
+                  <div
+                    className={`flex flex-col items-center w-full ${
+                      task.status === 'Done' ? 'bg-green-500 text-white rounded-lg' : ''
+                    }`}
+                  >
                     Done
                   </div>
                 </div>
@@ -467,8 +474,8 @@ export const Progress = () => {
             ))}
 
             {/* Add Task Button */}
-            <div className="border p-6 rounded-lg shadow-lg flex items-center justify-center bg-white">
-              <button className="text-blue-500 font-semibold" onClick={showAddTaskModal}>
+            <div className="border p-6 rounded-lg shadow-lg flex items-center justify-center bg-white w-full h-full">
+              <button className="text-blue-500 font-semibold w-full h-full" onClick={showAddTaskModal}>
                 + Add Task
               </button>
             </div>
@@ -507,14 +514,14 @@ export const Progress = () => {
               ),
               <Button key="submit" type="primary" onClick={selectedTask ? handleUpdateTask : handleAddTask}>
                 {selectedTask ? 'Save Changes' : 'Add Task'}
-              </Button>,
+              </Button>
             ]}
           >
             <Form layout="vertical">
               <Form.Item label="Task Name">
                 <Input
                   value={selectedTask ? selectedTask.taskName : newTask.taskName}
-                  onChange={(e) => {
+                  onChange={e => {
                     if (selectedTask) {
                       setSelectedTask({ ...selectedTask, taskName: e.target.value });
                     } else {
@@ -526,7 +533,7 @@ export const Progress = () => {
               <Form.Item label="Description">
                 <Input.TextArea
                   value={selectedTask ? selectedTask.description : newTask.description}
-                  onChange={(e) => {
+                  onChange={e => {
                     if (selectedTask) {
                       setSelectedTask({ ...selectedTask, description: e.target.value });
                     } else {
@@ -538,7 +545,7 @@ export const Progress = () => {
               <Form.Item label="Status">
                 <Select
                   value={selectedTask ? selectedStatus : newTask.status}
-                  onChange={(value) => {
+                  onChange={value => {
                     if (selectedTask) {
                       setSelectedStatus(value);
                     } else {
@@ -557,9 +564,8 @@ export const Progress = () => {
 
         {/* Progress Chart Section */}
         <div className="w-1/3">
-          
           {/* Overall Progress (Progress Bar) */}
-          <div className='bg-white p-8 rounded-lg shadow-lg'>
+          <div className="bg-white p-8 rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Overall Progress</h2>
             <div className="flex justify-center items-center  p-8">
               <ProgressChart percentage={calculateCompletionPercentage()} />
