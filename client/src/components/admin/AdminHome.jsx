@@ -7,7 +7,7 @@ export const AdminHome = () => {
   const [bookingStatus, setBookingStatus] = useState({
     accepted: 0,
     rejected: 0,
-    canceled: 0
+    Pending: 0
   });
 
   const [totalMentors, setTotalMentors] = useState(0);
@@ -21,7 +21,7 @@ export const AdminHome = () => {
       const mockBookingStatus = {
         accepted: 65,
         rejected: 25,
-        canceled: 10
+        Pending: 10
       };
 
       const mockTotals = {
@@ -44,6 +44,7 @@ export const AdminHome = () => {
     fetchMockData();
   }, []);
 
+  // Set giá trị star đến số gần nhất
   const roundStarRating = rating => {
     if (rating < 0.25) return 0;
     if (rating < 0.75) return 0.5;
@@ -127,10 +128,10 @@ export const AdminHome = () => {
   };
 
   const pieData = {
-    labels: ['Accepted', 'Rejected', 'Canceled'],
+    labels: ['Accepted', 'Rejected', 'Pending'],
     datasets: [
       {
-        data: [bookingStatus.accepted, bookingStatus.rejected, bookingStatus.canceled],
+        data: [bookingStatus.accepted, bookingStatus.rejected, bookingStatus.Pending],
         backgroundColor: ['#10B981', '#EF4444', '#F59E0B'],
         hoverBackgroundColor: ['#059669', '#DC2626', '#D97706']
       }
@@ -139,7 +140,7 @@ export const AdminHome = () => {
 
   return (
     <div className="w-full mx-auto items-center">
-      {/* <h1 className="text-3xl font-bold text-center mb-5 text-gray-800">Admin Dashboard</h1> */}
+      <h1 className="text-3xl font-bold text-center mb-5 text-gray-800">Admin Dashboard</h1>
       <div className="flex gap-3 h-3/5">
         <div className=" bg-white p-6 rounded-lg shadow-2xl col-span-2 w-2/3">
           <h2 className="text-2xl font-semibold mb-4 text-center text-gray-700">Mentor Ratings</h2>
@@ -156,7 +157,7 @@ export const AdminHome = () => {
           <ul className="mt-4 text-center">
             <li className="text-green-600 font-medium">Accepted: {bookingStatus.accepted}%</li>
             <li className="text-red-600 font-medium">Rejected: {bookingStatus.rejected}%</li>
-            <li className="text-yellow-600 font-medium">Canceled: {bookingStatus.canceled}%</li>
+            <li className="text-yellow-600 font-medium">Pending: {bookingStatus.Pending}%</li>
           </ul>
         </div>
       </div>
@@ -174,7 +175,8 @@ export const AdminHome = () => {
           <p className="text-2xl font-bold">{totalBookings}</p>
         </div>
         <div className="bg-white p-8 rounded-lg border-2 border-yellow-500 shadow-2xl flex flex-col items-center">
-          <h3 className="text-xl font-semibold">Total Groups</h3>
+          {/* chỉnh thành class */}
+          <h3 className="text-xl font-semibold">Total Groups</h3>           
           <p className="text-2xl font-bold">{totalGroups}</p>
         </div>
       </div>
