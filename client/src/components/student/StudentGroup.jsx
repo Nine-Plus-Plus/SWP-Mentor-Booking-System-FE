@@ -127,7 +127,7 @@ const StudentGroup = () => {
       const dataUpdate = { groupName: values.groupName };
       const response = await updateGroup(id, dataUpdate, token);
 
-      if (response && response?.statusCode) {
+      if (response && response?.statusCode === 200) {
         setInGroup(response?.groupDTO);
         setIsUpdateGroupModalVisible(false);
         Swal.fire({
