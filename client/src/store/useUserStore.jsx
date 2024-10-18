@@ -9,14 +9,13 @@ export const useUserStore = create(set => ({
   mentorOfClass: null,
   fullData: null,
 
-  setModal: (token, role, current, isLoggedIn) => {
+  setModal: (token, role, isLoggedIn) => {
     localStorage.setItem('token', token);
     localStorage.setItem('role', role);
     localStorage.setItem('isLoggedIn', isLoggedIn ? 'true' : 'false');
     set(() => ({
       token,
       role,
-      current,
       isLoggedIn
     }));
   },
@@ -51,7 +50,10 @@ export const useUserStore = create(set => ({
       token: null,
       role: null,
       isLoggedIn: false,
-      userData: null
+      fullData: null,
+      mentorOfClass: null,
+      userData: null,
+      current: null
     }));
   }
 }));

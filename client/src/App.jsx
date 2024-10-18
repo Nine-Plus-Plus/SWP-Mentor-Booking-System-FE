@@ -37,7 +37,7 @@ import { Meeting } from './components/common/Meeting';
 function App() {
   const { token, role, resetUserStore } = useUserStore();
   useEffect(() => {
-    if (!localStorage.getItem('token')) resetUserStore();
+    if (!localStorage.getItem('token') || localStorage.getItem('token') === 'null') resetUserStore();
   }, []);
 
   return (
