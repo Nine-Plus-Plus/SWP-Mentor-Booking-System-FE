@@ -1,7 +1,10 @@
-# Topic-13-FE
+# React + Vite
 
-SWP Mentor Booking System - Front-end
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-// npm install -g @mobiscroll/cli 
+Currently, two official plugins are available:
 
-mobiscroll config react
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+còn bug xoá token ở localStorege nhưng vẫn còn lưu đăng nhập

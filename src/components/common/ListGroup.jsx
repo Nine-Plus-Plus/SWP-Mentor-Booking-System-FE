@@ -33,13 +33,15 @@ const ListGroup = () => {
         ) : (
           groups?.map(group => (
             <GroupItem
+              // joined={joined}
+              // setJoined={setJoined}
               key={group?.id}
               idGroup={group?.id}
               groupName={group?.groupName}
               idTopic={group?.project?.topic?.topicName}
               totalPoint={group?.totalPoint}
               process={group?.project?.percentage}
-              totalMember={group?.students?.length}
+              totalMember={group?.students}
               projectName={group?.project?.projectName}
               leader={group?.students?.find(student => student?.groupRole === 'LEADER')?.user?.fullName}
             />

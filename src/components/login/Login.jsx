@@ -28,25 +28,19 @@ const Login = () => {
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
-  // Capture the token from the URL
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token');
     const role = queryParams.get('role');
 
     if (token !== null && token !== 'null') {
-      // Lưu trữ token và chuyển hướng dựa trên vai trò
       setModal(token, role, true);
       navigate(roleForComponent[role]);
       toast.success('Login SuccessFull');
     } else if (token === 'null') {
       resetUserStore();
-      toast.error('Login Fail');
-      // Chỉ thông báo lỗi nếu không có token và không ở trang login
-      if (location.pathname === 'public/login') {
-        navigate('public/login'); // Điều hướng về login chỉ khi cần thiết
-      }
-      // Xóa modal nếu không có token
+      toast.error('Login Fail, You email not found');
+      window.history.replaceState({}, document.title, location.pathname);
     }
   }, [location.search]); // Theo dõi chỉ location.search
 

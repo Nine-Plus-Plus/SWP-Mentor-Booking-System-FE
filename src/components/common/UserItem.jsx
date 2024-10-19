@@ -4,10 +4,8 @@ import clsx from 'clsx';
 import icons from '../../utils/icon';
 import { useNavigate } from 'react-router-dom';
 import path from '../../utils/path';
-import { SoundTwoTone } from '@ant-design/icons';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/useUserStore';
-import { faTurkishLiraSign } from '@fortawesome/free-solid-svg-icons';
 import { calculatePointDeduction, convertDateMeeting } from '../../utils/commonFunction';
 import { createBooking } from '../../apis/BookingServices';
 import { toast } from 'react-toastify';
@@ -27,14 +25,14 @@ const UserItem = ({
   countMember,
   isAdded,
   idUser,
-  schedule
+  schedule,
+  groupRole,
+  mentorAdd
 }) => {
   const { FaStar, FaStarHalf } = icons;
-  const navigate = useNavigate();
   const [added, setAdded] = useState(false);
   const [selectMeeting, setSelectMeeting] = useState('');
-  const { role, fullData } = useUserStore();
-  const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const { role, fullData, userData } = useUserStore();
 
   const handleStar = star => {
     let stars = [];
@@ -75,6 +73,18 @@ const UserItem = ({
   };
 
   const handleBookingClick = () => {
+    if (userData?.groupRole !== 'LEADER') {
+      Swal.fire({
+        title: 'Error!', // Tiêu đề thông báo
+        text: 'You must be the group leader to schedule.', // Nội dung thông báo
+        icon: 'error', // Biểu tượng lỗi
+        confirmButtonText: 'OK', // Văn bản nút xác nhận
+        confirmButtonColor: '#d33', // Màu nút xác nhận
+        timer: 2000, // Thời gian tự động đóng sau 5 giây
+        timerProgressBar: true // Hiển thị progress bar
+      });
+      return;
+    }
     if (selectMeeting) {
       Swal.fire({
         title: 'Are you sure?',
@@ -119,7 +129,11 @@ const UserItem = ({
   return (
     <div className="border shadow-md rounded-md h-[180px]">
       <div className="h-[179px] flex w-full gap-4">
-        <img src="/public/avatar1.jpg" alt="avatar" className="object-cover w-[160px] h-full rounded-md" />
+        <img
+          src={avatar ? avatar : '/public/avatar1.jpg'}
+          alt="avatar"
+          className="object-cover w-[160px] h-full rounded-md"
+        />
         <div className="flex items-center justify-between w-full p-3">
           <div className="flex flex-col h-full gap-3">
             <div className="flex items-center gap-1">
@@ -127,7 +141,8 @@ const UserItem = ({
                 className={clsx(
                   'font-bold text-xl',
                   roleItem === 'Mentor' && 'text-red-500',
-                  sameClass && 'bg-yellow-400 p-1 rounded-md'
+                  sameClass && 'bg-yellow-400 p-1 rounded-md',
+                  groupRole === 'LEADER' && 'text-red-500'
                 )}
               >
                 {roleItem}
@@ -143,9 +158,11 @@ const UserItem = ({
               <p>
                 {roleItem === 'Mentor' ? 'Mentor' : 'Student'} name: {name}
               </p>
-              <p>
-                {roleItem === 'Mentor' ? 'Mentor' : 'Student'} code: {code}
-              </p>
+              {code && (
+                <p>
+                  {roleItem === 'Mentor' ? 'Mentor' : 'Student'} code: {code}
+                </p>
+              )}
               <p>
                 {roleItem === 'Mentor' ? 'Skill' : 'Specialized'}: {specialized}
               </p>
@@ -201,7 +218,6 @@ const UserItem = ({
                   textColor={'text-white'}
                   textSize={'text-sm'}
                   bgHover={'hover:bg-orange-400 hover:text-gray-100'}
-                  // fix
                   to={`${path.USER_PROFILE}/${roleItem}/${idUser}`}
                 />
               )}

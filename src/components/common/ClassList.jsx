@@ -23,8 +23,6 @@ const ClassList = ({ addGroup }) => {
   console.log(mentorOfClass);
 
   useEffect(() => {
-    console.log(userData);
-
     const fetchStudentByIdAndSearch = async () => {
       const token = localStorage.getItem('token');
 
@@ -43,7 +41,6 @@ const ClassList = ({ addGroup }) => {
     };
     fetchStudentByIdAndSearch();
   }, [userData, searchPayload]);
-  console.log(students);
 
   useEffect(() => {
     if (countMember >= 4) {
@@ -78,7 +75,6 @@ const ClassList = ({ addGroup }) => {
               roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
               specialized={student?.expertise}
               name={student?.user?.fullName}
-              studentCode={student?.studentCode}
               gender={student?.user?.gender}
               isAdded={false}
               idUser={student?.user?.id}

@@ -11,11 +11,13 @@ import Swal from 'sweetalert2';
 import { dateFnsLocalizer } from 'react-big-calendar';
 import { createProject } from '../../apis/ProjectServices';
 import { capitalizeFirstLetter } from '../../utils/commonFunction';
+import UserItem from '../common/UserItem';
 
 const StudentGroup = () => {
   // const [haveGroup, setHaveGroup] = useState(true);
   const [isCreateGroupModalVisible, setIsCreateGroupModalVisible] = useState(false);
   const [isCreateProjectModalVisible, setIsCreateProjectModalVisible] = useState(false);
+  const [addModal, setAddModal] = useState(false);
   const [isUpdateGroupModalVisible, setIsUpdateGroupModalVisible] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(null);
 
@@ -120,6 +122,10 @@ const StudentGroup = () => {
     setIsUpdateGroupModalVisible(true);
   };
 
+  const showADdMemberModal = () => {
+    setAddModal(true);
+  };
+
   const handleUpdateGroup = async id => {
     const token = localStorage.getItem('token');
     try {
@@ -158,6 +164,7 @@ const StudentGroup = () => {
     setIsCreateGroupModalVisible(false);
     setIsCreateProjectModalVisible(false);
     setIsUpdateGroupModalVisible(false);
+    setAddModal(false);
   };
 
   const columns = [
@@ -386,17 +393,31 @@ const StudentGroup = () => {
                       onClick={showUpdateGroupModal}
                     />
                     <Button
-                      text={'Add Group'}
+                      text={'Add Member'}
                       textColor={'text-white'}
                       bgColor={'bg-green-500'}
                       htmlType={'button'}
                       bgHover={'hover:bg-green-400'}
                       fullWidth={'w-full'}
-                      onClick={() => {}}
+                      onClick={showADdMemberModal}
                     />
                   </div>
                 </div>
               </div>
+              {inGroup?.students?.map(member => (
+                <UserItem
+                  key={member.id}
+                  roleItem={capitalizeFirstLetter(member?.user?.role?.roleName)}
+                  specialized={member?.expertise}
+                  name={member?.user?.fullName}
+                  gender={member?.user?.gender}
+                  isAdded={false}
+                  idUser={member?.user?.id}
+                  code={member?.studentCode}
+                  groupRole={member?.groupRole}
+                  avatar={member?.user?.avatar}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -512,6 +533,58 @@ const StudentGroup = () => {
               <Input />
             </Form.Item>
           </Form>
+        </div>
+      </Modal>
+
+      {/* Modal Add Member */}
+      <Modal
+        title="Add Member To Group"
+        open={addModal}
+        onCancel={handleCancel}
+        onOk={() => {
+          form.submit();
+        }}
+        width={1500}
+        style={{ top: 40 }}
+      >
+        <div className="max-h-[80vh] overflow-y-auto w-full flex flex-col gap-3">
+          {inGroup?.students?.map(student => (
+            <UserItem
+              key={student.id}
+              roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
+              specialized={student?.expertise}
+              name={student?.user?.fullName}
+              gender={student?.user?.gender}
+              isAdded={false}
+              idUser={student?.user?.id}
+              code={student?.studentCode}
+            />
+          ))}
+          {inGroup?.students?.map(student => (
+            <UserItem
+              key={student.id}
+              roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
+              specialized={student?.expertise}
+              name={student?.user?.fullName}
+              gender={student?.user?.gender}
+              isAdded={false}
+              idUser={student?.user?.id}
+              code={student?.studentCode}
+            />
+          ))}
+          {inGroup?.students?.map(student => (
+            <UserItem
+              key={student.id}
+              addGroup={true}
+              roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
+              specialized={student?.expertise}
+              name={student?.user?.fullName}
+              gender={student?.user?.gender}
+              isAdded={false}
+              idUser={student?.user?.id}
+              code={student?.studentCode}
+            />
+          ))}
         </div>
       </Modal>
     </div>

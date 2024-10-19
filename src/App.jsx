@@ -72,6 +72,7 @@ function App() {
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
           <Route path={path.USER_BOOKING} element={<BookingList />} />
           <Route path={path.STUDENT_GROUP} element={<StudentGroup />} />
+          <Route path={`${path.STUDENT_GROUP}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_LIST_NOTIFICATION} element={<ListNotification />} />
           {/* <Route path={`${path.STUDENT_GROUP}/${path.LIST_GROUP}`} element={<ListGroup />} /> */}
           <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
@@ -94,6 +95,7 @@ function App() {
           <Route index element={<UserHome />} />
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
           <Route path={path.LIST_GROUP} element={<ListGroup />} />
+          <Route path={`${path.LIST_GROUP}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.MENTOR_SCHEDULE} element={<Schedule />} />
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />

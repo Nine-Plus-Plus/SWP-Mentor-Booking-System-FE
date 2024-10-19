@@ -1,35 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { getStudents, getStudentById, updateStudent, deleteStudent, createStudent } from '../../apis/StudentServices';
-import { Table, Button, message, Form, Modal, Input, Radio, Select, DatePicker } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
+import { Button, DatePicker, Form, Input, InputNumber, message, Modal, Radio, Select, Table, Tag } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { createMentor, deleteMentor, getAllMentors, updateMentor } from '../../apis/MentorServices';
 import { getAllSemester } from '../../apis/SemesterServices';
-import { getClassBySemesterId } from '../../apis/ClassServices';
+import { getAllSkill } from '../../apis/SkillServices';
+import dayjs from 'dayjs';
+import { colors } from '../../utils/constant';
 import Dragger from 'antd/es/upload/Dragger';
+import { InboxOutlined } from '@ant-design/icons';
 
-function StudentManager() {
-  const [students, setStudents] = useState([]);
+const MentorManager = () => {
+  const [mentors, setMentors] = useState([]);
+  const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [semesters, setSemesters] = useState([]);
-  const [selectedSemester, setSelectedSemester] = useState(null);
-  const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedMentor, setSelectedMentor] = useState(null);
   const [form] = Form.useForm();
+  const { Option } = Select;
   const [uploadedAvatar, setUploadedAvatar] = useState(null); // Lưu URL ảnh sau khi upload
   const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchMentors = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getStudents(token);
+        const response = await getAllMentors(token);
         console.log(response);
 
-        setStudents(response.studentsDTOList);
+        setMentors(response.mentorsDTOList);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -37,164 +36,134 @@ function StudentManager() {
       }
     };
 
-    fetchStudents();
+    fetchMentors();
   }, []);
 
   useEffect(() => {
-    const fetchSemesters = async () => {
+    const fetchSkill = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getAllSemester(token);
-        setSemesters(response.data?.semesterDTOList);
+        const response = await getAllSkill(token);
+        setSkills(response.data.skillsDTOList);
       } catch (err) {
-        setError(err?.message || 'Đã xảy ra lỗi');
+        setError(err.message || 'Đã xảy ra lỗi');
       } finally {
         setLoading(false);
       }
     };
-    fetchSemesters();
+    fetchSkill();
   }, []);
 
-  useEffect(() => {
-    const fetchClassBySemesterId = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await getClassBySemesterId(selectedSemester, token);
-        setClasses(response?.classDTOList);
-        // Đặt giá trị mặc định là tùy chọn cuối cùng
-      } catch (err) {
-        setError(err?.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
-      }
-    };
-    setLoading(false);
-    fetchClassBySemesterId();
-  }, [selectedSemester]);
-
-  // Delete student
-  const handleDelete = async studentId => {
-    const token = localStorage.getItem('token');
-    try {
-      const response = await deleteStudent(studentId, token);
-
-      if (response && response.statusCode === 200) {
-        message.success('Student deleted successfully');
-        setStudents(prevStudents => prevStudents.filter(student => student.user.id !== studentId)); // Cập nhật danh sách người dùng
-      } else {
-        message.error('Failed to delete student: ' + response.data.message);
-      }
-    } catch (error) {
-      console.error('Delete student error:', error);
-      message.error('Failed to delete student: ' + error.message);
-    }
+  // Create Mentor
+  const showCreateModal = () => {
+    setSelectedMentor(null);
+    form.resetFields();
+    setIsCreateModalVisible(true);
   };
 
-  // Update student
-  const showUpdateModal = student => {
-    setSelectedStudent(student);
-    const avatarFile = {
-      uid: '-1', // Đặt một uid duy nhất cho file
-      name: 'avatar.png', // Tên file (có thể thay đổi nếu cần)
-      status: 'done', // Trạng thái của file
-      url: student.user.avatar || null // Liên kết avatar
-    };
-    form.setFieldsValue({
-      fullName: student.user.fullName,
-      username: student.user.username,
-      email: student.user.email,
-      expertise: student.expertise,
-      semesterId: student.aclass.semester.id,
-      classId: student.aclass.id,
-      birthDate: dayjs(student.user.birthDate),
-      address: student.user.address,
-      phone: student.user.phone,
-      gender: student.user.gender,
-      avatar: avatarFile
-    });
-    student.user.avatar && setFileList([avatarFile]);
+  const handleCreateMentor = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const values = await form.validateFields();
+      const { avatar, ...mentorValue } = values;
 
-    setSelectedSemester(form.getFieldValue().semesterId);
-    setIsUpdateModalVisible(true);
+      const { skills, ...otherFields } = mentorValue;
+      const skillsArray = skills.map(skillId => ({ id: skillId }));
+      const createData = {
+        mentor: {
+          ...otherFields,
+          birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
+          skills: skillsArray
+        },
+        avatarFile: uploadedAvatar
+      };
+      const response = await createMentor(createData, token);
+      console.log(response);
+
+      if (response && response.statusCode === 200) {
+        setMentors(prevMentors => [
+          ...prevMentors,
+          {
+            ...response.mentorsDTO,
+            skills: response.mentorsDTO?.skills.map(skill => {
+              const skillDetail = skills.find(s => s.id === skill.id);
+              return skillDetail ? { id: skillDetail.id, skillName: skillDetail.skillName } : skill;
+            })
+          }
+        ]);
+        setIsCreateModalVisible(false);
+        message.success('Mentor created successfully');
+        setFileList([]);
+      } else {
+        message.error('Failed to create mentor');
+      }
+    } catch (error) {
+      console.error('Create mentor error:', error);
+      message.error('Failed to create mentor: ' + error.message);
+    }
   };
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
     try {
-      const values = await form.validateFields();
-      const { avatar, ...studentValues } = values;
+      const values = await form.validateFields([
+        'fullName',
+        'username',
+        'email',
+        'mentorCode',
+        'star',
+        'totalTimeRemain',
+        'birthDate',
+        'address',
+        'phone',
+        'gender',
+        'skills'
+      ]);
+      const { avatar, ...mentorValue } = values;
+
+      const { skills, ...otherFields } = mentorValue;
+      const skillsArray = skills?.map(skillId => ({ id: skillId }));
       const updateData = {
-        student: {
-          ...studentValues,
-          birthDate: dayjs(studentValues.birthDate).format('YYYY-MM-DD'),
-          aclass: {
-            id: studentValues.classId
-          }
+        mentor: {
+          ...otherFields,
+          birthDate: dayjs(values.birthDate).format('YYYY-MM-DD'),
+          skills: skillsArray
         },
-        avatarFile: uploadedAvatar // Đây là file avatar
+        avatarFile: uploadedAvatar
       };
       console.log(updateData);
 
-      const response = await updateStudent(selectedStudent.user.id, updateData, token);
-      console.log(response);
+      const response = await updateMentor(selectedMentor.user.id, updateData, token);
 
       if (response && response?.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
-        setStudents(students.map(student => (student.id === response.studentsDTO.id ? response.studentsDTO : student)));
+        setMentors(mentors?.map(mentor => (mentor.id === response.mentorsDTO.id ? response.mentorsDTO : mentor)));
         setIsUpdateModalVisible(false);
         setFileList([]);
-        message.success('Student updated successfully');
+        message.success('Mentor updated successfully');
       } else {
-        message.error('Failed to update student');
+        message.error('Failed to update mentor');
       }
     } catch (error) {
-      console.error('Update student error:', error);
-      message.error('Failed to update student: ' + error.message);
+      console.error('Update mentor error:', error);
+      message.error('Failed to update mentor: ' + error.message);
     }
   };
 
-  const handleCancelUpdate = () => {
-    form.resetFields();
-    setIsUpdateModalVisible(false);
-    setFileList([]);
-  };
-
-  // Create Student
-  const showCreateModal = () => {
-    setSelectedStudent(null); // Không chọn user nào vì đang tạo mới
-    form.resetFields(); // Xóa các giá trị trong form
-    setIsCreateModalVisible(true); // Hiển thị modal tạo người dùng
-  };
-
-  const handleCreateStudent = async () => {
+  const handleDelete = async mentorId => {
     const token = localStorage.getItem('token');
     try {
-      const values = await form.validateFields();
-      const { avatar, ...studentValues } = values;
-      const createData = {
-        student: {
-          ...studentValues,
-          birthDate: dayjs(studentValues.birthDate).format('YYYY-MM-DD'),
-          aclass: {
-            id: studentValues.classId
-          }
-        },
-        avatarFile: uploadedAvatar // Đây là file avatar
-      };
-
-      const response = await createStudent(createData, token);
-      console.log(response);
+      const response = await deleteMentor(mentorId, token);
 
       if (response && response.statusCode === 200) {
-        setStudents([...students, response.studentsDTO]);
-        setIsCreateModalVisible(false);
-        message.success('Student created successfully');
-        setUploadedAvatar(null);
+        message.success('Mentor deleted successfully');
+        setMentors(prevMentors => prevMentors.filter(mentor => mentor.user.id !== mentorId)); // Cập nhật danh sách người dùng
       } else {
-        message.error('Failed to create student');
+        message.error('Failed to delete mentor: ' + response.data.message);
       }
     } catch (error) {
-      message.error('Failed to create student: ' + error.message);
+      console.error('Delete mentor error:', error);
+      message.error('Failed to delete mentor: ' + error.message);
     }
   };
 
@@ -204,13 +173,37 @@ function StudentManager() {
     setFileList([]);
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
+  const handleCancelUpdate = () => {
+    form.resetFields();
+    setIsUpdateModalVisible(false);
+    setFileList([]);
+  };
 
-  if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
-  }
+  const showUpdateModal = mentor => {
+    setSelectedMentor(mentor);
+    const avatarFile = {
+      uid: '-1', // Đặt một uid duy nhất cho file
+      name: 'avatar.png', // Tên file (có thể thay đổi nếu cần)
+      status: 'done', // Trạng thái của file
+      url: mentor.user.avatar || null // Liên kết avatar
+    };
+    form.setFieldsValue({
+      fullName: mentor.user.fullName,
+      username: mentor.user.username,
+      email: mentor.user.email,
+      skills: mentor.skills.map(skill => skill.id),
+      mentorCode: mentor.mentorCode,
+      totalTimeRemain: mentor.totalTimeRemain,
+      star: mentor.star,
+      birthDate: dayjs(mentor.user.birthDate),
+      address: mentor.user.address,
+      phone: mentor.user.phone,
+      gender: mentor.user.gender,
+      avatar: avatarFile
+    });
+    mentor.user.avatar && setFileList([avatarFile]);
+    setIsUpdateModalVisible(true);
+  };
 
   const columns = [
     {
@@ -242,29 +235,38 @@ function StudentManager() {
       key: 'email'
     },
     {
-      title: 'Birth Date',
-      dataIndex: ['user', 'birthDate'],
-      key: 'birthDate'
+      title: 'Mentor Code',
+      dataIndex: 'mentorCode',
+      key: 'mentorCode'
     },
     {
-      title: 'Semester',
-      dataIndex: ['aclass', 'semester', 'semesterName'],
-      key: 'semester'
-    },
-    {
-      title: 'Class',
-      dataIndex: ['aclass', 'className'],
-      key: 'class'
-    },
-    {
-      title: 'Expertise',
-      dataIndex: 'expertise',
-      key: 'expertise'
+      title: 'Skill',
+      dataIndex: 'skills',
+      key: 'skills',
+      render: skills => (
+        <>
+          {skills?.map((skill, index) => (
+            <Tag color={colors[skill.id % colors.length]} key={skill.id}>
+              {skill.skillName}
+            </Tag>
+          ))}
+        </>
+      )
     },
     {
       title: 'Phone',
       dataIndex: ['user', 'phone'],
       key: 'phone'
+    },
+    {
+      title: 'Star',
+      dataIndex: 'star',
+      key: 'star'
+    },
+    {
+      title: 'Time-Remaining',
+      dataIndex: 'totalTimeRemain',
+      key: 'totalTimeRemain'
     },
     {
       title: 'Gender',
@@ -301,14 +303,14 @@ function StudentManager() {
 
   return (
     <div className="w-full h-full bg-gray-100 p-2">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Student List</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Mentor List</h1>
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
-        Create Student
+        Create Mentor
       </Button>
-      <Table columns={columns} bordered dataSource={students} rowKey="id" pagination={{ pageSize: 10 }} sticky />
+      <Table columns={columns} bordered dataSource={mentors} rowKey="id" pagination={{ pageSize: 10 }} />
 
-      {/* Modal for updating student */}
-      <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
+      {/* Modal for updating mentor */}
+      <Modal title="Update Mentor" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
         <div className="max-h-96 overflow-y-auto p-5">
           <Form form={form} layout="vertical">
             <Form.Item
@@ -351,56 +353,84 @@ function StudentManager() {
             >
               <Input />
             </Form.Item>
-            <Form.Item label="Birth Date" name="birthDate">
-              <DatePicker format="DD-MM-YYYY" />
-            </Form.Item>
             <Form.Item
-              label="Semester"
-              name="semesterId"
+              label="Mentor Code"
+              name="mentorCode"
               rules={[
                 {
                   required: true,
-                  message: 'Please select a semester!'
-                }
-              ]}
-            >
-              <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item
-              label="Class"
-              name="classId"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your class!'
-                }
-              ]}
-            >
-              <Select placeholder="Select Class">
-                {classes?.map(classU => (
-                  <Select.Option key={classU.id} value={classU.id}>
-                    {classU.className}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item
-              label="Expertise"
-              name="expertise"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your expertise!'
+                  message: 'Please input your mentor code!'
                 }
               ]}
             >
               <Input />
+            </Form.Item>
+            <Form.Item
+              label="Star"
+              name="star"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select a star rating!'
+                }
+              ]}
+            >
+              <Select placeholder="Select a star rating">
+                <Select.Option value={1}>1 Star</Select.Option>
+                <Select.Option value={2}>2 Stars</Select.Option>
+                <Select.Option value={3}>3 Stars</Select.Option>
+                <Select.Option value={4}>4 Stars</Select.Option>
+                <Select.Option value={5}>5 Stars</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="Total Time Remain"
+              name="totalTimeRemain"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input the total time remaining!'
+                },
+                {
+                  type: 'number',
+                  message: 'Please enter a valid number!',
+                  transform: value => Number(value) // Chuyển đổi giá trị đầu vào thành số
+                },
+                {
+                  validator: (_, value) => {
+                    if (value < 0) {
+                      return Promise.reject(new Error('Total time remaining must be greater than zero!'));
+                    }
+                    return Promise.resolve();
+                  }
+                }
+              ]}
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+            <Form.Item label="Birth Date" name="birthDate">
+              <DatePicker format="DD-MM-YYYY" />
+            </Form.Item>
+            <Form.Item
+              label="Mentor Code"
+              name="mentorCode"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your mentor code!'
+                }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item label="Skill" name="skills">
+              <Select mode="multiple" placeholder="Select skills" style={{ width: '100%' }}>
+                {skills?.map(skill => (
+                  <Option key={skill.id} value={skill.id}>
+                    {skill.skillName}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
             <Form.Item label="Address" name="address">
               <Input />
@@ -408,7 +438,16 @@ function StudentManager() {
             <Form.Item label="Phone" name="phone">
               <Input />
             </Form.Item>
-            <Form.Item label="Gender" name="gender">
+            <Form.Item
+              label="Gender"
+              name="gender"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your gender!'
+                }
+              ]}
+            >
               <Radio.Group>
                 <Radio value="MALE">Male</Radio>
                 <Radio value="FEMALE">Female</Radio>
@@ -446,13 +485,8 @@ function StudentManager() {
         </div>
       </Modal>
 
-      {/* Modal for creating student */}
-      <Modal
-        title="Create student"
-        open={isCreateModalVisible}
-        onOk={handleCreateStudent}
-        onCancel={handleCancelCreate}
-      >
+      {/* Modal for creating mentor */}
+      <Modal title="Create mentor" open={isCreateModalVisible} onOk={handleCreateMentor} onCancel={handleCancelCreate}>
         <div className="max-h-96 overflow-y-auto p-5">
           <Form form={form} layout="vertical" initialValues={{ gender: 'MALE' }}>
             <Form.Item
@@ -511,62 +545,23 @@ function StudentManager() {
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
-              label="Student Code"
-              name="studentCode"
+              label="Mentor Code"
+              name="mentorCode"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your student code!'
+                  message: 'Please input your mentor code!'
                 }
               ]}
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              label="Expertise"
-              name="expertise"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your expertise!'
-                }
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Semester"
-              name="semesterId"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select a semester!'
-                }
-              ]}
-            >
-              <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item
-              label="Class"
-              name="classId"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your class!'
-                }
-              ]}
-            >
-              <Select placeholder="Select Class">
-                {classes?.map(classU => (
-                  <Select.Option key={classU.id} value={classU.id}>
-                    {classU.className}
-                  </Select.Option>
+            <Form.Item label="Skill" name="skills">
+              <Select mode="multiple" placeholder="Select skills" style={{ width: '100%' }}>
+                {skills?.map(skill => (
+                  <Option key={skill.id} value={skill.id}>
+                    {skill.skillName}
+                  </Option>
                 ))}
               </Select>
             </Form.Item>
@@ -624,6 +619,6 @@ function StudentManager() {
       </Modal>
     </div>
   );
-}
+};
 
-export default StudentManager;
+export default MentorManager;

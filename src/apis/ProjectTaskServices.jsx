@@ -16,6 +16,22 @@ export const getAllTasks = token =>
     }
   });
 
+export const getAllTasksInGroup = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `/api/student/project-tasks/group/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 export const createTask = (data, token) =>
   new Promise(async (resolve, reject) => {
     try {
