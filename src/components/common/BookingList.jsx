@@ -15,6 +15,42 @@ function BookingList() {
   const [bookings, setBookings] = useState([]);
   const { fullData, role, userData } = useUserStore();
 
+  const rejectByMentor = async id => {
+    try {
+      const response = await rejectBooking(id, token);
+      console.log(response);
+      if (response && response?.statusCode === 200) {
+        Swal.fire({
+          title: 'Reject Successful!',
+          text: `Your booking has been reject successfully.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Đóng sau 3 giây
+          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+        });
+        setStatus('REJECTED');
+      } else toast.error(response?.message);
+    } catch (error) {
+      toast.error(error);
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const checkExpiredEvents = () => {
+      const now = new Date();
+      bookings.forEach(booking => {
+        if (booking?.status === 'PENDING' && booking?.mentorSchedule?.availableFrom > now) {
+          rejectByMentor(booking?.id);
+        }
+      });
+    };
+
+    const interval = setInterval(checkExpiredEvents, 1000); // Kiểm tra mỗi giây
+
+    return () => clearInterval(interval); // Dọn dẹp interval khi component bị hủy
+  }, [bookings]);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
 

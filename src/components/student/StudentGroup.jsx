@@ -6,12 +6,13 @@ import { useUserStore } from '../../store/useUserStore';
 import { Form, Input, Modal, Table, Tag } from 'antd';
 import { getAllTopicUnchosenClass } from '../../apis/TopicServices';
 import { toast } from 'react-toastify';
-import { createGroup, updateGroup } from '../../apis/GroupServices';
+import { createGroup, getGroupByClassId, getGroupById, updateGroup } from '../../apis/GroupServices';
 import Swal from 'sweetalert2';
 import { dateFnsLocalizer } from 'react-big-calendar';
 import { createProject } from '../../apis/ProjectServices';
 import { capitalizeFirstLetter } from '../../utils/commonFunction';
 import UserItem from '../common/UserItem';
+import { getStudentNotGroup } from '../../apis/StudentServices';
 
 const StudentGroup = () => {
   // const [haveGroup, setHaveGroup] = useState(true);
@@ -24,18 +25,30 @@ const StudentGroup = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [topics, setTopics] = useState([]);
-  const { userData, role, fullData } = useUserStore();
+  const { userData, role, fullData, setFullData } = useUserStore();
   const [form] = Form.useForm();
   const [inGroup, setInGroup] = useState(null);
   const [inProject, setInProject] = useState(inGroup?.project);
+  const [studentNoGroup, setStudentNoGroup] = useState([]);
 
   useEffect(() => {
-    setInGroup(fullData?.groupDTO);
-  }, [userData]);
+    // setInGroup(fullData?.groupDTO);
+    fetchGroup();
+  }, [fullData]);
 
-  useEffect(() => {
-    setInProject(inGroup?.project);
-  }, [inGroup]);
+  const fetchGroup = async () => {
+    const token = localStorage.getItem('token');
+    const groupId = fullData?.groupDTO?.id;
+    console.log(groupId);
+
+    try {
+      const response = await getGroupById(groupId, token);
+      console.log(response);
+      response?.statusCode === 200 && setInGroup(response?.groupDTO);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const fetchTopicUnchosen = async () => {
@@ -53,6 +66,24 @@ const StudentGroup = () => {
     };
     fetchTopicUnchosen();
   }, [userData]);
+
+  useEffect(() => {
+    const fetchStudentNoGroup = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await getStudentNotGroup(userData?.aclass?.id, token);
+        if (response && response?.statusCode === 200) setStudentNoGroup(response?.studentsDTOList);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchStudentNoGroup();
+  }, [addModal]);
+
+  useEffect(() => {
+    setInProject(inGroup?.project);
+  }, [inGroup]);
 
   const handleCreateProject = async () => {
     const token = localStorage.getItem('token');
@@ -115,6 +146,18 @@ const StudentGroup = () => {
   };
 
   const showUpdateGroupModal = () => {
+    if (userData?.groupRole !== 'LEADER') {
+      Swal.fire({
+        title: 'No Authority!',
+        text: 'You must be a leader to have access to this function!!!',
+        icon: 'error',
+        timer: 2000, // Đóng sau 2 giây
+        showConfirmButton: true, // Ẩn nút OK
+        timerProgressBar: true // Hiển thị progress bar
+      });
+      return;
+    }
+
     inGroup &&
       form.setFieldsValue({
         groupName: inGroup.groupName
@@ -123,6 +166,17 @@ const StudentGroup = () => {
   };
 
   const showADdMemberModal = () => {
+    if (userData?.groupRole !== 'LEADER') {
+      Swal.fire({
+        title: 'No Authority!',
+        text: 'You must be a leader to have access to this function!!!',
+        icon: 'error',
+        timer: 2000, // Đóng sau 2 giây
+        showConfirmButton: true, // Ẩn nút OK
+        timerProgressBar: true // Hiển thị progress bar
+      });
+      return;
+    }
     setAddModal(true);
   };
 
@@ -279,11 +333,6 @@ const StudentGroup = () => {
     }
   ];
 
-  const handleGet = record => {
-    console.log('Get action for:', record);
-    // Thực hiện logic lấy thông tin chi tiết của record tại đây
-  };
-
   return (
     <div className="w-full">
       {
@@ -416,6 +465,9 @@ const StudentGroup = () => {
                   code={member?.studentCode}
                   groupRole={member?.groupRole}
                   avatar={member?.user?.avatar}
+                  studentDel={member?.id}
+                  idGroup={inGroup?.id}
+                  onRemoveSuccess={fetchGroup}
                 />
               ))}
             </div>
@@ -548,41 +600,19 @@ const StudentGroup = () => {
         style={{ top: 40 }}
       >
         <div className="max-h-[80vh] overflow-y-auto w-full flex flex-col gap-3">
-          {inGroup?.students?.map(student => (
+          {studentNoGroup?.map(student => (
             <UserItem
               key={student.id}
+              addGroup={inGroup?.id}
               roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
               specialized={student?.expertise}
               name={student?.user?.fullName}
               gender={student?.user?.gender}
               isAdded={false}
+              idStudent={student?.id}
               idUser={student?.user?.id}
               code={student?.studentCode}
-            />
-          ))}
-          {inGroup?.students?.map(student => (
-            <UserItem
-              key={student.id}
-              roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
-              specialized={student?.expertise}
-              name={student?.user?.fullName}
-              gender={student?.user?.gender}
-              isAdded={false}
-              idUser={student?.user?.id}
-              code={student?.studentCode}
-            />
-          ))}
-          {inGroup?.students?.map(student => (
-            <UserItem
-              key={student.id}
-              addGroup={true}
-              roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
-              specialized={student?.expertise}
-              name={student?.user?.fullName}
-              gender={student?.user?.gender}
-              isAdded={false}
-              idUser={student?.user?.id}
-              code={student?.studentCode}
+              studentAdd={userData?.id}
             />
           ))}
         </div>

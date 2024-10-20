@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Button } from '../index';
 import clsx from 'clsx';
 import icons from '../../utils/icon';
@@ -9,6 +9,7 @@ import { useUserStore } from '../../store/useUserStore';
 import { calculatePointDeduction, convertDateMeeting } from '../../utils/commonFunction';
 import { createBooking } from '../../apis/BookingServices';
 import { toast } from 'react-toastify';
+import { addNewMember, removeMember } from '../../apis/GroupServices';
 
 const UserItem = ({
   avatar,
@@ -21,18 +22,22 @@ const UserItem = ({
   showSchedule,
   star,
   sameClass,
-  setCountMember,
-  countMember,
   isAdded,
   idUser,
   schedule,
   groupRole,
-  mentorAdd
+  idStudent,
+  mentorAdd,
+  studentDel,
+  idGroup,
+  onRemoveSuccess,
+  studentAdd,
+  accept
 }) => {
   const { FaStar, FaStarHalf } = icons;
   const [added, setAdded] = useState(false);
   const [selectMeeting, setSelectMeeting] = useState('');
-  const { role, fullData, userData } = useUserStore();
+  const { role, fullData, userData, setFullDAta } = useUserStore();
 
   const handleStar = star => {
     let stars = [];
@@ -41,9 +46,119 @@ const UserItem = ({
     return stars;
   };
 
-  const handleAddMember = () => {
-    setCountMember(countMember + 1);
-    setAdded(true);
+  const handleAddMember = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const addMemberData = {
+        id: idStudent
+      };
+      console.log(addGroup, addMemberData);
+
+      const response = await addNewMember(addGroup, addMemberData, token);
+      console.log(response);
+      if (response?.statusCode === 200) {
+        Swal.fire({
+          title: 'Added Successful!',
+          text: `Add student to new  group successfully.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Đóng sau 3 giây
+          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+        });
+        setAdded(true);
+      } else toast.error(response?.message);
+    } catch (error) {
+      toast.error(message);
+      console.log(error);
+    }
+  };
+
+  const handleNotiAddMember = () => {
+    const token = localStorage.getItem('token');
+    try {
+      const addMemberData = {
+        id: idStudent
+      };
+      console.log(addGroup, addMemberData);
+      // if (response?.statusCode === 200) {
+      Swal.fire({
+        title: 'Invitation Sent!',
+        text: 'Invite sent successfully to the student.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: true
+      });
+      setAdded(true);
+      // } else toast.error(response?.message);
+    } catch (error) {
+      toast.error(error);
+      console.log(error);
+    }
+  };
+
+  const handleRemove = async removeId => {
+    const token = localStorage.getItem('token');
+    try {
+      const removeData = {
+        id: removeId
+      };
+
+      const response = await removeMember(idGroup, removeData, token);
+      console.log(response);
+      if (response?.statusCode === 200) {
+        Swal.fire({
+          title: 'Remove Successfully!',
+          text: 'Remove the student successfully!',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: true
+        });
+        onRemoveSuccess();
+      }
+    } catch (error) {
+      toast.error(error);
+      console.log(error);
+    }
+  };
+
+  const handleClickRemove = id => {
+    Swal.fire({
+      title: 'Are you sure?', // Tiêu đề của hộp thoại
+      text: 'Remove student from group!', // Nội dung chính của hộp thoại
+      icon: 'warning', // Hiển thị biểu tượng cảnh báo
+      showCancelButton: true, // Hiển thị nút hủy
+      confirmButtonText: 'Yes, remove', // Văn bản nút xác nhận
+      cancelButtonText: 'No, cancel.', // Văn bản nút hủy
+      reverseButtons: true // Đảo ngược vị trí các nút
+    }).then(result => {
+      if (result.isConfirmed) {
+        handleRemove(id);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+      }
+    });
+  };
+
+  const handleClickAddClick = () => {
+    Swal.fire({
+      title: 'Are you sure?', // Tiêu đề của hộp thoại
+      text: 'Delete student in Group!', // Nội dung chính của hộp thoại
+      icon: 'warning', // Hiển thị biểu tượng cảnh báo
+      showCancelButton: true, // Hiển thị nút hủy
+      confirmButtonText: 'Yes, Update', // Văn bản nút xác nhận
+      cancelButtonText: 'No, cancel.', // Văn bản nút hủy
+      reverseButtons: true // Đảo ngược vị trí các nút
+    }).then(result => {
+      if (result.isConfirmed) {
+        mentorAdd ? handleAddMember() : handleNotiAddMember();
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+      }
+    });
   };
 
   const handleCreateBooking = async (bookingData, meeting) => {
@@ -240,14 +355,16 @@ const UserItem = ({
               (!added && !isAdded ? (
                 <div className="w-[13vw]">
                   <Button
-                    text={'Add Group'}
+                    text={'Add'}
                     fullWidth={'w-full'}
                     htmlType={'button'}
                     bgColor={'bg-green-500'}
                     textColor={'text-white'}
                     textSize={'text-sm'}
                     bgHover={'hover:bg-green-400 hover:text-gray-100'}
-                    onClick={handleAddMember}
+                    onClick={() => {
+                      handleClickAddClick();
+                    }}
                   />
                 </div>
               ) : (
@@ -263,6 +380,22 @@ const UserItem = ({
                   />
                 </div>
               ))}
+            {userData?.groupRole === 'LEADER' && studentDel && groupRole !== 'LEADER' && (
+              <div className="w-[13vw]">
+                <Button
+                  text={'Remove'}
+                  fullWidth={'w-full'}
+                  htmlType={'button'}
+                  bgColor={'bg-red-500'}
+                  textColor={'text-white'}
+                  textSize={'text-sm'}
+                  bgHover={'hover:bg-red-400 hover:text-gray-100'}
+                  onClick={() => {
+                    handleClickRemove(studentDel);
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

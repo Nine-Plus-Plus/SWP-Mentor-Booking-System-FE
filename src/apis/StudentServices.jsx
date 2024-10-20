@@ -117,3 +117,19 @@ export const getStudentByIdAndSearch = (classId, name, expertise, token) =>
       reject(error);
     }
   });
+
+export const getStudentNotGroup = (classId, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/user/get-students-not-in-group/${classId}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });

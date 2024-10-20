@@ -63,6 +63,8 @@ const Schedule = () => {
     const checkExpiredEvents = () => {
       const now = new Date();
       events.forEach(event => {
+        console.log(event.end);
+        
         if (event.title === 'AVAILABLE' && event.end < now) {
           handleSetExpired(event.id);
         }
@@ -141,8 +143,8 @@ const Schedule = () => {
         const response = await createSchedule(data, token);
         console.log(response);
         const added = {
-          id: response.mentorScheduleDTO.id,
-          title: 'Available',
+          id: response?.mentorScheduleDTO?.id,
+          title: 'AVAILABLE',
           start: dayjs(response.mentorScheduleDTO.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
           end: dayjs(response.mentorScheduleDTO.availableTo, 'DD-MM-YYYY HH:mm').toDate()
         };
@@ -151,6 +153,7 @@ const Schedule = () => {
             autoClose: 500
           });
           setEvents([...events, added]);
+          setSelectedEvent(null);
         } else {
           toast.error('Event create successfully' + response.data.message, {
             autoClose: 500
@@ -169,7 +172,7 @@ const Schedule = () => {
             autoClose: 5000
           });
           setEvents(events.map(event => (event.id === updated.id ? updated : event)));
-
+          setSelectedEvent(null);
           // Thêm sự kiện mới vào danh sách
         } else {
           toast.error('Failed to create event: ' + response.data.message, {
