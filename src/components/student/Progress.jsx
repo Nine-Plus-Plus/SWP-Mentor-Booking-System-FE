@@ -37,7 +37,7 @@ export const Progress = () => {
   const { fullData } = useUserStore();
 
   const dbStatus = {
-    NOTSTARTED: 'Not Start',
+    NOTSTARTED: 'Not Started',
     DONE: 'Done',
     INPROGRESS: 'In Progress'
   };
@@ -76,6 +76,7 @@ export const Progress = () => {
           id: fullData?.groupDTO?.project?.id
         }
       };
+
       const response = await createTask(createData, token);
       console.log(response);
       if (response?.statusCode === 200) {
@@ -247,7 +248,7 @@ export const Progress = () => {
                               task?.status === 'NOTSTARTED' ? 'bg-gray-400 text-white rounded-lg' : ''
                             }`}
                           >
-                            Not Start
+                            Not Started
                           </div>
                           <div
                             className={`flex flex-col items-center w-full ${
@@ -313,7 +314,7 @@ export const Progress = () => {
                   </Button>
                 ]}
               >
-                <Form form={form} layout="vertical" initialValues={{ status: 'Not start' }}>
+                <Form form={form} layout="vertical" initialValues={{ status: 'Not started' }}>
                   <Form.Item
                     label="Task Name"
                     name="taskName"
@@ -349,7 +350,7 @@ export const Progress = () => {
                     ]}
                   >
                     <Select>
-                      <Select.Option value="Not Started">Not Start</Select.Option>
+                      <Select.Option value="Not Started">Not Started</Select.Option>
                       <Select.Option value="In Progress">In Progress</Select.Option>
                       <Select.Option value="Done">Done</Select.Option>
                     </Select>

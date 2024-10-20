@@ -1,9 +1,11 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import Button from './Button';
 import { useUserStore } from '../../store/useUserStore';
 import { UserItem } from '..';
 import { capitalizeFirstLetter } from '../../utils/commonFunction';
 import { Modal } from 'antd';
+import { toast } from 'react-toastify';
+import { getStudentNotGroup } from '../../apis/StudentServices';
 
 const GroupItem = ({
   idGroup,
@@ -21,6 +23,8 @@ const GroupItem = ({
   const [isShowMore, setIsShowMore] = useState(false);
   const [joined, setJoined] = useState(true);
   const [addModal, setAddModal] = useState(false);
+  const [studentNoGroup, setStudentNoGroup] = useState([]);
+  const { userData } = useUserStore();
 
   const handleJoinForStudent = () => {
     setJoined(!joined);
@@ -33,6 +37,22 @@ const GroupItem = ({
   const handleCancel = () => {
     setAddModal(false);
   };
+
+  useEffect(() => {
+    console.log(userData);
+
+    const fetchStudentNoGroup = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await getStudentNotGroup(userData?.aclass?.id, token);
+        if (response && response?.statusCode === 200) setStudentNoGroup(response?.studentsDTOList);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchStudentNoGroup();
+  }, [addModal]);
 
   const { role } = useUserStore();
   return (
@@ -140,10 +160,12 @@ const GroupItem = ({
         width={1500}
         style={{ top: 40 }}
       >
-        <div className="max-h-[80vh] overflow-y-auto w-full flex flex-col gap-3">
-          {totalMember?.map(student => (
+        <div className="max-h-[75vh] overflow-y-auto w-full flex flex-col gap-3">
+          {studentNoGroup?.map(student => (
             <UserItem
-              key={student.id}
+              key={student?.id}
+              idStudent={student?.id}
+              addGroup={idGroup}
               roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
               specialized={student?.expertise}
               name={student?.user?.fullName}
@@ -151,31 +173,7 @@ const GroupItem = ({
               isAdded={false}
               idUser={student?.user?.id}
               code={student?.studentCode}
-            />
-          ))}
-          {totalMember?.map(student => (
-            <UserItem
-              key={student.id}
-              roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
-              specialized={student?.expertise}
-              name={student?.user?.fullName}
-              gender={student?.user?.gender}
-              isAdded={false}
-              idUser={student?.user?.id}
-              code={student?.studentCode}
-            />
-          ))}
-          {totalMember?.map(student => (
-            <UserItem
-              key={student.id}
-              addGroup={true}
-              roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
-              specialized={student?.expertise}
-              name={student?.user?.fullName}
-              gender={student?.user?.gender}
-              isAdded={false}
-              idUser={student?.user?.id}
-              code={student?.studentCode}
+              mentorAdd={userData?.id}
             />
           ))}
         </div>

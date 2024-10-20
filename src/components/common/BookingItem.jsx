@@ -73,6 +73,8 @@ export const BookingItem = ({
 
   const cancelByMentor = async id => {
     try {
+      console.log(id);
+
       const response = await cancelBookingMentor(id, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
@@ -168,6 +170,17 @@ export const BookingItem = ({
   };
 
   const handleCancelStudent = () => {
+    if (userData?.groupRole !== 'LEADER') {
+      Swal.fire({
+        title: 'No Authority!',
+        text: 'You must be a leader to have access to this function!!!',
+        icon: 'error',
+        timer: 2000, // Đóng sau 2 giây
+        showConfirmButton: true, // Ẩn nút OK
+        timerProgressBar: true // Hiển thị progress bar
+      });
+      return;
+    }
     Swal.fire({
       title: 'Are you sure?',
       html: `Are you sure cancel this booking?`,
@@ -196,14 +209,14 @@ export const BookingItem = ({
         )}
       </h1>
 
-      <div className="flex p-2 justify-between">
-        <div className="flex flex-col gap-2 text-md">
+      <div className="flex p-2 justify-between w-full">
+        <div className="flex flex-col gap-2 text-md w-1/3">
           <p>Day Booking: {dateCreated}</p>
           <p>Class: {className}</p>
           <p>Group: {group}</p>
           <p>Project: {project}</p>
         </div>
-        <div className="flex flex-col gap-2 text-md">
+        <div className="flex flex-col gap-2 text-md w-1/3">
           <p> Schedule: {schedule}</p>
           <p>Student Booking: {studentBook}</p>
           <p>Point Manner: {point}</p>
@@ -213,7 +226,7 @@ export const BookingItem = ({
           {roleProfile === 'mentor' ? (
             <>
               {status === 'PENDING' ? (
-                <div className="flex flex-col w-full gap-3">
+                <div className="flex flex-col gap-3">
                   <Button
                     text={'Accept'}
                     textColor={'text-white'}
@@ -234,7 +247,7 @@ export const BookingItem = ({
                   />
                 </div>
               ) : status === 'CONFIRMED' ? (
-                <div className="flex flex-col w-full gap-3">
+                <div className="flex flex-col gap-3">
                   <Button
                     text={'Accepted'}
                     textColor={'text-white'}
