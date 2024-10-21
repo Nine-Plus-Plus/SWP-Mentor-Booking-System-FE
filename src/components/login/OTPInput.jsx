@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Form } from 'antd';
 import { Button } from '../index';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 const OTPInput = () => {
   const [disable, setDisable] = useState(false); // Trạng thái vô hiệu hóa nút
   const [timerCount, setTimerCount] = useState(30); // Thời gian đếm ngược (30 giây)
   const [otp, setOtp] = useState(['', '', '', '', '']); // State cho từng ô OTP
+  const [fakeOTP] = useState('12345'); // Fake OTP for testing
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,13 +33,13 @@ const OTPInput = () => {
     // Logic gửi lại OTP
   };
 
-  // Hàm xử lý khi người dùng nhấn "Confirm"
   const onFinish = values => {
-    if (otp.join('').length === 5) {
-      console.log('Payload:', otp.join('')); // In giá trị OTP hợp lệ
-      navigate('/public/change-password'); // Chuyển trang sau khi submit thành công
+    const enteredOtp = otp.join('');
+    if (enteredOtp === fakeOTP) {
+      console.log('OTP matched:', enteredOtp); // In OTP nếu hợp lệ
+      navigate('/public/change-password');
     } else {
-      console.error('Please input OTP completely!');
+      toast.error('OTP did not match.');
     }
   };
 
@@ -46,33 +48,45 @@ const OTPInput = () => {
     return otp.some(val => val === '') ? Promise.reject(new Error('Please input OTP!')) : Promise.resolve();
   };
 
-  // Hàm xử lý chuyển đổi giữa các input khi người dùng nhập OTP
+  const handleKeyDown = (event, index) => {
+    console.log('Key pressed:', event.key);
+  
+    if (event.key === 'Backspace') {
+      console.log('Backspace detected at index:', index);
+  
+      const newOtp = [...otp];
+  
+      if (newOtp[index] === '') {
+        // Nếu ô hiện tại đã rỗng, di chuyển focus về ô trước đó
+        if (index > 0) {
+          const previousInput = document.getElementById(`otp${index - 1}`);
+          if (previousInput) {
+            previousInput.focus();
+          }
+        }
+      } else {
+        // Nếu ô hiện tại có ký tự, chỉ xóa ký tự tại ô đó
+        newOtp[index] = ''; 
+        setOtp(newOtp);
+      }
+    }
+  };
+  
+
   const handleChange = (event, index) => {
     const value = event.target.value;
 
+    // Kiểm tra nếu ký tự nhập vào là số
     if (/^[0-9]*$/.test(value)) {
-      // Kiểm tra xem giá trị nhập vào có phải là số không
       const newOtp = [...otp];
-      newOtp[index] = value; // Cập nhật giá trị tương ứng với ô OTP
-      setOtp(newOtp); // Cập nhật state với giá trị mới
+      newOtp[index] = value; // Cập nhật giá trị ô hiện tại
+      setOtp(newOtp);
 
       // Chuyển focus đến ô tiếp theo nếu có
       if (value.length === 1 && index < otp.length - 1) {
         const nextInput = document.getElementById(`otp${index + 1}`);
         if (nextInput) {
           nextInput.focus();
-        }
-      }
-    } else if (value === '') {
-      // Nếu người dùng xóa ký tự
-      const newOtp = [...otp];
-      newOtp[index] = ''; // Đặt giá trị ô hiện tại về rỗng
-      setOtp(newOtp); // Cập nhật state
-      // Chuyển focus về ô trước đó nếu không phải ô đầu tiên
-      if (index > 0) {
-        const previousInput = document.getElementById(`otp${index - 1}`);
-        if (previousInput) {
-          previousInput.focus();
         }
       }
     }
@@ -109,6 +123,7 @@ const OTPInput = () => {
                       type="text"
                       value={otp[index]}
                       onChange={event => handleChange(event, index)}
+                      onKeyDown={event => handleKeyDown(event, index)}
                       id={`otp${index}`}
                     />
                   </div>
