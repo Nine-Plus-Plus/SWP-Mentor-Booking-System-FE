@@ -1,12 +1,13 @@
 import { getMyProfile } from '../../apis/UserServices';
 import { useUserStore } from '../../store/useUserStore';
 import { useParams } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from './Button';
 import clsx from 'clsx';
 import { acceptBooking, cancelBookingMentor, cancelBookingStudent, rejectBooking } from '../../apis/BookingServices';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { createNoti } from '../../apis/NotificationServices';
 
 export const BookingItem = ({
   className,
@@ -16,19 +17,72 @@ export const BookingItem = ({
   mentor,
   point,
   dateCreated,
-  totalMember,
+  members,
   group,
   project,
   idGroup,
-  idBooking
+  idBooking,
+  mentorUserId
 }) => {
   const { role } = useUserStore();
 
   const [status, setStatus] = useState(initialStatus);
   const roleProfile = role.toLowerCase();
-  const userData = useUserStore(); // Lấy userData từ store
+  const { userData } = useUserStore(); // Lấy userData từ store
   const sameGroup = mentor?.assignedClass?.className === userData?.aclass?.className; // Kiểm tra xem mentor có cùng group không
   const token = localStorage.getItem('token');
+
+  const handleCreateNoti = async data => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await createNoti(data, token);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSentNotiOptionMentor = status => {
+    members?.map(member => {
+      const dataSent = {
+        message: `Mentor ${userData.user.fullName} want ${status} your booking: ${schedule}!`,
+        type: 'MESSAGE',
+        sender: {
+          id: userData.user.id
+        },
+        reciver: {
+          id: member.user.id
+        },
+        groupDTO: {
+          id: idGroup
+        },
+        bookingDTO: {
+          id: idBooking
+        }
+      };
+      handleCreateNoti(dataSent);
+    });
+  };
+
+  const handleSentNotiOptionStudent = status => {
+    const dataSent = {
+      message: `Student ${studentBook} was ${status} your booking: ${schedule}!`,
+      type: 'MESSAGE',
+      sender: {
+        id: userData.user.id
+      },
+      reciver: {
+        id: mentorUserId
+      },
+      groupDTO: {
+        id: idGroup
+      },
+      bookingDTO: {
+        id: idBooking
+      }
+    };
+    handleCreateNoti(dataSent);
+  };
 
   const acceptByMentor = async id => {
     try {
@@ -43,6 +97,7 @@ export const BookingItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        handleSentNotiOptionMentor('accepted');
         setStatus('CONFIRMED');
       } else toast.error(response?.message);
     } catch (error) {
@@ -50,6 +105,7 @@ export const BookingItem = ({
       console.log(error);
     }
   };
+  
   const rejectByMentor = async id => {
     try {
       const response = await rejectBooking(id, token);
@@ -63,6 +119,7 @@ export const BookingItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        handleSentNotiOptionMentor('rejected');
         setStatus('REJECTED');
       } else toast.error(response?.message);
     } catch (error) {
@@ -86,6 +143,7 @@ export const BookingItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        handleSentNotiOptionMentor('canceled');
         setStatus('CANCELED');
       } else toast.error(response?.message);
     } catch (error) {
@@ -107,6 +165,7 @@ export const BookingItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        handleSentNotiOptionStudent('canceled');
         setStatus('CANCELED');
       } else toast.error(response?.message);
     } catch (error) {
@@ -220,7 +279,7 @@ export const BookingItem = ({
           <p> Schedule: {schedule}</p>
           <p>Student Booking: {studentBook}</p>
           <p>Point Manner: {point}</p>
-          <p>Total member: {totalMember}/5</p>
+          <p>Total member: {members?.length}/5</p>
         </div>
         <div className="flex flex-col items-end justify-center gap-y-3 w-1/3 ">
           {roleProfile === 'mentor' ? (

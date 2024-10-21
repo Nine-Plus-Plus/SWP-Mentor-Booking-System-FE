@@ -25,8 +25,8 @@ function BookingList() {
           text: `Your booking has been reject successfully.`,
           icon: 'success',
           confirmButtonText: 'OK',
-          timer: 3000, // Đóng sau 3 giây
-          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+          timer: 3000,
+          timerProgressBar: true
         });
         setStatus('REJECTED');
       } else toast.error(response?.message);
@@ -96,10 +96,12 @@ function BookingList() {
                 point={booking?.pointPay}
                 schedule={convertDateMeeting(booking?.mentorSchedule)}
                 dateCreated={formatDate(booking?.dateCreated)}
-                totalMember={booking?.group?.students?.length}
+                members={booking?.group?.students}
                 project={booking?.group?.project?.projectName}
                 studentBook={booking?.group?.students?.find(student => student?.groupRole === 'LEADER')?.user?.fullName}
+                studentBookId={booking?.group?.students?.find(student => student?.groupRole === 'LEADER')?.user?.id}
                 mentor={booking?.mentor?.user?.fullName}
+                mentorUserId={booking?.mentor?.user?.id}
               />
             ))
           )}

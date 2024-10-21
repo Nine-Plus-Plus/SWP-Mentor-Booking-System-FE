@@ -10,6 +10,8 @@ import { calculatePointDeduction, convertDateMeeting } from '../../utils/commonF
 import { createBooking } from '../../apis/BookingServices';
 import { toast } from 'react-toastify';
 import { addNewMember, removeMember } from '../../apis/GroupServices';
+import { createNoti } from '../../apis/NotificationServices';
+import { message } from 'antd';
 
 const UserItem = ({
   avatar,
@@ -31,6 +33,7 @@ const UserItem = ({
   studentDel,
   idGroup,
   onRemoveSuccess,
+  groupName,
   studentAdd,
   accept
 }) => {
@@ -52,7 +55,6 @@ const UserItem = ({
       const addMemberData = {
         id: idStudent
       };
-      console.log(addGroup, addMemberData);
 
       const response = await addNewMember(addGroup, addMemberData, token);
       console.log(response);
@@ -73,25 +75,23 @@ const UserItem = ({
     }
   };
 
-  const handleNotiAddMember = () => {
+  const handleNotiAddMember = async addMemberData => {
     const token = localStorage.getItem('token');
     try {
-      const addMemberData = {
-        id: idStudent
-      };
-      console.log(addGroup, addMemberData);
-      // if (response?.statusCode === 200) {
-      Swal.fire({
-        title: 'Invitation Sent!',
-        text: 'Invite sent successfully to the student.',
-        icon: 'success',
-        confirmButtonText: 'OK',
-        timer: 3000,
-        timerProgressBar: true,
-        showConfirmButton: true
-      });
-      setAdded(true);
-      // } else toast.error(response?.message);
+      console.log(addMemberData);
+      const response = await createNoti(addMemberData);
+      if (response?.statusCode === 200) {
+        Swal.fire({
+          title: 'Invitation Sent!',
+          text: 'Invite sent successfully to the student.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: true
+        });
+        setAdded(true);
+      } else toast.error(response?.message);
     } catch (error) {
       toast.error(error);
       console.log(error);
@@ -137,6 +137,20 @@ const UserItem = ({
     }).then(result => {
       if (result.isConfirmed) {
         handleRemove(id);
+        const dataSent = {
+          message: `Leader ${userData.user.fullName} remove you from group: ${groupName} !`,
+          type: 'MESSAGE',
+          sender: {
+            id: userData.user.id
+          },
+          reciver: {
+            id: studentDel
+          },
+          groupDTO: {
+            id: idGroup
+          }
+        };
+        handleCreateNoti(dataSent);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Cancelled', 'Cancelled this action!', 'error');
       }
@@ -154,11 +168,52 @@ const UserItem = ({
       reverseButtons: true // Đảo ngược vị trí các nút
     }).then(result => {
       if (result.isConfirmed) {
-        mentorAdd ? handleAddMember() : handleNotiAddMember();
+        if (mentorAdd) {
+          handleAddMember();
+          const dataSent = {
+            message: `Mentor ${userData.user.fullName} added you to the group: ${groupName} !`,
+            type: 'MESSAGE',
+            sender: {
+              id: userData.user.id
+            },
+            reciver: {
+              id: idStudent
+            },
+            groupDTO: {
+              id: addGroup
+            }
+          };
+          handleCreateNoti(dataSent);
+        } else {
+          const dataSent = {
+            message: `Student ${userData.user.fullName} want invite you to group: ${groupName} !`,
+            type: 'ADDGROUP',
+            sender: {
+              id: studentAdd
+            },
+            reciver: {
+              id: idUser
+            },
+            groupDTO: {
+              id: addGroup
+            }
+          };
+          handleNotiAddMember(dataSent);
+        }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Cancelled', 'Cancelled this action!', 'error');
       }
     });
+  };
+
+  const handleCreateNoti = async data => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await createNoti(data, token);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCreateBooking = async (bookingData, meeting) => {
@@ -166,7 +221,7 @@ const UserItem = ({
     try {
       const response = await createBooking(bookingData, token);
       console.log(response);
-      if (response?.statusCode === 200)
+      if (response?.statusCode === 200) {
         Swal.fire({
           title: 'Booking Successful!',
           text: `Your schedule ${meeting} has been booked successfully.`,
@@ -175,7 +230,24 @@ const UserItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
-      else
+        const dataSent = {
+          message: `${userData.user.fullName} want book your schedule: ${convertDateMeeting(selectMeeting)}!`,
+          type: 'BOOKING',
+          sender: {
+            id: userData.user.id
+          },
+          reciver: {
+            id: idUser
+          },
+          groupDTO: {
+            id: fullData.groupDTO.id
+          },
+          bookingDTO: {
+            id: response.bookingDTO.id
+          }
+        };
+        handleCreateNoti(dataSent);
+      } else
         Swal.fire({
           title: 'Booking Failed!',
           text: `${response?.message}`, // Hiển thị thông báo lỗi

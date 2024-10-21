@@ -63,9 +63,7 @@ const Schedule = () => {
     const checkExpiredEvents = () => {
       const now = new Date();
       events.forEach(event => {
-        console.log(event.end);
-        
-        if (event.title === 'AVAILABLE' && event.end < now) {
+        if (event.title === 'AVAILABLE' && event.start < now) {
           handleSetExpired(event.id);
         }
       });

@@ -33,8 +33,6 @@ const ListGroup = () => {
         ) : (
           groups?.map(group => (
             <GroupItem
-              // joined={joined}
-              // setJoined={setJoined}
               key={group?.id}
               idGroup={group?.id}
               groupName={group?.groupName}
@@ -44,6 +42,7 @@ const ListGroup = () => {
               totalMember={group?.students}
               projectName={group?.project?.projectName}
               leader={group?.students?.find(student => student?.groupRole === 'LEADER')?.user?.fullName}
+              leaderId={group?.students?.find(student => student?.groupRole === 'LEADER')?.user?.id}
             />
           ))
         )}

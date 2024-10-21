@@ -32,7 +32,6 @@ const StudentGroup = () => {
   const [studentNoGroup, setStudentNoGroup] = useState([]);
 
   useEffect(() => {
-    // setInGroup(fullData?.groupDTO);
     fetchGroup();
   }, [fullData]);
 
@@ -468,6 +467,7 @@ const StudentGroup = () => {
                   studentDel={member?.id}
                   idGroup={inGroup?.id}
                   onRemoveSuccess={fetchGroup}
+                  groupName={inGroup?.groupName}
                 />
               ))}
             </div>
@@ -613,6 +613,7 @@ const StudentGroup = () => {
               idUser={student?.user?.id}
               code={student?.studentCode}
               studentAdd={userData?.id}
+              groupName={inGroup?.groupName}
             />
           ))}
         </div>
