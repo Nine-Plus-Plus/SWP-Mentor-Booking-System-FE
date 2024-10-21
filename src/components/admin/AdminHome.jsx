@@ -5,15 +5,11 @@ import { getAllBookingByStats } from '../../apis/BookingServices';
 import { getAllGroup } from '../../apis/GroupServices';
 import { getAllSemester } from '../../apis/SemesterServices';
 import { Select } from 'antd';
+import { getAllMentors } from '../../apis/MentorServices';
+import { getStudents } from '../../apis/StudentServices';
 
 export const AdminHome = () => {
   const [mentorRatings, setMentorRatings] = useState([]);
-  const [bookingStatus, setBookingStatus] = useState({
-    CONFIRMED: 0,
-    REJECTED: 0,
-    PENDING: 0,
-    CANCELLED: 0
-  });
   const [totalMentors, setTotalMentors] = useState(0);
   const [totalStudents, setTotalStudents] = useState(0);
   const [totalBookings, setTotalBookings] = useState(0);
@@ -23,6 +19,12 @@ export const AdminHome = () => {
   const [semesters, setSemesters] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState(null);
   const token = localStorage.getItem('token');
+  const [bookingStatus, setBookingStatus] = useState({
+    CONFIRMED: 0,
+    REJECTED: 0,
+    PENDING: 0,
+    CANCELLED: 0
+  });
 
   useEffect(() => {
     const fetchSemesters = async () => {
@@ -40,7 +42,6 @@ export const AdminHome = () => {
   }, []);
 
   useEffect(() => {
-    // bookingStatus?.map(item => console.log(item));
     const fetchAllBooking = async status => {
       const response = await getAllBookingByStats(status, token);
       if (response?.statusCode === 200) {
@@ -58,7 +59,30 @@ export const AdminHome = () => {
   }, []);
 
   useEffect(() => {
-    // bookingStatus?.map(item => console.log(item));
+    const fetchAllStudent = async () => {
+      const response = await getStudents(token);
+      if (response?.statusCode === 200) {
+        setTotalStudents(prevTotal => prevTotal + response.studentsDTOList.length);
+      }
+    };
+    setTotalStudents(0);
+    fetchAllStudent();
+  }, []);
+
+  useEffect(() => {
+    const fetchAllMentor = async () => {
+      const response = await getAllMentors(token);
+      if (response?.statusCode === 200) {
+        setTotalMentors(prevTotal => prevTotal + response.mentorsDTOList.length);
+        const rating = response?.mentorsDTOList?.map(mentor => mentor.star);
+        setMentorRatings(rating);
+      }
+    };
+    setTotalMentors(0);
+    fetchAllMentor();
+  }, []);
+
+  useEffect(() => {
     const fetchAllGroup = async () => {
       const response = await getAllGroup(semesters, token);
       if (response?.statusCode === 200) {
@@ -211,9 +235,9 @@ export const AdminHome = () => {
           className="rounded-lg shadow-sm border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition"
         >
           {semesters?.map(semester => (
-            <Option key={semester.id} value={semester.id}>
+            <Select.Option key={semester.id} value={semester.id}>
               {semester.semesterName}
-            </Option>
+            </Select.Option>
           ))}
         </Select>
       </div>
