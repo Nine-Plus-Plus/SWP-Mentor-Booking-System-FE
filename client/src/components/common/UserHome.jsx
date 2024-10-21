@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Button from './Button';
 import path from '../../utils/path';
+import { getAllSkill } from '../../apis/SkillServices';
 import { DatabaseOutlined, GithubOutlined } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faReact, faNodeJs, faHtml5 } from '@fortawesome/free-brands-svg-icons';
@@ -32,6 +33,7 @@ const fetchMentors = async () => {
 const UserHome = () => {
   const [mentors, setMentors] = useState([]);
   const [skills, setSkills] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Lấy danh sách mentor
   useEffect(() => {
@@ -45,12 +47,18 @@ const UserHome = () => {
 
   // Lấy danh sách skills
   useEffect(() => {
-    const loadSkills = async () => {
-      const fetchedSkills = await fetchSkills();
-      setSkills(fetchedSkills);
+    const fetchSkill = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await getAllSkill(token);
+        setSkills(response.data.skillsDTOList);
+      } catch (err) {
+        setError(err.message || 'Đã xảy ra lỗi');
+      } finally {
+        setLoading(false);
+      }
     };
-
-    loadSkills();
+    fetchSkill();
   }, []);
 
   return (
@@ -100,16 +108,16 @@ const UserHome = () => {
       <div className="gap-3 pt-5">
         <div className="bg-white p-8 rounded-lg border-2 shadow-2xl">
           <div className="row mb-5 flex justify-center font-bold text-xl text-main-1">Skills</div>
-          <div className="flex overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
+          <div className="flex justify-between overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
             {skills.map(skill => (
               <Link
                 key={skill.id}
-                to={path.USER_VIEW_MENTOR}
-                className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105 flex-shrink-0"
-                style={{ minWidth: '1px', flex: '1 1 auto' }}
+                to={`${path.USER_VIEW_MENTOR}?skill=${skill?.skillName}`}
+                className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105"
+                style={{ flex: '0 0 15.35%' /* Chiếm 1/6 chiều rộng */ }}
               >
                 {skill.icon}
-                <div className="mt-2 text-dark text-center">{skill.name}</div>
+                <div className="mt-2 text-dark text-center">{skill.skillName}</div>
               </Link>
             ))}
           </div>
@@ -122,7 +130,8 @@ const UserHome = () => {
           <div className="flex flex-col justify-center items-center text-center">
             <h2 className="font-bold text-xl pb-5">Wide Networking</h2>
             <p>
-              Connect to reputation mentors all over the campus. Just stay at home and learn with mentor through our website.
+              Connect to reputation mentors all over the campus. Just stay at home and learn with mentor through our
+              website.
             </p>
           </div>
         </div>

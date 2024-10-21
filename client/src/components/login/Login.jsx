@@ -1,18 +1,9 @@
-import React, { useState } from 'react';
-import clsx from 'clsx';
+import React, { useEffect, useState } from 'react';
 import { Divider, Form, Input } from 'antd';
-import axios from 'axios';
-import {
-  EyeInvisibleFilled,
-  EyeTwoTone,
-  GoogleCircleFilled,
-  LockOutlined,
-  MailOutlined,
-  UserOutlined
-} from '@ant-design/icons';
+import { EyeInvisibleFilled, EyeTwoTone, LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button } from '../index';
 import icons from '../../utils/icon';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { StudentLogin } from '../../apis/UserServices';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../store/useUserStore';
@@ -24,7 +15,8 @@ const Login = () => {
   const [payload, setPayload] = useState({ username: '', password: '' });
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { setModal, role } = useUserStore();
+  const { setModal, role, resetUserStore } = useUserStore();
+  const location = useLocation();
 
   const { FaSignInAlt, FcGoogle } = icons;
 
@@ -32,14 +24,40 @@ const Login = () => {
     setPayload(values);
   };
 
+  const handleLoginGoogle = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+  };
+
+  // Capture the token from the URL
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const token = queryParams.get('token');
+    const role = queryParams.get('role');
+
+    if (token !== null && token !== 'null') {
+      // Lưu trữ token và chuyển hướng dựa trên vai trò
+      setModal(token, role, true);
+      navigate(roleForComponent[role]);
+      toast.success('Login SuccessFull');
+    } else if (token === 'null') {
+      resetUserStore();
+      toast.error('Login Fail');
+      // Chỉ thông báo lỗi nếu không có token và không ở trang login
+      if (location.pathname === 'public/login') {
+        navigate('public/login'); // Điều hướng về login chỉ khi cần thiết
+      }
+      // Xóa modal nếu không có token
+    }
+  }, [location.search]); // Theo dõi chỉ location.search
+
   const handleLogin = async () => {
     if (payload.username && payload.password) {
       setIsLoading(true);
       const response = await StudentLogin(payload);
       setIsLoading(false);
-      if (response && response.data.token) {
+      if (response && response?.data?.token) {
         ///// set token
-        setModal(response.data.token, response.data.role, '', true);
+        setModal(response.data.token, response.data.role, true);
         console.log(response);
 
         navigate(roleForComponent[role]);
@@ -47,13 +65,10 @@ const Login = () => {
       } else {
         if (response && response.status === 400) {
           toast.error(response.data.message);
+          console.log(response.data.message)
         }
       }
     }
-  };
-
-  const handleLoginGoogle = () => {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
   const handleInputChange = e => {

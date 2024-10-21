@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { DialogContent, DialogActions, Box, Typography, Slider, Button } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
-import { Crop as CropIcon } from '@mui/icons-material'; // Sửa lại để import đúng
+import { Crop as CropIcon } from '@mui/icons-material';
 import Cropper from 'react-easy-crop';
+import getCroppedImg from './CropImage.jsx';
 
-export const CropEasy = ({ photoURL, setOpenCrop }) => {
+export const CropEasy = ({ photoURL, setOpenCrop, setPhotoURL, setFile }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   const cropComplete = (croppedArea, croppedAreaPixels) => {
@@ -17,15 +19,18 @@ export const CropEasy = ({ photoURL, setOpenCrop }) => {
   const cropImage = async () => {
     setLoading(true);
     try {
-      const { file, url } = await getCroppedImg(photoURL, croppedAreaPixels, rotation); // Gọi hàm crop ảnh
+      const { file, url } = await getCroppedImg(photoURL, croppedAreaPixels, rotation);
       setPhotoURL(url);
       setFile(file);
-      setOpenCrop(false); // Đóng modal sau khi crop thành công
+      setOpenCrop(false);
     } catch (error) {
-      console.error("Error cropping image:", error);
+      console.error('Error cropping image:', error);
+    } finally {
+      setLoading(false); // Ensure loading is set to false in both success and error cases
     }
-    setLoading(false);
   };
+
+  const zoomPercent = value => `${Math.round(value * 100)}%`;
 
   return (
     <>
@@ -62,33 +67,40 @@ export const CropEasy = ({ photoURL, setOpenCrop }) => {
               max={3}
               step={0.1}
               value={zoom}
-              onChange={(e, zoom) => setZoom(zoom)}
+              onChange={(e, newValue) => setZoom(newValue)} // Ensure newValue is a number
             />
           </Box>
           <Box>
-            <Box sx={{ width: '100%', mb: 1 }}>
-              <Typography>Rotation: {rotation}</Typography>
-              <Slider
-                valueLabelDisplay="auto"
-                min={0}
-                max={360}
-                value={rotation}
-                onChange={(e, rotation) => setRotation(rotation)}
-              />
-            </Box>
+            <Typography>Rotation: {rotation}°</Typography>
+            <Slider
+              valueLabelDisplay="auto"
+              min={0}
+              max={360}
+              step={1} // Optional: Add a step for rotation for smoother increments
+              value={rotation}
+              onChange={(e, newRotation) => setRotation(newRotation)} // Ensure newRotation is a number
+            />
           </Box>
         </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 2,
-            flexWrap: 'wrap'
-          }}
-        >
-          <Button variant="outlined" startIcon={<Cancel />} onClick={() => setOpenCrop(false)}>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          {/* Uncomment if you want the Cancel button */}
+          {/* <Button
+            variant="outlined"
+            startIcon={<Cancel />}
+            onClick={() => {
+              setOpenCrop(false);
+              setPhotoURL(null);
+              setFile(null);
+            }}
+          >
             Cancel
-          </Button>
-          <Button variant="contained" startIcon={<CropIcon />} onClick={cropImage => setOpenCrop(false)}>
+          </Button> */}
+          <Button
+            variant="contained"
+            startIcon={<CropIcon />}
+            onClick={cropImage}
+            disabled={loading} // Disable button if loading
+          >
             Crop
           </Button>
         </Box>
@@ -98,7 +110,3 @@ export const CropEasy = ({ photoURL, setOpenCrop }) => {
 };
 
 export default CropEasy;
-
-const zoomPercent = value => {
-  return `${Math.round(value * 100)}%`;
-};
