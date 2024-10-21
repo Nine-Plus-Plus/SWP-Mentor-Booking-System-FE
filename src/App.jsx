@@ -75,7 +75,6 @@ function App() {
           <Route path={path.STUDENT_GROUP} element={<StudentGroup />} />
           <Route path={`${path.STUDENT_GROUP}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_LIST_NOTIFICATION} element={<ListNotification />} />
-          {/* <Route path={`${path.STUDENT_GROUP}/${path.LIST_GROUP}`} element={<ListGroup />} /> */}
           <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_PROFILE_NAME_ID} element={<UserProfile />} />
@@ -124,7 +123,6 @@ function App() {
           <Route path={path.ADMIN_SEMESTER_MANAGER} element={<SemesterManager />} />
           <Route path={path.ADMIN_CLASS_MANAGER} element={<ClassManager />} />
           <Route path={path.ADMIN_TOPIC_MANAGER} element={<TopicManager />} />
-          {/* <Route path={path.ADMIN_USER_MANAGER} element={<UserList />} /> */}
         </Route>
       </Routes>
     </div>

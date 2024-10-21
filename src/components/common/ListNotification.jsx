@@ -8,18 +8,18 @@ const ListNotification = () => {
   const [notis, setNotis] = useState([]);
   const { userData } = useUserStore();
   useEffect(() => {
-    const fetchAllNotiByReceiverId = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await getAllNotiByReceiverId(userData?.user?.id, token);
-        console.log(response);
-        response?.statusCode === 200 ? setNotis(response?.notificationsDTOList) : setNotis([]);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchAllNotiByReceiverId();
   }, [userData]);
+  const fetchAllNotiByReceiverId = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await getAllNotiByReceiverId(userData?.user?.id, token);
+      console.log(response);
+      response?.statusCode === 200 ? setNotis(response?.notificationsDTOList) : setNotis([]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
@@ -30,6 +30,7 @@ const ListNotification = () => {
           notis?.map(noti => (
             <NotificationItem
               key={noti?.id}
+              notiId={noti?.id}
               type={noti.type}
               senderName={noti?.sender?.fullName}
               content={noti?.message}
@@ -37,6 +38,9 @@ const ListNotification = () => {
               senderId={noti?.sender?.id}
               groupName={noti?.groupDTO?.groupName}
               groupId={noti?.groupDTO?.id}
+              studentSenderId={noti?.sender?.student?.id}
+              updateActionClick={fetchAllNotiByReceiverId}
+              notiAction={noti?.action}
             />
           ))
         )}

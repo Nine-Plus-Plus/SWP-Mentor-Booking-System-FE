@@ -32,3 +32,20 @@ export const createNoti = (data, token) =>
       reject(error);
     }
   });
+
+export const updateAction = (id, data, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'put',
+        url: `api/user/update-noti/${id}`,
+        data: data,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });

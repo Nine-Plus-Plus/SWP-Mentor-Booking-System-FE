@@ -73,6 +73,25 @@ export const getAllBookingForGroupByStatus = (groupId, status, token) =>
     }
   });
 
+export const getAllBookingByStats = (status, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/admin/get-all-by-status/`,
+        params: {
+          status: status
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 export const acceptBooking = (id, token) =>
   new Promise(async (resolve, reject) => {
     try {
