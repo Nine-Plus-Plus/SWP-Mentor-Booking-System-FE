@@ -5,7 +5,7 @@ export const getAllGroup = token =>
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: `api/admin/get-classes-by-semester/${semesterId}`,
+        url: `api/user/get-all-groups`,
         headers: {
           Authorization: `Bearer ${token}`
         }
