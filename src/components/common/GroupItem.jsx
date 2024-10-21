@@ -6,6 +6,8 @@ import { capitalizeFirstLetter } from '../../utils/commonFunction';
 import { Modal } from 'antd';
 import { toast } from 'react-toastify';
 import { getStudentNotGroup } from '../../apis/StudentServices';
+import { createNoti } from '../../apis/NotificationServices';
+import Swal from 'sweetalert2';
 
 const GroupItem = ({
   idGroup,
@@ -16,7 +18,8 @@ const GroupItem = ({
   totalMember,
   process,
   className,
-  leader
+  leader,
+  leaderId
   // setJoined,
   // joined
 }) => {
@@ -25,10 +28,6 @@ const GroupItem = ({
   const [addModal, setAddModal] = useState(false);
   const [studentNoGroup, setStudentNoGroup] = useState([]);
   const { userData } = useUserStore();
-
-  const handleJoinForStudent = () => {
-    setJoined(!joined);
-  };
 
   const showADdMemberModal = () => {
     setAddModal(true);
@@ -53,6 +52,59 @@ const GroupItem = ({
     };
     fetchStudentNoGroup();
   }, [addModal]);
+
+  const handleCreateNoti = async data => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await createNoti(data, token);
+      console.log(response);
+      response?.statusCode === 200 &&
+        Swal.fire({
+          title: 'Sent Request Successful!',
+          text: `Your request was sent successfully.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Đóng sau 3 giây
+          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleJoinForStudent = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      html: `Are you sure join this group?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, join it',
+      cancelButtonText: 'No!',
+      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+    }).then(result => {
+      if (result.isConfirmed) {
+        const dataSent = {
+          message: `Student ${userData?.user?.fullName} want join your group!`,
+          type: 'ADDGROUP',
+          sender: {
+            id: userData.user.id
+          },
+          reciver: {
+            id: leaderId
+          },
+          groupDTO: {
+            id: idGroup
+          }
+        };
+        console.log(dataSent);
+
+        handleCreateNoti(dataSent);
+        setJoined(!joined);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+      }
+    });
+  };
 
   const { role } = useUserStore();
   return (
@@ -102,7 +154,7 @@ const GroupItem = ({
                 bgHover={'hover:bg-green-400'}
                 htmlType={'button'}
                 fullWidth={'w-4/5'}
-                onClick={handleJoinForStudent}
+                onClick={() => handleJoinForStudent()}
               />
             ) : (
               <Button
@@ -174,6 +226,7 @@ const GroupItem = ({
               idUser={student?.user?.id}
               code={student?.studentCode}
               mentorAdd={userData?.id}
+              groupName={groupName}
             />
           ))}
         </div>
