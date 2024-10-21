@@ -17,11 +17,8 @@ const GroupItem = ({
   projectName,
   totalMember,
   process,
-  className,
   leader,
   leaderId
-  // setJoined,
-  // joined
 }) => {
   const [isShowMore, setIsShowMore] = useState(false);
   const [joined, setJoined] = useState(true);
