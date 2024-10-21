@@ -198,7 +198,7 @@ export const BookingItem = ({
       html: `Are you sure reject this booking?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, accept it',
+      confirmButtonText: 'Yes, reject it',
       cancelButtonText: 'No, cancel!',
       reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {

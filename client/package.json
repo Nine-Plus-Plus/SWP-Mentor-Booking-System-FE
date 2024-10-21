@@ -17,6 +17,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@mobiscroll/react": "npm:@mobiscroll/react-next-trial@^5.32.0",
     "@mui/icons-material": "^6.1.4",
     "@mui/material": "^6.1.4",
     "@types/react-big-calendar": "^1.8.12",

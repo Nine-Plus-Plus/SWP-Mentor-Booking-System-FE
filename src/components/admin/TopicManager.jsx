@@ -128,7 +128,7 @@ const TopicManager = () => {
         }
       };
       console.log(dataUpdate);
-      const response = await updateTopic(selectedTopic.id, updateData, token);
+      const response = await updateTopic(selectedTopic.id, dataUpdate, token);
       console.log(response);
 
       if (response && response.statusCode === 200) {
