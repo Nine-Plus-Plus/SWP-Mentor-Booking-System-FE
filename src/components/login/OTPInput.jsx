@@ -36,9 +36,10 @@ const OTPInput = () => {
   const onFinish = values => {
     const enteredOtp = otp.join('');
     if (enteredOtp === fakeOTP) {
+      toast.success('OTP matched')
       console.log('OTP matched:', enteredOtp); // In OTP nếu hợp lệ
       navigate('/public/change-password');
-    } else {
+    } else {      
       toast.error('OTP did not match.');
     }
   };

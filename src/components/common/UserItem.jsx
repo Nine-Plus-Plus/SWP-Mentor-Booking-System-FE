@@ -67,6 +67,20 @@ const UserItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        const dataSent = {
+          message: `Mentor ${userData.user.fullName} added you to the group: ${groupName} !`,
+          type: 'MESSAGE',
+          sender: {
+            id: userData.user.id
+          },
+          reciver: {
+            id: idStudent
+          },
+          groupDTO: {
+            id: addGroup
+          }
+        };
+        handleCreateNoti(dataSent);
         setAdded(true);
       } else toast.error(response?.message);
     } catch (error) {
@@ -104,7 +118,6 @@ const UserItem = ({
       const removeData = {
         id: removeId
       };
-
       const response = await removeMember(idGroup, removeData, token);
       console.log(response);
       if (response?.statusCode === 200) {
@@ -117,6 +130,20 @@ const UserItem = ({
           timerProgressBar: true,
           showConfirmButton: true
         });
+        const dataSent = {
+          message: `Leader ${userData.user.fullName} remove you from group: ${groupName} !`,
+          type: 'MESSAGE',
+          sender: {
+            id: userData.user.id
+          },
+          reciver: {
+            id: idUser
+          },
+          groupDTO: {
+            id: idGroup
+          }
+        };
+        handleCreateNoti(dataSent);
         onRemoveSuccess();
       }
     } catch (error) {
@@ -137,20 +164,6 @@ const UserItem = ({
     }).then(result => {
       if (result.isConfirmed) {
         handleRemove(id);
-        const dataSent = {
-          message: `Leader ${userData.user.fullName} remove you from group: ${groupName} !`,
-          type: 'MESSAGE',
-          sender: {
-            id: userData.user.id
-          },
-          reciver: {
-            id: studentDel
-          },
-          groupDTO: {
-            id: idGroup
-          }
-        };
-        handleCreateNoti(dataSent);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Cancelled', 'Cancelled this action!', 'error');
       }
@@ -170,20 +183,6 @@ const UserItem = ({
       if (result.isConfirmed) {
         if (mentorAdd) {
           handleAddMember();
-          const dataSent = {
-            message: `Mentor ${userData.user.fullName} added you to the group: ${groupName} !`,
-            type: 'MESSAGE',
-            sender: {
-              id: userData.user.id
-            },
-            reciver: {
-              id: idStudent
-            },
-            groupDTO: {
-              id: addGroup
-            }
-          };
-          handleCreateNoti(dataSent);
         } else {
           const dataSent = {
             message: `Student ${userData.user.fullName} want invite you to group: ${groupName} !`,

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search, UserItem } from '../index';
 import { getAllMentorByNameSkillDate } from '../../apis/MentorServices';
 import { capitalizeFirstLetter, convertSkillArray } from '../../utils/commonFunction';
@@ -9,9 +10,12 @@ const MentorList = () => {
   const [error, setError] = useState(null);
   const [mentors, setMentors] = useState([]);
   const { userData } = useUserStore();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const skillFromUrl = searchParams.get('skill') || '';  
   const [searchPayload, setSearchPayload] = useState({
     name: '',
-    skill: '',
+    skill: skillFromUrl ? [skillFromUrl] : [],
     date: ''
   });
 
@@ -51,6 +55,15 @@ const MentorList = () => {
     };
     fetchMentorByCondition();
   }, [searchPayload]);
+
+  useEffect(() => {
+    if (skillFromUrl) {
+      setSearchPayload(prevPayload => ({
+        ...prevPayload,
+        skill: [skillFromUrl]  // Ensure it's an array
+      }));
+    }
+  }, [skillFromUrl]);
 
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
