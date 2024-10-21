@@ -228,7 +228,7 @@ function StudentProfile() {
               {/* Bọc img trong một thẻ div hoặc span */}
               <div>
                 <img
-                  src={photoURL || profile?.photo || '/public/user-profile.jpg'}
+                  src={photoURL || profile?.photo || '/public/placeholder.jpg'}
                   alt="cover"
                   className="w-[150px] h-[150px] rounded-full object-cover"
                   style={{ cursor: 'pointer' }}

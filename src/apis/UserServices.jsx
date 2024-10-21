@@ -132,3 +132,16 @@ export const createUser = (data, token) =>
       reject(error);
     }
   });
+
+  /**
+   *  Update user avatar
+   */
+  export const updateAvatar = (id, data, token) =>
+    new Promise(async (resolve, reject) => {
+      try {
+        const formData = new FormData();
+        formData.append('avatarFile', data.avatarFile);
+      } catch (error) {
+        
+      }
+    })

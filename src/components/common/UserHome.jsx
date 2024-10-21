@@ -35,15 +35,14 @@ const UserHome = () => {
   const [mentors, setMentors] = useState([]);
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
-    const location = useLocation();
+  const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const skillFromUrl = searchParams.get('skill') || '';  
+  const skillFromUrl = searchParams.get('skill') || '';
   const [searchPayload, setSearchPayload] = useState({
     name: '',
     skill: skillFromUrl ? [skillFromUrl] : [],
     date: ''
   });
-  
 
   // Lấy danh sách top mentor
   useEffect(() => {
@@ -70,7 +69,7 @@ const UserHome = () => {
     };
     fetchSkill();
   }, []);
-    
+
   //     useEffect(() => {
   //   const fetchMentorByCondition = async () => {
   //     const token = localStorage.getItem('token');
@@ -142,7 +141,7 @@ const UserHome = () => {
                 key={skill.id}
                 to={`${path.USER_VIEW_MENTOR}?skill=${skill?.id}`}
                 className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105"
-                style={{ flex: '0 0 15.35%'  }}
+                style={{ flex: '0 0 15.35%' }}
               >
                 {skill.icon}
                 <div className="mt-2 text-dark text-center">{skill.skillName}</div>

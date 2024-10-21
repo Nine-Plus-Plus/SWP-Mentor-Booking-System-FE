@@ -10,33 +10,46 @@ const MentorList = () => {
   const [error, setError] = useState(null);
   const [mentors, setMentors] = useState([]);
   const { userData } = useUserStore();
+  // Inside the component
   const location = useLocation();
+
+  // This will parse the URL query params
   const searchParams = new URLSearchParams(location.search);
-  const skillFromUrl = searchParams.get('skill') || '';  
+  const skillFromUrl = searchParams.get('skill') || '';
+
   const [searchPayload, setSearchPayload] = useState({
     name: '',
-    skill: skillFromUrl ? [skillFromUrl] : [],
+    skill: skillFromUrl ? [skillFromUrl] : [], // Initialize skill from URL
     date: ''
   });
 
   useEffect(() => {
-    const fetchMentorByCondition = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const skills = searchPayload?.skill?.length > 0 ? searchPayload.skill.join(',') : undefined;
-        const name = searchPayload?.name || '';
-        const availableFrom = searchPayload?.date[0]?.format('DD-MM-YYYY HH:mm') || undefined;
-        const availableTo = searchPayload?.date[1]?.format('DD-MM-YYYY HH:mm') || undefined;
+    if (skillFromUrl) {
+      setSearchPayload(prevPayload => ({
+        ...prevPayload,
+        skill: [skillFromUrl] // Ensure it's an array
+      }));
+    }
+  }, [skillFromUrl]);
 
-        const response = await getAllMentorByNameSkillDate(name, skills, availableFrom, availableTo, token);
-        if (response && response.statusCode === 200) setMentors(response.mentorsDTOList);
-        else setMentors([]);
-      } catch (error) {
-        setError(error.message || 'Đã xảy ra lỗi');
-      }
-    };
-    fetchMentorByCondition();
-  }, []);
+  // useEffect(() => {
+  //   const fetchMentorByCondition = async () => {
+  //     const token = localStorage.getItem('token');
+  //     try {
+  //       const skills = searchPayload?.skill?.length > 0 ? searchPayload.skill.join(',') : undefined;
+  //       const name = searchPayload?.name || '';
+  //       const availableFrom = searchPayload?.date[0]?.format('DD-MM-YYYY HH:mm') || undefined;
+  //       const availableTo = searchPayload?.date[1]?.format('DD-MM-YYYY HH:mm') || undefined;
+
+  //       const response = await getAllMentorByNameSkillDate(name, skills, availableFrom, availableTo, token);
+  //       if (response && response.statusCode === 200) setMentors(response.mentorsDTOList);
+  //       else setMentors([]);
+  //     } catch (error) {
+  //       setError(error.message || 'Đã xảy ra lỗi');
+  //     }
+  //   };
+  //   fetchMentorByCondition();
+  // }, []);
 
   useEffect(() => {
     const fetchMentorByCondition = async () => {
