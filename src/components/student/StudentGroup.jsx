@@ -38,8 +38,6 @@ const StudentGroup = () => {
   const fetchGroup = async () => {
     const token = localStorage.getItem('token');
     const groupId = fullData?.groupDTO?.id;
-    console.log(groupId);
-
     try {
       const response = await getGroupById(groupId, token);
       console.log(response);
@@ -612,7 +610,7 @@ const StudentGroup = () => {
               idStudent={student?.id}
               idUser={student?.user?.id}
               code={student?.studentCode}
-              studentAdd={userData?.id}
+              studentAdd={userData?.user?.id}
               groupName={inGroup?.groupName}
             />
           ))}

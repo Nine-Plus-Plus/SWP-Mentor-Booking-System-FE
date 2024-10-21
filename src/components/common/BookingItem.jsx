@@ -45,7 +45,7 @@ export const BookingItem = ({
   const handleSentNotiOptionMentor = status => {
     members?.map(member => {
       const dataSent = {
-        message: `Mentor ${userData.user.fullName} want ${status} your booking: ${schedule}!`,
+        message: `Mentor ${userData.user.fullName} ${status} your booking: ${schedule}!`,
         type: 'MESSAGE',
         sender: {
           id: userData.user.id
