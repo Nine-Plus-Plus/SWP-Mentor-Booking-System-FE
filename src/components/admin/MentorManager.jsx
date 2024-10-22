@@ -1,6 +1,6 @@
 import { Button, DatePicker, Form, Input, InputNumber, message, Modal, Radio, Select, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { createMentor, deleteMentor, getAllMentors, updateMentor } from '../../apis/MentorServices';
+import { createMentor, deleteMentor, getAllMentors, importExcelMentor, updateMentor } from '../../apis/MentorServices';
 import { getAllSemester } from '../../apis/SemesterServices';
 import { getAllSkill } from '../../apis/SkillServices';
 import dayjs from 'dayjs';
@@ -15,6 +15,7 @@ const MentorManager = () => {
   const [error, setError] = useState(null);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [isImportModalVisible, setIsImportModalVisible] = useState(false);
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [form] = Form.useForm();
   const { Option } = Select;
@@ -167,6 +168,47 @@ const MentorManager = () => {
     }
   };
 
+  const handleImportExcel = async () => {
+    const token = localStorage.getItem('token');
+
+    // Đảm bảo rằng một tệp đã được chọn
+    if (fileList.length === 0) {
+      message.error('Please select a file to import!');
+      return;
+    }
+
+    try {
+      const response = await importExcelMentor(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+
+      if (response && response.statusCode === 200) {
+        // Cập nhật lại danh sách người dùng với thông tin mới
+        await fetchMentors(token); // Cập nhật lại danh sách mentors
+        setIsUpdateModalVisible(false);
+        setFileList([]);
+        message.success('Mentors imported successfully');
+      } else {
+        message.error('Import Excel thất bại');
+      }
+    } catch (error) {
+      console.error('Import Excel error:', error);
+      message.error('Import Excel thất bại: ' + error.message);
+    }
+  };
+
+  const fetchMentors = async token => {
+    try {
+      const response = await getAllMentors(token);
+      console.log(response);
+
+      // Cập nhật danh sách mentors từ API
+      setMentors(response.mentorsDTOList);
+    } catch (err) {
+      setError(err.message || 'Đã xảy ra lỗi');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCancelCreate = () => {
     form.resetFields();
     setIsCreateModalVisible(false);
@@ -177,6 +219,24 @@ const MentorManager = () => {
     form.resetFields();
     setIsUpdateModalVisible(false);
     setFileList([]);
+  };
+
+  // Import Excel
+  const showImportModal = () => {
+    setIsImportModalVisible(true);
+  };
+
+  const handleCancelImport = () => {
+    setIsImportModalVisible(false);
+    setFileList([]);
+  };
+
+  const handleFileChange = info => {
+    if (info.fileList.length > 0) {
+      setFileList(info.fileList.slice(-1)); // Chỉ giữ lại file cuối cùng được tải lên
+    } else {
+      setFileList([]);
+    }
   };
 
   const showUpdateModal = mentor => {
@@ -306,6 +366,9 @@ const MentorManager = () => {
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Mentor List</h1>
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Mentor
+      </Button>
+      <Button type="primary" onClick={showImportModal} style={{ marginBottom: '10px', marginLeft: '10px' }}>
+        Import Excel
       </Button>
       <Table columns={columns} bordered dataSource={mentors} rowKey="id" pagination={{ pageSize: 10 }} />
 
@@ -616,6 +679,27 @@ const MentorManager = () => {
             </Form.Item>
           </Form>
         </div>
+      </Modal>
+
+      {/* Modal for importing Excel */}
+      <Modal
+        title="Import Mentor từ Excel"
+        open={isImportModalVisible}
+        onOk={handleImportExcel}
+        onCancel={handleCancelImport}
+      >
+        <Dragger
+          accept=".xlsx, .xls"
+          beforeUpload={() => false} // Ngăn không cho upload tự động
+          fileList={fileList}
+          onChange={handleFileChange}
+        >
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">Click hoặc kéo thả file để tải lên</p>
+          <p className="ant-upload-hint">Chỉ chấp nhận file Excel (.xls, .xlsx)</p>
+        </Dragger>
       </Modal>
     </div>
   );

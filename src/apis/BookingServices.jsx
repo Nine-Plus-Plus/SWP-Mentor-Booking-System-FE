@@ -33,6 +33,22 @@ export const getAllActiveBooking = token =>
     }
   });
 
+export const getAllBookingBySemesterId = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/admin/get-booking-by-semesterId/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 export const getAllBookingForMentorByStatus = (mentorId, status, token) =>
   new Promise(async (resolve, reject) => {
     try {

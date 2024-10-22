@@ -111,8 +111,6 @@ const TopicManager = () => {
     const token = localStorage.getItem('token');
     try {
       const values = await form.validateFields();
-      const updateData = form.getFieldValue();
-
       const dataUpdate = {
         topicName: values.topicName,
         context: values.context,
@@ -127,16 +125,13 @@ const TopicManager = () => {
           id: values.mentorId
         }
       };
-      console.log(dataUpdate);
+
       const response = await updateTopic(selectedTopic.id, dataUpdate, token);
-      console.log(response);
 
-      if (response && response.statusCode === 200) {
-        // Cập nhật lại danh sách kỹ năng với thông tin mới
-        console.log(response);
-
-        setSkills(prevTopics =>
-          prevTopics.map(topic => (topic.id === response.topicsDTO.id ? response.topicsDTO : topic))
+      if (response?.statusCode === 200 && response?.topicDTO) {
+        // Cập nhật lại danh sách chủ đề với thông tin mới
+        setTopics(prevTopics =>
+          prevTopics.map(topic => (topic.id === response.topicDTO.id ? response.topicDTO : topic))
         );
         setIsUpdateModalVisible(false);
         message.success('Topic updated successfully');

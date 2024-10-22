@@ -16,6 +16,22 @@ export const getAllGroup = token =>
     }
   });
 
+export const getAllGroupBySemesterId = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/admin/get-groups-in-semester/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 export const getGroupByClassId = (id, token) =>
   new Promise(async (resolve, reject) => {
     try {
