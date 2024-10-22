@@ -64,6 +64,7 @@ const ClassList = ({ addGroup }) => {
             sameClass={true}
             idUser={mentorOfClass?.mentorInf?.id}
             code={userData?.aclass?.mentor?.mentorCode}
+            avatar={mentorOfClass?.mentorInf?.avatar}
           />
         )}
         {students?.length === 0 ? (
@@ -79,6 +80,7 @@ const ClassList = ({ addGroup }) => {
               isAdded={false}
               idUser={student?.user?.id}
               code={student?.studentCode}
+              avatar={student?.user?.avatar}
             />
           ))
         )}

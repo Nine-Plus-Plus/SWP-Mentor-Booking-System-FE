@@ -204,7 +204,7 @@ const GroupItem = ({
         open={addModal}
         onCancel={handleCancel}
         onOk={() => {
-          form.submit();
+          setAddModal(false);
         }}
         width={1500}
         style={{ top: 40 }}
@@ -224,6 +224,7 @@ const GroupItem = ({
               code={student?.studentCode}
               mentorAdd={userData?.id}
               groupName={groupName}
+              avatar={student?.user?.avatar}
             />
           ))}
         </div>
