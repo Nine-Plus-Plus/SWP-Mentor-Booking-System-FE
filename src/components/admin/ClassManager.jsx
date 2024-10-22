@@ -39,7 +39,7 @@ const ClassManager = () => {
 
   useEffect(() => {
     if (semesters?.length > 0) {
-      setSelectedSemester(semesters[semesters.length - 1].id);
+      setSelectedSemester(semesters[0].id);
     }
   }, [semesters]);
 

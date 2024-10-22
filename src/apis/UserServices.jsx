@@ -133,15 +133,55 @@ export const createUser = (data, token) =>
     }
   });
 
-  /**
-   *  Update user avatar
-   */
-  export const updateAvatar = (id, data, token) =>
-    new Promise(async (resolve, reject) => {
-      try {
-        const formData = new FormData();
-        formData.append('avatarFile', data.avatarFile);
-      } catch (error) {
-        
-      }
-    })
+export const checkExistEmail = data =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/auth/email-existed`,
+        data: data
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const checkOtpCorrect = data =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/auth/otp-existed`,
+        data: data
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const changePassword = data =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/auth/change-password`,
+        data: data
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+/**
+ *  Update user avatar
+ */
+export const updateAvatar = (id, data, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const formData = new FormData();
+      formData.append('avatarFile', data.avatarFile);
+    } catch (error) {}
+  });

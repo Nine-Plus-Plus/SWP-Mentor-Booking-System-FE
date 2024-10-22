@@ -13,6 +13,7 @@ export const AdminHome = () => {
   const [totalMentors, setTotalMentors] = useState(0);
   const [totalStudents, setTotalStudents] = useState(0);
   const [totalBookings, setTotalBookings] = useState(0);
+  const [totalTopics, setTotalTopics] = useState(0);
   const [totalGroups, setTotalGroups] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -225,21 +226,24 @@ export const AdminHome = () => {
           ))}
         </Select>
       </div>
-      <div className="gap-3 pb-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
-        <div className="bg-white p-8 rounded-lg border-2 border-sky-500 shadow-2xl flex flex-col items-center">
+      <div className="gap-3 pb-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
+        <div className="bg-white p-2 rounded-lg border-2 border-sky-500 shadow-2xl flex flex-col items-center">
           <h3 className="text-xl font-semibold">Total Mentors</h3>
           <p className="text-2xl font-bold">{totalMentors}</p>
         </div>
-        <div className="bg-white p-8 rounded-lg border-2 border-emerald-500 shadow-2xl flex flex-col items-center">
+        <div className="bg-white p-2 rounded-lg border-2 border-emerald-500 shadow-2xl flex flex-col items-center">
           <h3 className="text-xl font-semibold">Total Students</h3>
           <p className="text-2xl font-bold">{totalStudents}</p>
         </div>
-        <div className="bg-white p-8 rounded-lg border-2 border-orange-500 shadow-2xl flex flex-col items-center">
+        <div className="bg-white p-2 rounded-lg border-2 border-purple-500 shadow-2xl flex flex-col items-center">
+          <h3 className="text-xl font-semibold">Total Topics</h3>
+          <p className="text-2xl font-bold">{totalTopics}</p>
+        </div>
+        <div className="bg-white p-2 rounded-lg border-2 border-orange-500 shadow-2xl flex flex-col items-center">
           <h3 className="text-xl font-semibold">Total Bookings</h3>
           <p className="text-2xl font-bold">{totalBookings}</p>
         </div>
-        <div className="bg-white p-8 rounded-lg border-2 border-yellow-500 shadow-2xl flex flex-col items-center">
-          {/* chỉnh thành class */}
+        <div className="bg-white p-2 rounded-lg border-2 border-yellow-500 shadow-2xl flex flex-col items-center">
           <h3 className="text-xl font-semibold">Total Groups</h3>
           <p className="text-2xl font-bold">{totalGroups}</p>
         </div>
@@ -259,16 +263,18 @@ export const AdminHome = () => {
           </div>
           <ul className="mt-4 text-center">
             <li className="text-green-600 font-medium">
-              Accepted: {bookingStatus.CONFIRMED > 0 ? (bookingStatus.CONFIRMED / totalBookings) * 100 : 0}%
+              Accepted: {bookingStatus.CONFIRMED > 0 ? ((bookingStatus.CONFIRMED / totalBookings) * 100).toFixed(2) : 0}
+              %
             </li>
             <li className="text-red-600 font-medium">
-              Rejected: {bookingStatus.CONFIRMED > 0 ? (bookingStatus.REJECTED / totalBookings) * 100 : 0}%
+              Rejected: {bookingStatus.CONFIRMED > 0 ? ((bookingStatus.REJECTED / totalBookings) * 100).toFixed(2) : 0}%
             </li>
             <li className="text-yellow-600 font-medium">
-              Pending: {bookingStatus.CONFIRMED > 0 ? (bookingStatus.PENDING / totalBookings) * 100 : 0}%
+              Pending: {bookingStatus.CONFIRMED > 0 ? ((bookingStatus.PENDING / totalBookings) * 100).toFixed(2) : 0}%
             </li>
             <li className="text-gray-600 font-medium">
-              Cancelled: {bookingStatus.CONFIRMED > 0 ? (bookingStatus.CANCELLED / totalBookings) * 100 : 0}%
+              Cancelled:{' '}
+              {bookingStatus.CONFIRMED > 0 ? ((bookingStatus.CANCELLED / totalBookings) * 100).toFixed(2) : 0}%
             </li>
           </ul>
         </div>

@@ -3,13 +3,18 @@ import { Form } from 'antd';
 import { Button } from '../index';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '../../store/useUserStore';
+import { checkExistEmail, checkOtpCorrect } from '../../apis/UserServices';
+import icons from '../../utils/icon';
 
 const OTPInput = () => {
   const [disable, setDisable] = useState(false); // Trạng thái vô hiệu hóa nút
   const [timerCount, setTimerCount] = useState(30); // Thời gian đếm ngược (30 giây)
   const [otp, setOtp] = useState(['', '', '', '', '']); // State cho từng ô OTP
-  const [fakeOTP] = useState('12345'); // Fake OTP for testing
   const navigate = useNavigate();
+  const { email, setStoreOTP } = useUserStore();
+  const { FaSignInAlt } = icons;
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Đếm ngược thời gian cho việc gửi lại OTP
@@ -27,7 +32,7 @@ const OTPInput = () => {
 
   const handleResendClick = () => {
     if (disable) return; // Nếu disable là true, không thực thi tiếp
-
+    handleResendOtp();
     setDisable(true); // Vô hiệu hóa nút
     setTimerCount(30); // Đặt lại thời gian đếm ngược về 30 giây
     // Logic gửi lại OTP
@@ -35,11 +40,29 @@ const OTPInput = () => {
 
   const onFinish = values => {
     const enteredOtp = otp.join('');
-    if (enteredOtp === fakeOTP) {
-      toast.success('OTP matched')
-      console.log('OTP matched:', enteredOtp); // In OTP nếu hợp lệ
+    const dataSent = {
+      otpCode: enteredOtp,
+      email: email
+    };
+    handleCheckOtp(dataSent);
+  };
+
+  const handleResendOtp = async () => {
+    const dataSent = {
+      email: email
+    };
+    const response = await checkExistEmail(dataSent);
+  };
+
+  const handleCheckOtp = async dataSend => {
+    setIsLoading(true);
+    const response = await checkOtpCorrect(dataSend);
+    setIsLoading(false);
+    if (response?.statusCode === 200) {
+      toast.success('OTP matched');
+      setStoreOTP(dataSend.otpCode);
       navigate('/public/change-password');
-    } else {      
+    } else {
       toast.error('OTP did not match.');
     }
   };
@@ -50,13 +73,8 @@ const OTPInput = () => {
   };
 
   const handleKeyDown = (event, index) => {
-    console.log('Key pressed:', event.key);
-  
     if (event.key === 'Backspace') {
-      console.log('Backspace detected at index:', index);
-  
       const newOtp = [...otp];
-  
       if (newOtp[index] === '') {
         // Nếu ô hiện tại đã rỗng, di chuyển focus về ô trước đó
         if (index > 0) {
@@ -67,12 +85,11 @@ const OTPInput = () => {
         }
       } else {
         // Nếu ô hiện tại có ký tự, chỉ xóa ký tự tại ô đó
-        newOtp[index] = ''; 
+        newOtp[index] = '';
         setOtp(newOtp);
       }
     }
   };
-  
 
   const handleChange = (event, index) => {
     const value = event.target.value;
@@ -120,7 +137,7 @@ const OTPInput = () => {
                   <div className="w-16 h-16 sm:w-12 sm:h-12" key={index}>
                     <input
                       maxLength="1"
-                      className="w-full h-full flex items-center justify-center text-center px-3 outline-none rounded-xl border border-4 border-gray-300 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700"
+                      className="w-full h-full flex items-center justify-center text-center px-3 outline-none rounded-xl border-4 border-gray-300 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700"
                       type="text"
                       value={otp[index]}
                       onChange={event => handleChange(event, index)}
@@ -139,6 +156,8 @@ const OTPInput = () => {
                 bgHover="hover:bg-main-2"
                 text={'Verify Account'}
                 htmlType="submit"
+                isLoading={isLoading}
+                IcBefore={FaSignInAlt}
               />
             </Form.Item>
 

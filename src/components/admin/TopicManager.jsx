@@ -50,7 +50,7 @@ const TopicManager = () => {
 
   useEffect(() => {
     if (semesters?.length > 0) {
-      setSelectedSemester(semesters[semesters.length - 1].id);
+      setSelectedSemester(semesters[0].id);
     }
   }, [semesters]);
 
@@ -322,9 +322,25 @@ const TopicManager = () => {
   return (
     <div className="w-full h-full bg-gray-100 p-2">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Topic List</h1>
+
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Topic
       </Button>
+      <div className="w-[10vw] mb-3">
+        <Select
+          placeholder="Select Semester"
+          value={selectedSemester}
+          onChange={value => setSelectedSemester(value)}
+          style={{ backgroundColor: '#F3F4F6', width: '100%' }}
+          className="rounded-lg shadow-sm border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition"
+        >
+          {semesters?.map(semester => (
+            <Select.Option key={semester.id} value={semester.id}>
+              {semester.semesterName}
+            </Select.Option>
+          ))}
+        </Select>
+      </div>
       <Table
         columns={columns}
         bordered
@@ -411,7 +427,7 @@ const TopicManager = () => {
                 }
               ]}
             >
-              <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
+              <Select placeholder="Select Semester">
                 {semesters?.map(semester => (
                   <Select.Option key={semester.id} value={semester.id}>
                     {semester.semesterName}
@@ -523,7 +539,7 @@ const TopicManager = () => {
                 }
               ]}
             >
-              <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
+              <Select placeholder="Select Semester">
                 {semesters?.map(semester => (
                   <Select.Option key={semester.id} value={semester.id}>
                     {semester.semesterName}
