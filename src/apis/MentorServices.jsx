@@ -117,3 +117,23 @@ export const getAllMentorByNameSkillDate = (name, skill, availableFrom, availabl
     }
   });
 
+export const importExcelMentor = (file, token) =>
+  new Promise(async (resolve, reject) => {
+    const formData = new FormData();
+    formData.append('file', file); // Thêm tệp tin vào formData
+
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: 'api/admin/import-mentor',
+        data: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });

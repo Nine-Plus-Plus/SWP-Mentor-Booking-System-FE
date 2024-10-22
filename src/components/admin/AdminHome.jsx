@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
-import { getAllBookingByStats } from '../../apis/BookingServices';
-import { getAllGroup } from '../../apis/GroupServices';
+import { getAllBookingBySemesterId, getAllBookingByStats } from '../../apis/BookingServices';
+import { getAllGroup, getAllGroupBySemesterId } from '../../apis/GroupServices';
 import { getAllSemester } from '../../apis/SemesterServices';
 import { Select } from 'antd';
 import { getAllMentors } from '../../apis/MentorServices';
-import { getStudents } from '../../apis/StudentServices';
+import { getStudents, getStudentsBySemesterId } from '../../apis/StudentServices';
 
 export const AdminHome = () => {
   const [mentorRatings, setMentorRatings] = useState([]);
@@ -42,32 +42,56 @@ export const AdminHome = () => {
   }, []);
 
   useEffect(() => {
-    const fetchAllBooking = async status => {
-      const response = await getAllBookingByStats(status, token);
+    if (semesters?.length > 0) {
+      setSelectedSemester(semesters[0].id);
+    }
+  }, [semesters]);
+
+  useEffect(() => {
+    const fetchAllBooking = async () => {
+      const response = await getAllBookingBySemesterId(selectedSemester, token);
       if (response?.statusCode === 200) {
-        setBookingStatus(prev => ({
-          ...prev,
-          [status]: response.bookingDTOList.length || 0
-        }));
+        response.bookingDTOList.map(booking => {
+          const { status } = booking;
+          setBookingStatus(prev => ({
+            ...prev,
+            [status]: (prev[status] || 0) + 1
+          }));
+        });
         setTotalBookings(prevTotal => prevTotal + response.bookingDTOList.length);
-      }
+      } else
+        setBookingStatus({
+          CONFIRMED: 0,
+          REJECTED: 0,
+          PENDING: 0,
+          CANCELLED: 0
+        });
     };
     setTotalBookings(0);
-    Object.keys(bookingStatus).forEach(status => {
-      fetchAllBooking(status);
-    });
-  }, []);
+    fetchAllBooking();
+  }, [selectedSemester]);
 
   useEffect(() => {
     const fetchAllStudent = async () => {
-      const response = await getStudents(token);
+      const response = await getStudentsBySemesterId(selectedSemester, token);
       if (response?.statusCode === 200) {
         setTotalStudents(prevTotal => prevTotal + response.studentsDTOList.length);
       }
     };
     setTotalStudents(0);
     fetchAllStudent();
-  }, []);
+  }, [selectedSemester]);
+
+  useEffect(() => {
+    const fetchAllGroup = async () => {
+      const response = await getAllGroupBySemesterId(selectedSemester, token);
+      if (response?.statusCode === 200) {
+        setTotalGroups(prevTotal => prevTotal + response.groupDTOList.length);
+      }
+    };
+    setTotalGroups(0);
+    fetchAllGroup();
+  }, [selectedSemester]);
 
   useEffect(() => {
     const fetchAllMentor = async () => {
@@ -81,46 +105,6 @@ export const AdminHome = () => {
     setTotalMentors(0);
     fetchAllMentor();
   }, []);
-
-  useEffect(() => {
-    const fetchAllGroup = async () => {
-      const response = await getAllGroup(semesters, token);
-      if (response?.statusCode === 200) {
-        setTotalGroups(prevTotal => prevTotal + response.groupDTOList.length);
-      }
-    };
-    setTotalGroups(0);
-    fetchAllGroup();
-  }, [semesters]);
-
-  // useEffect(() => {
-  //   const fetchMockData = () => {
-  //     const mockMentorRatings = Array.from({ length: 724 }, () => Math.random() * 5);
-  //     const mockBookingStatus = {
-  //       accepted: 65,
-  //       rejected: 25,
-  //       Pending: 10
-  //     };
-
-  //     const mockTotals = {
-  //       mentors: 120,
-  //       students: 450,
-  //       bookings: 300,
-  //       groups: 15
-  //     };
-
-  //     setTimeout(() => {
-  //       setMentorRatings(mockMentorRatings);
-  //       setBookingStatus(mockBookingStatus);
-  //       setTotalMentors(mockTotals.mentors);
-  //       setTotalStudents(mockTotals.students);
-  //       setTotalBookings(mockTotals.bookings);
-  //       setTotalGroups(mockTotals.groups);
-  //     }, 2000);
-  //   };
-
-  //   fetchMockData();
-  // }, []);
 
   // Set giá trị star đến số gần nhất
   const roundStarRating = rating => {
@@ -274,10 +258,18 @@ export const AdminHome = () => {
             <Pie data={pieData} options={pieOptions} />
           </div>
           <ul className="mt-4 text-center">
-            <li className="text-green-600 font-medium">Accepted: {bookingStatus.CONFIRMED}%</li>
-            <li className="text-red-600 font-medium">Rejected: {bookingStatus.REJECTED}%</li>
-            <li className="text-yellow-600 font-medium">Pending: {bookingStatus.PENDING}%</li>
-            <li className="text-gray-600 font-medium">Cancelled: {bookingStatus.CANCELLED}%</li>
+            <li className="text-green-600 font-medium">
+              Accepted: {bookingStatus.CONFIRMED > 0 ? (bookingStatus.CONFIRMED / totalBookings) * 100 : 0}%
+            </li>
+            <li className="text-red-600 font-medium">
+              Rejected: {bookingStatus.CONFIRMED > 0 ? (bookingStatus.REJECTED / totalBookings) * 100 : 0}%
+            </li>
+            <li className="text-yellow-600 font-medium">
+              Pending: {bookingStatus.CONFIRMED > 0 ? (bookingStatus.PENDING / totalBookings) * 100 : 0}%
+            </li>
+            <li className="text-gray-600 font-medium">
+              Cancelled: {bookingStatus.CONFIRMED > 0 ? (bookingStatus.CANCELLED / totalBookings) * 100 : 0}%
+            </li>
           </ul>
         </div>
       </div>
