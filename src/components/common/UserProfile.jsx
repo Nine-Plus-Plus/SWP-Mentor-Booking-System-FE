@@ -177,21 +177,21 @@ function StudentProfile() {
         // Cập nhật state với dữ liệu từ API
         setProfile({
           code: roleProfile == 'MENTOR' ? user?.mentorCode : user?.studentCode,
-          userName: user?.user?.username || 'N/A',
-          fullName: user?.user?.fullName || 'N/A',
-          email: user?.user?.email || 'N/A',
-          birthDate: user?.user?.birthDate || 'N/A',
+          userName: user?.user?.username || '',
+          fullName: user?.user?.fullName || '',
+          email: user?.user?.email || '',
+          birthDate: user?.user?.birthDate || '',
           photo: user?.user?.avatar || '/public/cover.jpg',
-          address: user?.user?.address || 'N/A',
-          phone: user?.user?.phone || 'N/A',
-          gender: user?.user?.gender || 'N/A',
+          address: user?.user?.address || '',
+          phone: user?.user?.phone || '',
+          gender: user?.user?.gender || '',
           point: roleProfile === 'MENTOR' ? user?.star : user?.point,
           expertise:
             roleProfile === 'MENTOR' ? user?.skills?.map(skill => skill.skillName).join(', ') : user?.expertise,
           className: roleProfile === 'MENTOR' ? user?.assignedClass?.className : user?.aclass?.className,
-          timeRemain: user?.totalTimeRemain || 'N/A',
-          groupProject: group?.project?.projectName || 'N/A',
-          groupRole: user?.groupRole || 'N/A'
+          timeRemain: user?.totalTimeRemain || '',
+          groupProject: group?.project?.projectName || '',
+          groupRole: user?.groupRole || ''
         });
       } catch (err) {
         console.error('Lỗi khi gọi API:', err);
