@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getStudents, getStudentById, updateStudent, deleteStudent, createStudent } from '../../apis/StudentServices';
+import {
+  getStudents,
+  getStudentById,
+  updateStudent,
+  deleteStudent,
+  createStudent,
+  importExcelStudent
+} from '../../apis/StudentServices';
 import { Table, Button, message, Form, Modal, Input, Radio, Select, DatePicker } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -13,6 +20,7 @@ function StudentManager() {
   const [error, setError] = useState(null);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [isImportModalVisible, setIsImportModalVisible] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [semesters, setSemesters] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState(null);
@@ -220,6 +228,65 @@ function StudentManager() {
     setFileList([]);
   };
 
+  // Import Excel
+  const showImportModal = () => {
+    setIsImportModalVisible(true);
+  };
+
+  const handleCancelImport = () => {
+    setIsImportModalVisible(false);
+    setFileList([]);
+  };
+
+  const handleFileChange = info => {
+    if (info.fileList.length > 0) {
+      setFileList(info.fileList.slice(-1)); // Chỉ giữ lại file cuối cùng được tải lên
+    } else {
+      setFileList([]);
+    }
+  };
+
+  const handleImportExcel = async () => {
+    const token = localStorage.getItem('token');
+
+    // Đảm bảo rằng một tệp đã được chọn
+    if (fileList.length === 0) {
+      message.error('Please select a file to import!');
+      return;
+    }
+
+    try {
+      const response = await importExcelStudent(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+
+      if (response && response.statusCode === 200) {
+        // Cập nhật lại danh sách người dùng với thông tin mới
+        await fetchStudents(token); // Cập nhật lại danh sách mentors
+        setIsUpdateModalVisible(false);
+        setFileList([]);
+        message.success('Mentors imported successfully');
+      } else {
+        message.error('Import Excel thất bại');
+      }
+    } catch (error) {
+      console.error('Import Excel error:', error);
+      message.error('Import Excel thất bại: ' + error.message);
+    }
+  };
+
+  const fetchStudents = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await getStudents(token);
+      console.log(response);
+
+      setStudents(response.studentsDTOList);
+    } catch (err) {
+      setError(err.message || 'Đã xảy ra lỗi');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return <div className="text-center text-gray-700">Loading...</div>;
   }
@@ -320,6 +387,9 @@ function StudentManager() {
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Student List</h1>
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Student
+      </Button>
+      <Button type="primary" onClick={showImportModal} style={{ marginBottom: '10px', marginLeft: '10px' }}>
+        Import Excel
       </Button>
       <Table columns={columns} bordered dataSource={students} rowKey="id" pagination={{ pageSize: 10 }} />
 
@@ -649,6 +719,26 @@ function StudentManager() {
             </Form.Item>
           </Form>
         </div>
+      </Modal>
+      {/* Modal for importing Excel */}
+      <Modal
+        title="Import Mentor từ Excel"
+        open={isImportModalVisible}
+        onOk={handleImportExcel}
+        onCancel={handleCancelImport}
+      >
+        <Dragger
+          accept=".xlsx, .xls"
+          beforeUpload={() => false} // Ngăn không cho upload tự động
+          fileList={fileList}
+          onChange={handleFileChange}
+        >
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">Click hoặc kéo thả file để tải lên</p>
+          <p className="ant-upload-hint">Chỉ chấp nhận file Excel (.xls, .xlsx)</p>
+        </Dragger>
       </Modal>
     </div>
   );
