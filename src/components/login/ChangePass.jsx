@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 const ChangePass = () => {
   const [form] = Form.useForm();
   const [isShowPass, setIsShowPass] = useState(false);
-  const [payload, setPayload] = useState({});
   const { email, otp, resetChangePass } = useUserStore();
   const { FaSignInAlt } = icons;
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +32,7 @@ const ChangePass = () => {
     if (response?.statusCode === 200) {
       toast.success('Change password successFully!');
     } else toast.error('Change password fail, please try again!');
-    navigate('public/login');
+    navigate('/public/login');
     resetChangePass();
   };
 
