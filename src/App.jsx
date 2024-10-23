@@ -39,8 +39,7 @@ function App() {
   const { token, role, resetUserStore } = useUserStore();
   useEffect(() => {
     if (!localStorage?.getItem('token') || localStorage?.getItem('token') === 'null') resetUserStore();
-  }, [useUserStore]);
-  console.log(token);
+  }, []);
 
   return (
     <div>

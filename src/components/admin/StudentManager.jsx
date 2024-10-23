@@ -5,7 +5,8 @@ import {
   updateStudent,
   deleteStudent,
   createStudent,
-  importExcelStudent
+  importExcelStudent,
+  getStudentsBySemesterId
 } from '../../apis/StudentServices';
 import { Table, Button, message, Form, Modal, Input, Radio, Select, DatePicker } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
@@ -25,28 +26,10 @@ function StudentManager() {
   const [semesters, setSemesters] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState(null);
   const [form] = Form.useForm();
   const [uploadedAvatar, setUploadedAvatar] = useState(null); // Lưu URL ảnh sau khi upload
   const [fileList, setFileList] = useState([]);
-
-  useEffect(() => {
-    const fetchStudents = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await getStudents(token);
-        console.log(response);
-
-        setStudents(response.studentsDTOList);
-      } catch (err) {
-        setError(err.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStudents();
-  }, []);
+  const [filterSemester, setFilterSemester] = useState(null);
 
   useEffect(() => {
     const fetchSemesters = async () => {
@@ -62,6 +45,28 @@ function StudentManager() {
     };
     fetchSemesters();
   }, []);
+
+  useEffect(() => {
+    if (semesters?.length > 0) {
+      setFilterSemester(semesters[0].id);
+    }
+  }, [semesters]);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await getStudentsBySemesterId(filterSemester, token);
+        setStudents(response.studentsDTOList);
+      } catch (err) {
+        setError(err.message || 'Đã xảy ra lỗi');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [filterSemester]);
 
   useEffect(() => {
     const fetchClassBySemesterId = async () => {
@@ -391,8 +396,22 @@ function StudentManager() {
       <Button type="primary" onClick={showImportModal} style={{ marginBottom: '10px', marginLeft: '10px' }}>
         Import Excel
       </Button>
+      <div className="w-[10vw] mb-3">
+        <Select
+          placeholder="Select Semester"
+          value={filterSemester}
+          onChange={value => setFilterSemester(value)}
+          style={{ backgroundColor: '#F3F4F6', width: '100%' }}
+          className="rounded-lg shadow-sm border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition"
+        >
+          {semesters?.map(semester => (
+            <Select.Option key={semester.id} value={semester.id}>
+              {semester.semesterName}
+            </Select.Option>
+          ))}
+        </Select>
+      </div>
       <Table columns={columns} bordered dataSource={students} rowKey="id" pagination={{ pageSize: 10 }} />
-
       {/* Modal for updating student */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
         <div className="max-h-96 overflow-y-auto p-5">
