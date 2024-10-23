@@ -7,6 +7,7 @@ import { getAllSemester } from '../../apis/SemesterServices';
 import { Select } from 'antd';
 import { getAllMentors } from '../../apis/MentorServices';
 import { getStudents, getStudentsBySemesterId } from '../../apis/StudentServices';
+import { getTopicByIdSemester } from '../../apis/TopicServices';
 
 export const AdminHome = () => {
   const [mentorRatings, setMentorRatings] = useState([]);
@@ -92,6 +93,17 @@ export const AdminHome = () => {
     };
     setTotalGroups(0);
     fetchAllGroup();
+  }, [selectedSemester]);
+
+  useEffect(() => {
+    const fetchAllTopic = async () => {
+      const response = await getTopicByIdSemester(selectedSemester, token);
+      if (response?.statusCode === 200) {
+        setTotalTopics(prevTotal => prevTotal + response.topicDTOList.length);
+      }
+    };
+    setTotalTopics(0);
+    fetchAllTopic();
   }, [selectedSemester]);
 
   useEffect(() => {
