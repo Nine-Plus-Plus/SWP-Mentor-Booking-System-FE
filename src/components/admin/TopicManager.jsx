@@ -1,7 +1,7 @@
 import { Button, Form, Input, message, Modal, Select, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getAllSemester } from '../../apis/SemesterServices';
-import { createTopic, deleteTopic, getAllTopic, updateTopic } from '../../apis/TopicServices';
+import { createTopic, deleteTopic, getAllTopic, getTopicByIdSemester, updateTopic } from '../../apis/TopicServices';
 import { getAllMentors } from '../../apis/MentorServices';
 
 const TopicManager = () => {
@@ -33,6 +33,30 @@ const TopicManager = () => {
   }, []);
 
   useEffect(() => {
+    if (semesters?.length > 0) {
+      setSelectedSemester(semesters[0].id);
+    }
+  }, [semesters]);
+
+  useEffect(() => {
+    const fetchAllTopicBySemesterId = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        console.log(selectedSemester);
+        const response = await getTopicByIdSemester(selectedSemester, token);
+        console.log(response);
+        response?.statusCode === 200 ? setTopics(response?.topicDTOList) : setTopics([]);
+      } catch (err) {
+        setError(err?.message || 'Đã xảy ra lỗi');
+      } finally {
+        setLoading(false);
+      }
+    };
+    setLoading(false);
+    fetchAllTopicBySemesterId();
+  }, [selectedSemester]);
+
+  useEffect(() => {
     const fetchMentors = async () => {
       const token = localStorage.getItem('token');
       try {
@@ -46,29 +70,6 @@ const TopicManager = () => {
     };
 
     fetchMentors();
-  }, []);
-
-  useEffect(() => {
-    if (semesters?.length > 0) {
-      setSelectedSemester(semesters[0].id);
-    }
-  }, [semesters]);
-
-  useEffect(() => {
-    const fetchAllTopic = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await getAllTopic(token);
-        setTopics(response?.topicDTOList);
-        console.log(response);
-      } catch (err) {
-        setError(err?.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
-      }
-    };
-    setLoading(false);
-    fetchAllTopic();
   }, []);
 
   const handleCreateTopic = async () => {

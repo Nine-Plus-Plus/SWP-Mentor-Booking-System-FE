@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 const PrivateRoute = ({ children, role }) => {
   const { isLoggedIn } = useUserStore();
   if (!isLoggedIn) {
-    toast.warn('Please Login!!!');
     return <Navigate to="/public/login" />;
   }
 
