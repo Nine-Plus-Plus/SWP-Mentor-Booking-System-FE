@@ -109,8 +109,4 @@ export const CropEasy = ({ photoURL, setOpenCrop, setPhotoURL, setFile }) => {
   );
 };
 
-<<<<<<< HEAD:src/components/common/CropEasy.jsx
 export default CropEasy;
-=======
-export default CropEasy;
->>>>>>> 932c068db694a40ffe3e7af1d8bb12211263e4ff:client/src/components/common/CropEasy.jsx

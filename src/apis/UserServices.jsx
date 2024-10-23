@@ -30,6 +30,7 @@ export const getMyProfile = token =>
       reject(error);
     }
   });
+
 export const getProfileById = (id, token) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -63,6 +64,7 @@ export const getAllUsers = token =>
       reject(error);
     }
   });
+  
 // Phương thức lấy người dùng bằng id
 export const getUserById = (id, token) =>
   new Promise(async (resolve, reject) => {
