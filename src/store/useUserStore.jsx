@@ -75,7 +75,6 @@ export const useUserStore = create(set => ({
       mentorOfClass: null,
       userData: null,
       current: null,
-      mentorOfClass: null,
       email: null,
       otp: null
     }));

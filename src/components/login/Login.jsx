@@ -28,39 +28,67 @@ const Login = () => {
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
+  // useEffect(() => {
+  //   const queryParams = new URLSearchParams(location.search);
+  //   const token = queryParams.get('token');
+  //   const role = queryParams.get('role');
+
+  //   if (token !== null && token !== 'null') {
+  //     setModal(token, role, true);
+  //     navigate(roleForComponent[role]);
+  //     toast.success('Login SuccessFull');
+  //   } else if (token === 'null') {
+  //     resetUserStore();
+  //     toast.error('Login Fail, You email not found');
+  //     window.history.replaceState({}, document.title, location.pathname);
+  //   }
+  // }, [location.search]); // Theo dõi chỉ location.search
+
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token');
     const role = queryParams.get('role');
 
-    if (token !== null && token !== 'null') {
+    // Kiểm tra nếu token không phải là null và hợp lệ
+    if (token && token !== 'null' && role) {
       setModal(token, role, true);
       navigate(roleForComponent[role]);
-      toast.success('Login SuccessFull');
+      toast.success('Login Successful');
     } else if (token === 'null') {
       resetUserStore();
-      toast.error('Login Fail, You email not found');
+      toast.error('Login Failed: Your email was not found');
       window.history.replaceState({}, document.title, location.pathname);
     }
-  }, [location.search]); // Theo dõi chỉ location.search
+  }, [location.search, navigate, setModal, resetUserStore]);
 
   const handleLogin = async () => {
     if (payload.username && payload.password) {
       setIsLoading(true);
-      const response = await StudentLogin(payload);
-      setIsLoading(false);
-      if (response && response?.data?.token) {
-        ///// set token
-        setModal(response.data.token, response.data.role, true);
-        console.log(response);
+      try {
+        const response = await StudentLogin(payload);
+        setIsLoading(false);
 
-        navigate(roleForComponent[role]);
-        toast.success('Login SuccessFull');
-      } else {
-        if (response && response?.status === 400) {
-          toast.error(response.data.message);
+        if (response?.data?.token) {
+          const userRole = response.data.role;
+          setModal(response.data.token, userRole, true);
+
+          if (userRole && roleForComponent[userRole]) {
+            navigate(roleForComponent[userRole]);
+            toast.success('Login Successful');
+          } else {
+            toast.error('Invalid role');
+          }
+        } else if (response?.status === 400) {
+          toast.error(response.data.message || 'Login failed, please try again.');
+        } else {
+          toast.error('Unexpected error occurred, please try again.');
         }
+      } catch (error) {
+        setIsLoading(false);
+        toast.error('An error occurred during login. Please check your network connection.');
       }
+    } else {
+      toast.error('Username and password are required.');
     }
   };
 
