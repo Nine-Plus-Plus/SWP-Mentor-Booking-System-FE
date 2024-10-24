@@ -136,18 +136,23 @@ const UserHome = () => {
         <div className="bg-white p-8 rounded-lg border-2 shadow-2xl">
           <div className="row mb-5 flex justify-center font-bold text-xl text-main-1">Skills</div>
           <div className="flex justify-between overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
-            {skills.map(skill => (
-              <Link
-                key={skill.id}
-                to={`${path.USER_VIEW_MENTOR}?skill=${skill?.id}`}
-                className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105"
-                style={{ flex: '0 0 15.35%' }}
-              >
-                {skill.icon}
-                <div className="mt-2 text-dark text-center">{skill.skillName}</div>
-              </Link>
-            ))}
-          </div>
+  {skills && skills.length > 0 ? (
+    skills.map(skill => (
+      <Link
+        key={skill.id}
+        to={`${path.USER_VIEW_MENTOR}?skill=${skill?.id}`}
+        className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105"
+        style={{ flex: '0 0 15.35%' }}
+      >
+        {skill.icon}
+        <div className="mt-2 text-dark text-center">{skill.skillName}</div>
+      </Link>
+    ))
+  ) : (
+    <div className="text-center w-full text-gray-500">The skill list is null</div>
+  )}
+</div>
+
         </div>
       </div>
 
