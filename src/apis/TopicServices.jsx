@@ -97,3 +97,24 @@ export const updateTopic = (id, data, token) =>
       reject(error);
     }
   });
+
+export const importExcelTopic = (file, token) =>
+  new Promise(async (resolve, reject) => {
+    const formData = new FormData();
+    formData.append('file', file); // Thêm tệp tin vào formData
+
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: 'api/admin/import-topics',
+        data: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });

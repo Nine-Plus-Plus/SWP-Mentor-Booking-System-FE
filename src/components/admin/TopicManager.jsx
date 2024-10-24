@@ -1,8 +1,17 @@
 import { Button, Form, Input, message, Modal, Select, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getAllSemester } from '../../apis/SemesterServices';
-import { createTopic, deleteTopic, getAllTopic, getTopicByIdSemester, updateTopic } from '../../apis/TopicServices';
+import {
+  createTopic,
+  deleteTopic,
+  getAllTopic,
+  getTopicByIdSemester,
+  importExcelTopic,
+  updateTopic
+} from '../../apis/TopicServices';
 import { getAllMentors } from '../../apis/MentorServices';
+import Dragger from 'antd/es/upload/Dragger';
+import { InboxOutlined } from '@ant-design/icons';
 
 const TopicManager = () => {
   const [semesters, setSemesters] = useState([]);
@@ -15,6 +24,8 @@ const TopicManager = () => {
   const [error, setError] = useState(null);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [isImportModalVisible, setIsImportModalVisible] = useState(false);
+  const [fileList, setFileList] = useState([]);
   const { Option } = Select;
 
   useEffect(() => {
@@ -90,6 +101,9 @@ const TopicManager = () => {
         },
         mentorsDTO: {
           id: values.mentorId
+        },
+        subMentorDTO: {
+          id: values.subMentorId
         }
       };
       console.log(dataCreate);
@@ -119,11 +133,14 @@ const TopicManager = () => {
         actor: values.actors.split('\n'),
         requirement: values.requirements.split('\n'),
         nonFunctionRequirement: values.nonFunctionRequirements.split('\n'),
-        semesterDTO: {
+        semester: {
           id: values.semesterId
         },
-        mentorsDTO: {
+        mentor: {
           id: values.mentorId
+        },
+        subMentors: {
+          id: values.subMentorId
         }
       };
 
@@ -196,6 +213,65 @@ const TopicManager = () => {
   const handleCancelCreate = () => {
     form.resetFields();
     setIsCreateModalVisible(false);
+  };
+
+  // Import Excel
+  const showImportModal = () => {
+    setIsImportModalVisible(true);
+  };
+
+  const handleCancelImport = () => {
+    setIsImportModalVisible(false);
+    setFileList([]);
+  };
+
+  const handleFileChange = info => {
+    if (info.fileList.length > 0) {
+      setFileList(info.fileList.slice(-1)); // Chỉ giữ lại file cuối cùng được tải lên
+    } else {
+      setFileList([]);
+    }
+  };
+
+  const handleImportExcel = async () => {
+    const token = localStorage.getItem('token');
+
+    // Đảm bảo rằng một tệp đã được chọn
+    if (fileList.length === 0) {
+      message.error('Please select a file to import!');
+      return;
+    }
+
+    try {
+      const response = await importExcelTopic(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+
+      if (response && response.statusCode === 200) {
+        // Cập nhật lại danh sách người dùng với thông tin mới
+        await fetchAllTopicBySemesterId(token); // Cập nhật lại danh sách mentors
+        setIsUpdateModalVisible(false);
+        setFileList([]);
+        message.success('Topic imported successfully');
+      } else {
+        message.error('Import Excel thất bại');
+      }
+    } catch (error) {
+      console.error('Import Excel error:', error);
+      message.error('Import Excel thất bại: ' + error.message);
+    }
+  };
+
+  const fetchAllTopicBySemesterId = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      console.log(selectedSemester);
+      const response = await getTopicByIdSemester(selectedSemester, token);
+      console.log(response);
+      response?.statusCode === 200 ? setTopics(response?.topicDTOList) : setTopics([]);
+    } catch (err) {
+      setError(err?.message || 'Đã xảy ra lỗi');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -301,6 +377,13 @@ const TopicManager = () => {
       render: semester => semester?.semesterName || 'N/A'
     },
     {
+      title: 'Sub-Mentor',
+      dataIndex: 'subMentorDTO',
+      key: 'subMentorDTO',
+      className: 'whitespace-pre-line text-left align-top',
+      render: subMentor => subMentor?.user?.fullName || 'Empty'
+    },
+    {
       title: 'Actions',
       key: 'actions',
       render: (text, record) => (
@@ -326,6 +409,9 @@ const TopicManager = () => {
 
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Topic
+      </Button>
+      <Button type="primary" onClick={showImportModal} style={{ marginBottom: '10px', marginLeft: '10px' }}>
+        Import Excel
       </Button>
       <div className="w-[10vw] mb-3">
         <Select
@@ -454,6 +540,24 @@ const TopicManager = () => {
                 ))}
               </Select>
             </Form.Item>
+            <Form.Item
+              label="Sub-Mentor"
+              name="subMentorId"
+              rules={[
+                {
+                  required: false,
+                  message: 'Please select a sub-mentor!'
+                }
+              ]}
+            >
+              <Select placeholder="Select Sub-Mentor">
+                {mentors?.map(subMentor => (
+                  <Select.Option key={subMentor.id} value={subMentor.id}>
+                    {subMentor.user.fullName}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
           </Form>
         </div>
       </Modal>
@@ -566,8 +670,46 @@ const TopicManager = () => {
                 ))}
               </Select>
             </Form.Item>
+            <Form.Item
+              label="Sub-Mentor"
+              name="subMentorId"
+              rules={[
+                {
+                  required: false,
+                  message: 'Please select a sub-mentor!'
+                }
+              ]}
+            >
+              <Select placeholder="Select Sub-Mentor">
+                {mentors?.map(subMentor => (
+                  <Select.Option key={subMentor.id} value={subMentor.id}>
+                    {subMentor.user.fullName}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
           </Form>
         </div>
+      </Modal>
+      {/* Modal for importing Excel */}
+      <Modal
+        title="Import Mentor từ Excel"
+        open={isImportModalVisible}
+        onOk={handleImportExcel}
+        onCancel={handleCancelImport}
+      >
+        <Dragger
+          accept=".xlsx, .xls"
+          beforeUpload={() => false} // Ngăn không cho upload tự động
+          fileList={fileList}
+          onChange={handleFileChange}
+        >
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">Click hoặc kéo thả file để tải lên</p>
+          <p className="ant-upload-hint">Chỉ chấp nhận file Excel (.xls, .xlsx)</p>
+        </Dragger>
       </Modal>
     </div>
   );
