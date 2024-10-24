@@ -172,7 +172,7 @@ const ClassManager = () => {
     form.setFieldsValue({
       className: classU.className,
       semesterId: classU.semester.id,
-      mentorId: classU?.mentor?.id || ''
+      mentorId: classU.mentor.id
     });
     setIsUpdateModalVisible(true);
   };
@@ -212,8 +212,12 @@ const ClassManager = () => {
     },
     {
       title: 'Mentor Code',
-      dataIndex: ['mentor', 'mentorCode'],
-      key: 'mentor'
+      key: 'mentor',
+      render: (_, record) => {
+        const fullName = record.mentor?.user?.fullName || '';
+        const mentorCode = record.mentor?.mentorCode || '';
+        return `${fullName} - ${mentorCode}`;
+      }
     },
     {
       title: 'Actions',
@@ -300,7 +304,7 @@ const ClassManager = () => {
               <Select placeholder="Select mentor" style={{ width: '100%' }}>
                 {mentors?.map(mentor => (
                   <Select.Option key={mentor.id} value={mentor.id}>
-                    {mentor.mentorCode}
+                    {`${mentor?.user?.fullName}-${mentor.mentorCode}`}
                   </Select.Option>
                 ))}
               </Select>
@@ -347,7 +351,7 @@ const ClassManager = () => {
               <Select placeholder="Select mentor" style={{ width: '100%' }}>
                 {mentors?.map(mentor => (
                   <Select.Option key={mentor.id} value={mentor.id}>
-                    {mentor.mentorCode}
+                    {`${mentor.user.fullName}-${mentor.mentorCode}`}
                   </Select.Option>
                 ))}
               </Select>

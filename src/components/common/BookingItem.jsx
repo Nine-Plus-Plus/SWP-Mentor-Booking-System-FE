@@ -31,14 +31,18 @@ export const BookingItem = ({
   const { userData } = useUserStore(); // Lấy userData từ store
   const sameGroup = mentor?.assignedClass?.className === userData?.aclass?.className; // Kiểm tra xem mentor có cùng group không
   const token = localStorage.getItem('token');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCreateNoti = async data => {
     const token = localStorage.getItem('token');
     try {
+      setIsLoading(true);
       const response = await createNoti(data, token);
       console.log(response);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -86,6 +90,7 @@ export const BookingItem = ({
 
   const acceptByMentor = async id => {
     try {
+      setIsLoading(true);
       const response = await acceptBooking(id, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
@@ -103,11 +108,14 @@ export const BookingItem = ({
     } catch (error) {
       toast.error(error);
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  
+
   const rejectByMentor = async id => {
     try {
+      setIsLoading(true);
       const response = await rejectBooking(id, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
@@ -125,13 +133,14 @@ export const BookingItem = ({
     } catch (error) {
       toast.error(error);
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const cancelByMentor = async id => {
     try {
-      console.log(id);
-
+      setIsLoading(true);
       const response = await cancelBookingMentor(id, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
@@ -149,11 +158,14 @@ export const BookingItem = ({
     } catch (error) {
       toast.error(error);
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const cancelByStudent = async id => {
     try {
+      setIsLoading(true);
       const response = await cancelBookingStudent(id, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
@@ -171,6 +183,8 @@ export const BookingItem = ({
     } catch (error) {
       toast.error(error);
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -293,6 +307,7 @@ export const BookingItem = ({
                     bgHover={'hover:bg-green-400'}
                     htmlType={'button'}
                     onClick={handleAccept}
+                    isLoading={isLoading}
                     className="w-full min-w-[120px]"
                   />
                   <Button
@@ -300,6 +315,7 @@ export const BookingItem = ({
                     textColor={'text-white'}
                     bgColor={'bg-red-500'}
                     bgHover={'hover:bg-red-400'}
+                    isLoading={isLoading}
                     htmlType={'button'}
                     onClick={handleReject}
                     className="w-full min-w-[120px]"
@@ -322,6 +338,7 @@ export const BookingItem = ({
                     bgColor={'bg-gray-500'}
                     bgHover={'hover:bg-gray-400'}
                     htmlType={'button'}
+                    isLoading={isLoading}
                     onClick={handleCancelMentor}
                     className="w-full min-w-[120px]"
                   />
@@ -380,6 +397,7 @@ export const BookingItem = ({
                     htmlType={'button'}
                     className="w-full min-w-[120px]"
                     acHover={'hover:cursor-pointer'}
+                    isLoading={isLoading}
                     onClick={handleCancelStudent}
                   />
                 </div>

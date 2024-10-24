@@ -40,6 +40,12 @@ export const formatDate = date => {
   return dayFormat;
 };
 
+export const formatDateTransaction = date => {
+  const dayFormat = dayjs(date).format('dddd, HH:mm DD-MM-YYYY');
+
+  return dayFormat;
+};
+
 export const parseStringStatus = string => {
   const stringWithoutSpaces = string.replace(/\s+/g, '');
   console.log(stringWithoutSpaces);

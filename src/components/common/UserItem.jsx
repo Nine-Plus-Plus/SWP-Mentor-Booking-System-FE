@@ -37,10 +37,11 @@ const UserItem = ({
   studentAdd,
   accept
 }) => {
-  const { FaStar, FaStarHalf } = icons;
+  const { FaStar, FaStarHalf, FaSignInAlt } = icons;
   const [added, setAdded] = useState(false);
   const [selectMeeting, setSelectMeeting] = useState('');
   const { role, fullData, userData, setFullDAta } = useUserStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleStar = star => {
     let stars = [];
@@ -55,9 +56,8 @@ const UserItem = ({
       const addMemberData = {
         id: idStudent
       };
-
+      setIsLoading(true);
       const response = await addNewMember(addGroup, addMemberData, token);
-      console.log(response);
       if (response?.statusCode === 200) {
         Swal.fire({
           title: 'Added Successful!',
@@ -65,7 +65,8 @@ const UserItem = ({
           icon: 'success',
           confirmButtonText: 'OK',
           timer: 3000, // Đóng sau 3 giây
-          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+          timerProgressBar: true, // Hiển thị progress bar khi đếm thời gian,
+          reverseButtons: true // Đảo ngược vị trí các nút
         });
         const dataSent = {
           message: `Mentor ${userData.user.fullName} added you to the group: ${groupName} !`,
@@ -86,13 +87,15 @@ const UserItem = ({
     } catch (error) {
       toast.error(message);
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleNotiAddMember = async addMemberData => {
     const token = localStorage.getItem('token');
     try {
-      console.log(addMemberData);
+      setIsLoading(true);
       const response = await createNoti(addMemberData);
       if (response?.statusCode === 200) {
         Swal.fire({
@@ -102,13 +105,16 @@ const UserItem = ({
           confirmButtonText: 'OK',
           timer: 3000,
           timerProgressBar: true,
-          showConfirmButton: true
+          showConfirmButton: true,
+          reverseButtons: true // Đảo ngược vị trí các nút
         });
         setAdded(true);
       } else toast.error(response?.message);
     } catch (error) {
       toast.error(error);
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -128,7 +134,8 @@ const UserItem = ({
           confirmButtonText: 'OK',
           timer: 3000,
           timerProgressBar: true,
-          showConfirmButton: true
+          showConfirmButton: true,
+          reverseButtons: true // Đảo ngược vị trí các nút
         });
         const dataSent = {
           message: `Leader ${userData.user.fullName} remove you from group: ${groupName} !`,
@@ -173,7 +180,7 @@ const UserItem = ({
   const handleClickAddClick = () => {
     Swal.fire({
       title: 'Are you sure?', // Tiêu đề của hộp thoại
-      text: 'Delete student in Group!', // Nội dung chính của hộp thoại
+      text: 'Add student in Group!', // Nội dung chính của hộp thoại
       icon: 'warning', // Hiển thị biểu tượng cảnh báo
       showCancelButton: true, // Hiển thị nút hủy
       confirmButtonText: 'Yes, Update', // Văn bản nút xác nhận
@@ -208,16 +215,20 @@ const UserItem = ({
   const handleCreateNoti = async data => {
     const token = localStorage.getItem('token');
     try {
+      setIsLoading(true);
       const response = await createNoti(data, token);
       console.log(response);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleCreateBooking = async (bookingData, meeting) => {
     const token = localStorage.getItem('token');
     try {
+      setIsLoading(true);
       const response = await createBooking(bookingData, token);
       console.log(response);
       if (response?.statusCode === 200) {
@@ -255,6 +266,8 @@ const UserItem = ({
         });
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -418,6 +431,7 @@ const UserItem = ({
                   textColor={'text-white'}
                   textSize={'text-sm'}
                   bgHover={'hover:bg-blue-400 hover:text-gray-100'}
+                  isLoading={isLoading}
                   onClick={handleBookingClick}
                 />
               </div>
@@ -433,6 +447,7 @@ const UserItem = ({
                     textColor={'text-white'}
                     textSize={'text-sm'}
                     bgHover={'hover:bg-green-400 hover:text-gray-100'}
+                    isLoading={isLoading}
                     onClick={() => {
                       handleClickAddClick();
                     }}
@@ -461,6 +476,7 @@ const UserItem = ({
                   textColor={'text-white'}
                   textSize={'text-sm'}
                   bgHover={'hover:bg-red-400 hover:text-gray-100'}
+                  isLoading={isLoading}
                   onClick={() => {
                     handleClickRemove(studentDel);
                   }}
