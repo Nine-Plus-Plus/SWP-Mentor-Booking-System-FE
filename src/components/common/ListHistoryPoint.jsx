@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import HistoryPointItem from './HistoryPointItem';
 import { useUserStore } from '../../store/useUserStore';
 import { getGroupHistoryPoint, getHistoryPointByStudentId } from '../../apis/HistoryPointServices';
+import { Pagination } from 'antd';
 
 export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingId }) => {
   const [points, setPoints] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const topRef = useRef(null);
+
   const { userData } = useUserStore();
 
   useEffect(() => {
@@ -29,6 +34,13 @@ export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingI
     fetchAllHistoryPoint();
   }, [userData]);
 
+  const onChangePage = page => {
+    setCurrentPage(page);
+    topRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const currentPoints = points.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-start pr-40">
@@ -38,11 +50,11 @@ export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingI
       </div>
 
       {/* Tạo các HistoryPointItem trực tiếp */}
-      <div className="p-3 bg-white rounded-md flex flex-col gap-5">
-        {points?.length === 0 ? (
+      <div className="p-3 bg-white rounded-md flex flex-col gap-5" topRef={topRef}>
+        {currentPoints?.length === 0 ? (
           <p className="text-red-500">Do not have any transaction point!!!</p>
         ) : (
-          points?.map(point => (
+          currentPoints?.map(point => (
             <HistoryPointItem
               key={point?.id}
               dateCreated={point?.dateCreated}
@@ -53,6 +65,15 @@ export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingI
               mentorBooking={point?.booking?.mentor?.user?.fullName}
             />
           ))
+        )}
+        {currentPoints?.length !== 0 && (
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={points.length}
+            onChange={onChangePage}
+            showSizeChanger={false}
+          />
         )}
       </div>
     </div>

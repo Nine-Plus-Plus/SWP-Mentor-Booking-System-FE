@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BookingItem } from './BookingItem';
-import { Segmented } from 'antd';
+import { Pagination, Segmented } from 'antd';
 import { useUserStore } from '../../store/useUserStore';
 import {
   getAllActiveBooking,
@@ -14,6 +14,9 @@ function BookingList() {
   const [filter, setFilter] = useState('PENDING');
   const [bookings, setBookings] = useState([]);
   const { fullData, role, userData } = useUserStore();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const topRef = useRef(null);
 
   const rejectByMentor = async id => {
     try {
@@ -71,6 +74,13 @@ function BookingList() {
     fetchAllActiveBooking();
   }, [userData?.id, filter, fullData?.groupDTO?.id]);
 
+  const currentBooking = bookings.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const onChangePage = page => {
+    setCurrentPage(page);
+    topRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div>
       <Segmented
@@ -80,11 +90,11 @@ function BookingList() {
         className="mb-5"
       />
       <div>
-        <div className="flex flex-col gap-3 p-3 bg-white rounded-md">
-          {bookings?.length === 0 ? (
+        <div className="flex flex-col gap-3 p-3 bg-white rounded-md" ref={topRef}>
+          {currentBooking?.length === 0 ? (
             <p className="text-red-500">Do not have any {filter} booking.</p>
           ) : (
-            bookings?.map(booking => (
+            currentBooking?.map(booking => (
               <BookingItem
                 //
                 key={booking?.id}
@@ -104,6 +114,15 @@ function BookingList() {
                 mentorUserId={booking?.mentor?.user?.id}
               />
             ))
+          )}
+          {currentBooking?.length !== 0 && (
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={bookings.length}
+              onChange={onChangePage}
+              showSizeChanger={false}
+            />
           )}
         </div>
       </div>

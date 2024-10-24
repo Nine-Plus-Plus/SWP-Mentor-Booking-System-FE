@@ -23,6 +23,7 @@ const Button = ({
             flex items-center justify-center gap-1 cursor-pointer ${textSize}
             p-2 rounded-lg hover:underline px-9 font-semibold ${bgHover} `}
         onClick={onClick}
+        disabled={isLoading}
       >
         {IcBefore && <IcBefore />}
         {text}
@@ -36,6 +37,7 @@ const Button = ({
             flex items-center justify-center gap-1 cursor-pointer ${textSize}
             p-2 rounded-lg hover:underline px-9 ${acHover} font-semibold ${bgHover} `}
       onClick={onClick}
+      disabled={isLoading}
     >
       {IcBefore && <IcBefore />}
       {text}
