@@ -1,92 +1,80 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import HistoryPointItem from './HistoryPointItem';
 import { useUserStore } from '../../store/useUserStore';
 import { getGroupHistoryPoint, getHistoryPointByStudentId } from '../../apis/HistoryPointServices';
+import { Pagination } from 'antd';
 
 export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingId }) => {
   const [points, setPoints] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const topRef = useRef(null);
+
   const { userData } = useUserStore();
 
-  // Hàm gọi API để lấy lịch sử điểm
   useEffect(() => {
-    const token = localStorage.getItem('token'); // Lấy token từ localStorage
+    const token = localStorage.getItem('token');
 
     const fetchAllHistoryPoint = async () => {
-      if (!userData?.id || !token) return; // Kiểm tra nếu không có userId hoặc token thì thoát
-
+      if (!userData?.id || !token) return;
       try {
-        const response = await getHistoryPointByStudentId(userData?.id, token); // Gọi API lấy lịch sử điểm
+        const response = await getHistoryPointByStudentId(userData?.id, token);
         console.log('Response from API:', response);
-
-        // Kiểm tra dữ liệu trả về và cập nhật state
         if (response?.statusCode === 200) {
-          setPoints(response?.pointHistoryDTOList || []); // Đảm bảo pointHistoryDTOList có giá trị
+          setPoints(response?.pointHistoryDTOList || []);
         } else {
-          setPoints([]); // Nếu statusCode không phải 200 thì set rỗng
+          setPoints([]);
         }
       } catch (error) {
         console.error('Error fetching history points: ', error);
-        setPoints([]); // Nếu có lỗi thì set points rỗng
+        setPoints([]);
       }
     };
 
-    fetchAllHistoryPoint(); // Gọi API
-  }, [userData]); // Chỉ chạy lại khi userData thay đổi
+    fetchAllHistoryPoint();
+  }, [userData]);
+
+  const onChangePage = page => {
+    setCurrentPage(page);
+    topRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const currentPoints = points.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="flex flex-col gap-3">
-      {/* div chứa points */}
       <div className="flex justify-start pr-40">
         <div className="inline-flex px-3 py-1 font-medium text-white bg-main-1 rounded-lg">
-          {/* fix */}
-          <span>Total Point: 100</span>
+          <span>Total Point: {userData?.point}</span>
         </div>
       </div>
 
       {/* Tạo các HistoryPointItem trực tiếp */}
-      <div className="p-3 bg-white rounded-md flex flex-col gap-5">
-        {points?.length === 0 ? (
-          <p className="text-red-500">Do not have any point</p>
+      <div className="p-3 bg-white rounded-md flex flex-col gap-5" topRef={topRef}>
+        {currentPoints?.length === 0 ? (
+          <p className="text-red-500">Do not have any transaction point!!!</p>
         ) : (
-          points?.map(point => (
+          currentPoints?.map(point => (
             <HistoryPointItem
-              key={point?.id} // Đảm bảo mỗi item có key duy nhất
+              key={point?.id}
               dateCreated={point?.dateCreated}
               pointHistoryId={point?.id}
               status={point?.status}
               points={point?.point}
-              bookingId={point?.bookingId}
+              booking={point?.booking}
+              mentorBooking={point?.booking?.mentor?.user?.fullName}
             />
           ))
         )}
-        {/* <HistoryPointItem
-          dateCreated={'Tuesday, Oct 1, 2024'}
-          pointHistoryId={111}
-          status={'Purchased'}
-          points={-10}
-          bookingId={121}
-        />
-        <HistoryPointItem
-          dateCreated={'Thurday, Sep 18, 2024'}
-          pointHistoryId={112}
-          status={'Earned'}
-          points={50}
-          bookingId={122}
-        />
-        <HistoryPointItem
-          dateCreated={'Saturday, Feb 6, 2024'}
-          pointHistoryId={113}
-          status={'Bonus'}
-          points={20}
-          bookingId={123}
-        />
-        <HistoryPointItem
-          dateCreated={'Saturday, Feb 6, 2024'}
-          pointHistoryId={113}
-          status={'Bonus'}
-          points={-20}
-          bookingId={123}
-        /> */}
+        {currentPoints?.length !== 0 && (
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={points.length}
+            onChange={onChangePage}
+            showSizeChanger={false}
+          />
+        )}
       </div>
     </div>
   );

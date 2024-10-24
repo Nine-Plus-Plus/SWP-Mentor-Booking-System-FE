@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Search, UserItem } from '../index';
 import { getAllMentorByNameSkillDate } from '../../apis/MentorServices';
 import { capitalizeFirstLetter, convertSkillArray } from '../../utils/commonFunction';
 import { useUserStore } from '../../store/useUserStore';
 import dayjs from 'dayjs';
+import { Pagination } from 'antd';
 
 const MentorList = () => {
   const [error, setError] = useState(null);
@@ -12,6 +13,9 @@ const MentorList = () => {
   const { userData } = useUserStore();
   // Inside the component
   const location = useLocation();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const topRef = useRef(null);
 
   // This will parse the URL query params
   const searchParams = new URLSearchParams(location.search);
@@ -59,14 +63,21 @@ const MentorList = () => {
     }
   }, [skillFromUrl]);
 
+  const onChangePage = page => {
+    setCurrentPage(page);
+    topRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const currentMentors = mentors.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
       <Search searchFor={'mentor'} setPayload={setSearchPayload} />
-      <div className="p-3 bg-white rounded-md flex flex-col gap-5">
-        {mentors.length === 0 ? (
+      <div className="p-3 bg-white rounded-md flex flex-col gap-5" topRef={topRef}>
+        {currentMentors.length === 0 ? (
           <p className="text-red-500">No instructors were found.</p>
         ) : (
-          mentors.map(mentor => (
+          currentMentors.map(mentor => (
             <UserItem
               key={mentor.id}
               roleItem={capitalizeFirstLetter(mentor?.user?.role?.roleName)}
@@ -84,6 +95,15 @@ const MentorList = () => {
           ))
         )}
       </div>
+      {currentMentors?.length !== 0 && (
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={currentMentors.length}
+          onChange={onChangePage}
+          showSizeChanger={false}
+        />
+      )}
     </div>
   );
 };
