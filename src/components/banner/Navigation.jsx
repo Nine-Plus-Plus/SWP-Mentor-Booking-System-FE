@@ -20,7 +20,7 @@ const Navigation = ({ children, menuNavbar }) => {
   const { IoIosNotifications } = icons;
   const [notificationCount, setNotificationCount] = useState(3);
   const [loading, setLoading] = useState(false);
-  const { resetUserStore, role, current, userData } = useUserStore();
+  const { resetUserStore, role, current, userData, avatar } = useUserStore();
   const [collapsed, setCollapsed] = useState(false);
   const { Content } = Layout;
   const location = useLocation();
@@ -172,11 +172,7 @@ const Navigation = ({ children, menuNavbar }) => {
             <div className="flex items-center gap-2 ">
               <Dropdown menu={{ items }} trigger={['click']}>
                 <Space>
-                  <img
-                    src={userData?.user?.avatar}
-                    alt="avatar"
-                    className="object-cover h-[6vh] w-[6vh] rounded-full cursor-pointer"
-                  />
+                  <img src={avatar} alt="avatar" className="object-cover h-[6vh] w-[6vh] rounded-full cursor-pointer" />
                   <CaretDownOutlined />
                 </Space>
               </Dropdown>

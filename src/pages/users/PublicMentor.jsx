@@ -7,7 +7,7 @@ import { getMyProfile } from '../../apis/UserServices';
 import { getClassByIdMentor } from '../../apis/MentorServices';
 
 const PublicMentor = () => {
-  const { setUserData, setCurrent } = useUserStore();
+  const { setUserData, setCurrent, setAvatar } = useUserStore();
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
@@ -19,6 +19,7 @@ const PublicMentor = () => {
         };
         console.log(mentorsDTO);
         setUserData(mentorsDTO);
+        setAvatar(mentorsDTO?.user?.avatar);
         const name = mentorsDTO?.user?.fullName.split(' ');
         setCurrent(name.length > 0 ? name[name.length - 1] : mentorsDTO.user.fullName);
       } catch (err) {

@@ -21,30 +21,33 @@ import { Modal, message, Dropdown, Menu } from 'antd';
 import { UploadOutlined, EyeOutlined } from '@ant-design/icons';
 import { updateStudent } from '../../apis/StudentServices';
 import { updateMentor } from '../../apis/MentorServices';
+import dayjs from 'dayjs';
 
 function StudentProfile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { role, userData } = useUserStore();
-  const [students, setStudents] = useState([]);
+  const { role, userData, setAvatar } = useUserStore();
   const [isDataChanged, setIsDataChanged] = useState(false);
   const { name, id } = useParams();
   const [openCrop, setOpenCrop] = useState(false);
   const [photoURL, setPhotoURL] = useState(null); // Lưu URL ảnh sau khi upload
   const [file, setFile] = useState([]);
-  const [isCopied, setIsCopied] = useState(false);
   const [isAvatarVisible, setIsAvatarVisible] = useState(false);
   const [modalUpdateAvatar, setModalUpdateAvatar] = useState(false);
 
   let roleProfile = name ? name.toUpperCase() : role;
 
-  const handleDataChanged = e => {
-    const selectedFile = e.target.files[0];
+  const handleDataChanged = event => {
+    const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      setPhotoURL(URL.createObjectURL(selectedFile)); // Lưu URL của ảnh
-      setModalUpdateAvatar(true);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoURL(reader.result); // Cập nhật URL ảnh để hiển thị
+        setFile(selectedFile); // Lưu file để cắt chỉnh sau này
+        setModalUpdateAvatar(true); // Mở modal cắt ảnh
+      };
+      reader.readAsDataURL(selectedFile);
     }
   };
 
@@ -69,44 +72,34 @@ function StudentProfile() {
     }
   ];
 
-  // const handleSubmit = async e => {
-  //   e.preventDefault();
-  //   setLoading(true);
-
-  //   try {
-  //     if (file) {  
-  //       const url = await uploadFile(file); // Thêm xử lý upload ảnh
-  //       profile.photo = url; // Cập nhật avatar với URL mới
-  //       await updateAvatar(profile.photo);
-  //     }
-  //     toast.success('Profile updated successfully!');
-  //   } catch (error) {
-  //     toast.error('Failed to update profile.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  const handleUpdateAvatar = async () => {
+  const handleUpdateAvatarStudent = async () => {
     const token = localStorage.getItem('token');
     try {
-      const currentStudentData = userData?.user;
       const updateData = {
         student: {
-          ...currentStudentData,
+          username: userData?.user?.username,
+          email: userData?.user?.email,
+          fullName: userData?.user?.fullName,
+          birthDate: dayjs(userData?.user?.birthDate),
+          address: userData?.user?.address,
+          phone: userData?.user?.phone,
+          gender: userData?.user?.gender,
+          expertise: userData?.expertise,
+          studentCode: userData?.studentCode,
           aclass: {
-            id: currentStudentData?.classId, 
+            id: userData?.aclass?.id
           }
         },
-        avatarFile: photoURL // Ensure this is a File or Blob
+        avatarFile: file // Ensure this is a File or Blob
       };
-  
+
+      console.log(updateData);
+
       const response = await updateStudent(userData?.user?.id, updateData, token);
-  
+      console.log(response);
+
       if (response && response?.statusCode === 200) {
-        setStudents(students.map(student => 
-          (student?.id === response?.studentsDTO.id ? response.studentsDTO : student)
-        ));
+        setAvatar(response?.studentsDTO?.user?.avatar);
         setModalUpdateAvatar(false);
         setFile([]);
         message.success('Avatar updated successfully');
@@ -118,39 +111,51 @@ function StudentProfile() {
       message.error('Failed to update avatar: ' + error.message);
     }
   };
-  
+
+  const handleUpdateAvatarMentor = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const skillsArray = userData?.skills.map(skill => ({ id: skill.id }));
+      console.log(userData?.user?.id);
+
+      const updateData = {
+        mentor: {
+          username: userData?.user?.username,
+          email: userData?.user?.email,
+          fullName: userData?.user?.fullName,
+          birthDate: dayjs(userData?.user?.birthDate),
+          address: userData?.user?.address,
+          phone: userData?.user?.phone,
+          gender: userData?.user?.gender,
+          mentorCode: userData?.mentorCode,
+          star: userData?.star,
+          totalTimeRemain: userData?.totalTimeRemain,
+          skills: skillsArray
+        },
+        avatarFile: file // Ensure this is a File or Blob
+      };
+      console.log(skillsArray);
+      const response = await updateMentor(userData?.user?.id, updateData, token);
+      console.log(response);
+      if (response?.statusCode === 200) {
+        setModalUpdateAvatar(false);
+        setFile([]);
+        setAvatar(response?.mentorsDTO?.user?.avatar);
+        message.success('Avatar updated successfully');
+      } else {
+        message.error('Failed to update avatar');
+      }
+    } catch (error) {
+      console.error('Update avatar error:', error);
+      message.error('Failed to update avatar: ' + error.message);
+    }
+  };
 
   const handleCancel = () => {
     setModalUpdateAvatar(false);
-    setPhotoURL('');
+    setPhotoURL(null);
     setFile(null);
   };
-
-  // Hàm xử lý khi tải ảnh lên
-  // const handleUpload = file => {
-  //   const reader = new FileReader();
-  //   reader.onload = () => {
-  //     setPhotoURL(reader.result);
-  //   };
-  //   reader.readAsDataURL(file);
-  //   return false;
-  // };
-
-  // Hàm xử lý lưu avatar
-  // const handleSaveAvatar = async () => {
-  //   if (photoURL) {
-  //     try {
-  //       // Thực hiện upload ảnh lên server tại đây
-  //       await uploadFile(file); // Upload file
-  //       message.success('Avatar updated successfully!');
-  //       setOpenAvatarModal(false); // Đóng modal sau khi lưu thành công
-  //     } catch (error) {
-  //       message.error('Failed to update avatar.');
-  //     }
-  //   } else {
-  //     message.error('Please upload an image first!');
-  //   }
-  // };
 
   const copyToClipboard = text => event => {
     window.navigator.clipboard
@@ -169,22 +174,9 @@ function StudentProfile() {
       .catch(err => console.error('Failed to copy text: ', err));
   };
 
-  const onCopyHandler = () => {
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 1000); // Hide the success message after 1 seconds
-  };
-
   const capitalizeFirstLetter = string => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
-
-  // const updateAvatar = async avatarUrl => {
-  //   const token = localStorage.getItem('token');
-  //   if (!token) throw new Error('Token không tồn tại');
-
-  //   const response = await updateAvatarApi(token, { avatar: avatarUrl });
-  //   if (response.error) throw new Error(response.error); // Handle error response from API
-  // };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -194,18 +186,8 @@ function StudentProfile() {
           setError('Token không tồn tại');
           return;
         }
-
-        // Gọi API để lấy profile
         const response = id ? await getProfileById(id, token) : await getMyProfile(token);
-        // console.log('get profile: ', response);
-
-        console.log('Role:', roleProfile);
         const user = roleProfile === 'MENTOR' ? response?.mentorsDTO : response?.studentsDTO;
-
-        // Kiểm tra dữ liệu trả về từ API
-        console.log('User DTO:', user);
-
-        // Lấy group cho STUDENT
         const group = response?.groupDTO;
 
         // Cập nhật state với dữ liệu từ API
@@ -269,8 +251,14 @@ function StudentProfile() {
               </div>
             </Dropdown>
 
-            <Modal title="View Avatar" open={isAvatarVisible} onCancel={() => setIsAvatarVisible(false)} footer={null}>
-              <img src={profile.photo} alt="Avatar" style={{ width: '100%', height: 'auto' }} />
+            <Modal
+              title="View Avatar"
+              open={isAvatarVisible}
+              onCancel={() => setIsAvatarVisible(false)}
+              footer={null}
+              width={700}
+            >
+              <img src={profile.photo} alt="Avatar" className="w-[60vw] h-[60vh]" />
             </Modal>
 
             <Dialog open={modalUpdateAvatar}>
@@ -283,7 +271,8 @@ function StudentProfile() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   overflow: 'hidden',
-                  height: 150
+                  height: 450,
+                  width: 500
                 }}
               >
                 <Box>
@@ -295,7 +284,7 @@ function StudentProfile() {
                       style={{ display: 'none' }}
                       onChange={handleDataChanged}
                     />
-                    <Avatar src={photoURL} sx={{ width: 75, height: 75, cursor: 'pointer' }} />
+                    <Avatar src={photoURL} sx={{ width: 350, height: 350, cursor: 'pointer' }} />
                   </label>
                 </Box>
               </DialogContent>
@@ -305,11 +294,19 @@ function StudentProfile() {
                 <Button variant="outlined" onClick={handleCancel}>
                   Cancel
                 </Button>
-                <Button variant="contained" onClick={handleUpdateAvatar} endIcon={<Send />} type="submit">
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    userData?.user?.role?.roleName === 'STUDENT'
+                      ? handleUpdateAvatarStudent()
+                      : handleUpdateAvatarMentor();
+                  }}
+                  endIcon={<Send />}
+                  type="submit"
+                >
                   Submit
                 </Button>
               </DialogActions>
-              <CropEasy {...{ photoURL, setOpenCrop, setPhotoURL, setFile }} />
             </Dialog>
           </div>
         </div>
