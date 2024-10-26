@@ -60,7 +60,7 @@ export const updateStudent = (id, data, token) =>
       formData.append('avatarFile', data.avatarFile);
       const response = await axiosConfig({
         method: 'put',
-        url: `api/admin/update-student/${id}`,
+        url: `api/user/update-student/${id}`,
         data: formData,
         headers: {
           Authorization: `Bearer ${token}`

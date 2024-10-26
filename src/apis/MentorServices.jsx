@@ -47,7 +47,7 @@ export const updateMentor = (id, data, token) =>
     try {
       const response = await axiosConfig({
         method: 'put',
-        url: `api/admin/update-mentor/${id}`,
+        url: `api/user/update-mentor/${id}`,
         data: formData,
         headers: {
           Authorization: `Bearer ${token}`
