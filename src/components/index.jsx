@@ -18,6 +18,7 @@ export { default as NotificationItem } from './common/NotificationItem';
 export { default as Loading } from './common/Loading';
 export { default as BookingList } from './common/BookingList';
 export { default as UserProfile } from './common/UserProfile';
+export { default as ReviewList } from './common/ReviewList';
 // banner
 export { default as Navigation } from './banner/Navigation';
 // student
