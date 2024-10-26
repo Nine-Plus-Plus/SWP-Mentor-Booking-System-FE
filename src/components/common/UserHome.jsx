@@ -3,24 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import Button from './Button';
 import path from '../../utils/path';
 import { getAllSkill } from '../../apis/SkillServices';
-import { getAllMentorByNameSkillDate } from '../../apis/MentorServices';
-import { DatabaseOutlined, GithubOutlined } from '@ant-design/icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faReact, faNodeJs, faHtml5 } from '@fortawesome/free-brands-svg-icons';
-import { faLeaf } from '@fortawesome/free-solid-svg-icons';
-import PublicFoot from '../../pages/public/PublicFoot';
-
-// Hàm lấy dữ liệu kỹ năng
-const fetchSkills = async () => {
-  return [
-    { id: 1, name: 'Database', icon: <DatabaseOutlined className="flex justify-center" /> },
-    { id: 2, name: 'Github', icon: <GithubOutlined className="flex justify-center" /> },
-    { id: 3, name: 'ReactJS', icon: <FontAwesomeIcon icon={faReact} className="flex justify-center" /> },
-    { id: 4, name: 'NodeJS', icon: <FontAwesomeIcon icon={faNodeJs} className="flex justify-center" /> },
-    { id: 5, name: 'Spring Boot', icon: <FontAwesomeIcon icon={faLeaf} className="flex justify-center" /> },
-    { id: 6, name: 'HTML/CSS', icon: <FontAwesomeIcon icon={faHtml5} className="flex justify-center" /> }
-  ];
-};
 
 // Hàm lấy dữ liệu mentor giả lập
 const fetchMentors = async () => {
@@ -37,12 +19,7 @@ const UserHome = () => {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const skillFromUrl = searchParams.get('skill') || '';
-  const [searchPayload, setSearchPayload] = useState({
-    name: '',
-    skill: skillFromUrl ? [skillFromUrl] : [],
-    date: ''
-  });
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // Lấy danh sách top mentor
   useEffect(() => {
@@ -70,23 +47,15 @@ const UserHome = () => {
     fetchSkill();
   }, []);
 
-  //     useEffect(() => {
-  //   const fetchMentorByCondition = async () => {
-  //     const token = localStorage.getItem('token');
-  //     try {
-  //       const skills = searchPayload?.skill?.length > 0 ? searchPayload.skill.join(',') : undefined;
-  //       const name = searchPayload?.name || '';
-  //       const availableFrom = searchPayload?.date[0]?.format('DD-MM-YYYY HH:mm') || undefined;
-  //       const availableTo = searchPayload?.date[1]?.format('DD-MM-YYYY HH:mm') || undefined;
-  //       const response = await getAllMentorByNameSkillDate(name, skills, availableFrom, availableTo, token);
-  //       if (response && response.statusCode === 200) setMentors(response.mentorsDTOList);
-  //       else setMentors([]);
-  //     } catch (error) {
-  //       setError(error.message || 'Đã xảy ra lỗi');
-  //     }
-  //   };
-  //   fetchMentorByCondition();
-  // }, [searchPayload]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex(prevIndex => (prevIndex === skills.length - 1 ? 0 : prevIndex + 1));
+    }, 2000); // 3s chuyển đổi hình ảnh
+
+    return () => clearInterval(interval); // Dọn dẹp interval khi component bị unmount
+  }, [skills.length]);
+
+  //chuyển đổi skill
 
   return (
     <div className="flex flex-col">
@@ -136,23 +105,24 @@ const UserHome = () => {
         <div className="bg-white p-8 rounded-lg border-2 shadow-2xl">
           <div className="row mb-5 flex justify-center font-bold text-xl text-main-1">Skills</div>
           <div className="flex justify-between overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
-  {skills && skills.length > 0 ? (
-    skills.map(skill => (
-      <Link
-        key={skill.id}
-        to={`${path.USER_VIEW_MENTOR}?skill=${skill?.id}`}
-        className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105"
-        style={{ flex: '0 0 15.35%' }}
-      >
-        {skill.icon}
-        <div className="mt-2 text-dark text-center">{skill.skillName}</div>
-      </Link>
-    ))
-  ) : (
-    <div className="text-center w-full text-gray-500">The skill list is null</div>
-  )}
-</div>
-
+            {skills && skills.length > 0 ? (
+              skills.map(skill => (
+                <Link
+                  key={skill.id}
+                  to={`${path.USER_VIEW_MENTOR}?skill=${skill?.id}`}
+                  className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105"
+                  style={{ flex: '0 0 15.35%' }}
+                >
+                  <div className="mt-2 text-dark text-center" title={skill?.skillDescription}>
+                    {/* {skills[currentIndex].skillName} */}
+                    {skill?.skillName}
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="text-center w-full text-gray-500">The skill list is null</div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -182,9 +152,6 @@ const UserHome = () => {
           </div>
         </div>
       </div>
-      {/* <div className="pt-20 relative ">
-        <PublicFoot />
-      </div> */}
     </div>
   );
 };
