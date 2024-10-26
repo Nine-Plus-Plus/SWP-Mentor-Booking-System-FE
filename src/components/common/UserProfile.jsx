@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { getMyProfile, getProfileById } from '../../apis/UserServices';
+import { getMyProfile, getProfileById, updateUser } from '../../apis/UserServices';
 import CopyAction from './CopyAction';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../store/useUserStore';
@@ -24,27 +24,24 @@ function StudentProfile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { role } = useUserStore();
+  const { role, userData } = useUserStore();
   const [isDataChanged, setIsDataChanged] = useState(false);
-  const [isContentScrolled, setIsContentScrolled] = useState(false);
   const { name, id } = useParams();
   const [openCrop, setOpenCrop] = useState(false);
   const [photoURL, setPhotoURL] = useState(null); // Lưu URL ảnh sau khi upload
   const [file, setFile] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
-  const [openAvatarModal, setOpenAvatarModal] = useState(false); // Trạng thái mở modal
-  const [isAvatarVisible, setIsAvatarVisible] = useState(false); // Trạng thái hiển thị modal avatar
+  const [isAvatarVisible, setIsAvatarVisible] = useState(false);
   const [modalUpdateAvatar, setModalUpdateAvatar] = useState(false);
 
   let roleProfile = name ? name.toUpperCase() : role;
 
-  // Cập nhật trạng thái dữ liệu khi có thay đổi (có modal)
   const handleDataChanged = e => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
       setPhotoURL(URL.createObjectURL(selectedFile)); // Lưu URL của ảnh
-      setModalUpdateAvatar(true); // Mở modal
+      setModalUpdateAvatar(true);
     }
   };
 
@@ -69,58 +66,84 @@ function StudentProfile() {
     }
   ];
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setLoading(true);
+  // const handleSubmit = async e => {
+  //   e.preventDefault();
+  //   setLoading(true);
 
+  //   try {
+  //     if (file) {
+  //       const url = await uploadFile(file); // Thêm xử lý upload ảnh
+  //       profile.photo = url; // Cập nhật avatar với URL mới
+  //       await updateAvatar(profile.photo);
+  //     }
+  //     toast.success('Profile updated successfully!');
+  //   } catch (error) {
+  //     toast.error('Failed to update profile.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+  const handleUpdateAvatar = async () => {
+    const token = localStorage.getItem('token');
     try {
-      if (file) {
-        const url = await uploadFile(file); // Thêm xử lý upload ảnh
-        profile.photo = url; // Cập nhật avatar với URL mới
-        await updateAvatar(profile.photo); // Call the API to update the avatar in the backend
+      const { avatar } = value;
+      const updateData = {
+       avatarFile: photoURL
       }
-      toast.success('Profile updated successfully!');
+      console.log(updateData);
+      const response = await updateUser(userData?.user?.id, updateData, token);
+      console.log('Update avatar: ', response);
+
+      if (response && response?.statusCode === 200) {
+        setModalUpdateAvatar(false);
+        setFile([]);
+        message.success('Avatar updated successfully');
+      } else {
+        message.error('Failed to update avatar');
+      }
     } catch (error) {
-      toast.error('Failed to update profile.');
-    } finally {
-      setLoading(false);
+      console.error('Update avatar error:', error);
+      message.error('Failed to update avatar: ' + error.message);
     }
-  };
+  }
 
   const handleCancel = () => {
-    setModalUpdateAvatar(false); // Đóng modal bằng cách thay đổi trạng thái modal
-    setPhotoURL(''); // Reset lại URL ảnh nếu cần
-    setFile(null); // Reset lại file nếu cần
+    setModalUpdateAvatar(false);
+    setPhotoURL('');
+    setFile(null);
   };
 
   // Hàm xử lý khi tải ảnh lên
-  const handleUpload = file => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPhotoURL(reader.result); // Cập nhật URL ảnh
-    };
-    reader.readAsDataURL(file);
-    return false;
-  };
+  // const handleUpload = file => {
+  //   const reader = new FileReader();
+  //   reader.onload = () => {
+  //     setPhotoURL(reader.result);
+  //   };
+  //   reader.readAsDataURL(file);
+  //   return false;
+  // };
 
   // Hàm xử lý lưu avatar
-  const handleSaveAvatar = async () => {
-    if (photoURL) {
-      try {
-        // Thực hiện upload ảnh lên server tại đây
-        await uploadFile(file); // Upload file
-        message.success('Avatar updated successfully!');
-        setOpenAvatarModal(false); // Đóng modal sau khi lưu thành công
-      } catch (error) {
-        message.error('Failed to update avatar.');
-      }
-    } else {
-      message.error('Please upload an image first!');
-    }
-  };
+  // const handleSaveAvatar = async () => {
+  //   if (photoURL) {
+  //     try {
+  //       // Thực hiện upload ảnh lên server tại đây
+  //       await uploadFile(file); // Upload file
+  //       message.success('Avatar updated successfully!');
+  //       setOpenAvatarModal(false); // Đóng modal sau khi lưu thành công
+  //     } catch (error) {
+  //       message.error('Failed to update avatar.');
+  //     }
+  //   } else {
+  //     message.error('Please upload an image first!');
+  //   }
+  // };
 
   const copyToClipboard = text => event => {
-    window.navigator.clipboard ?.writeText(text)
+    window.navigator.clipboard
+      ?.writeText(text)
       .then(() => {
         const tipText = 'Text copied';
         toast.success(tipText, {
@@ -144,13 +167,13 @@ function StudentProfile() {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
-  const updateAvatar = async avatarUrl => {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('Token không tồn tại');
+  // const updateAvatar = async avatarUrl => {
+  //   const token = localStorage.getItem('token');
+  //   if (!token) throw new Error('Token không tồn tại');
 
-    const response = await updateAvatarApi(token, { avatar: avatarUrl });
-    if (response.error) throw new Error(response.error); // Handle error response from API
-  };
+  //   const response = await updateAvatarApi(token, { avatar: avatarUrl });
+  //   if (response.error) throw new Error(response.error); // Handle error response from API
+  // };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -225,7 +248,6 @@ function StudentProfile() {
           />
           <div className="flex items-center justify-center absolute inset-0 mt-[10vh] mx-auto bg-white w-[170px] rounded-full z-[999] h-[170px]">
             <Dropdown menu={{ items: menuItems }} trigger={['click']}>
-              {/* Bọc img trong một thẻ div hoặc span */}
               <div>
                 <img
                   src={photoURL || profile?.photo || '/public/placeholder.jpg'}
@@ -236,41 +258,17 @@ function StudentProfile() {
               </div>
             </Dropdown>
 
-            <Modal
-              title="View Avatar"
-              open={isAvatarVisible}
-              onCancel={() => setIsAvatarVisible(false)}
-              footer={null}
-            >
+            <Modal title="View Avatar" open={isAvatarVisible} onCancel={() => setIsAvatarVisible(false)} footer={null}>
               <img src={profile.photo} alt="Avatar" style={{ width: '100%', height: 'auto' }} />
             </Modal>
 
             <Dialog open={modalUpdateAvatar}>
               <DialogTitle>Upload Avatar</DialogTitle>
-              {/* <DialogContent dividers sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden', height: 150 }}>                
-                <Box>
-                  <label htmlFor="profilePhoto">
-                    <input
-                      accept="image/*"
-                      id="profilePhoto"
-                      type="file"
-                      style={{ display: 'none' }}
-                      onChange={handleDataChanged}
-                    />
-                    <Avatar src={photoURL} sx={{ width: 75, height: 75, cursor: 'pointer' }} />
-                  </label>
-//                  {file && (
-//                    <IconButton aria-label="Crop" color="primary" onClick={() => setOpenCrop(true)}>
-//                      <Crop />
-//                    </IconButton>
-//                  )} 
-                </Box>
-              </DialogContent> */}
               <DialogContent
                 dividers
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column', // Stack children vertically
+                  flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                   overflow: 'hidden',
@@ -288,13 +286,6 @@ function StudentProfile() {
                     />
                     <Avatar src={photoURL} sx={{ width: 75, height: 75, cursor: 'pointer' }} />
                   </label>
-
-                  {/* Uncomment if you want to show the crop button */}
-                  {/* {file && (
-                        <IconButton aria-label="Crop" color="primary" onClick={() => setOpenCrop(true)}>
-                          <Crop />
-                        </IconButton>
-                      )} */}
                 </Box>
               </DialogContent>
 
@@ -303,7 +294,7 @@ function StudentProfile() {
                 <Button variant="outlined" onClick={handleCancel}>
                   Cancel
                 </Button>
-                <Button variant="contained" endIcon={<Send />} type="submit">
+                <Button variant="contained" onClick={handleUpdateAvatar} endIcon={<Send />} type="submit">
                   Submit
                 </Button>
               </DialogActions>

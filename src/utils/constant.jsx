@@ -5,6 +5,7 @@ import {
   BookOutlined,
   ClockCircleOutlined,
   ContactsOutlined,
+  FormOutlined,
   FundProjectionScreenOutlined,
   GroupOutlined,
   HeatMapOutlined,
@@ -93,7 +94,7 @@ export const menuNavbarItemsStudent = [
     key: 'meeting',
     icon: <ClockCircleOutlined />,
     label: (
-      <NavLink to={path.STUDENT_MEETING} className="text-white">
+      <NavLink to={path.USER_MEETING} className="text-white">
         Meeting
       </NavLink>
     ),
@@ -115,6 +116,16 @@ export const menuNavbarItemsStudent = [
     label: (
       <NavLink to={path.STUDENT_HISTORY_POINT} className="text-white">
         History Point
+      </NavLink>
+    ),
+    className: 'text-white text-lg'
+  },
+  {
+    key: 'Review',
+    icon: <FormOutlined />,
+    label: (
+      <NavLink to={path.USER_REVIEW} className="text-white">
+        Review
       </NavLink>
     ),
     className: 'text-white text-lg'
@@ -185,7 +196,11 @@ export const menuNavbarItemsMentor = [
   {
     key: 'meeting',
     icon: <ScheduleOutlined />,
-    label: 'Meeting',
+    label: (
+      <NavLink to={path.USER_MEETING} className="text-white">
+        Meeting
+      </NavLink>
+    ),
     className: 'text-white text-lg'
   },
   {
@@ -194,6 +209,16 @@ export const menuNavbarItemsMentor = [
     label: (
       <NavLink to={path.USER_BOOKING} className="text-white">
         Booking
+      </NavLink>
+    ),
+    className: 'text-white text-lg'
+  },
+  {
+    key: 'Review',
+    icon: <FormOutlined />,
+    label: (
+      <NavLink to={path.USER_REVIEW} className="text-white">
+        Review
       </NavLink>
     ),
     className: 'text-white text-lg'

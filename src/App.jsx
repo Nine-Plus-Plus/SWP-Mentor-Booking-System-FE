@@ -24,7 +24,8 @@ import {
   TopicManager,
   Schedule,
   ListNotification,
-  Progress
+  Progress,
+  ReviewList
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -68,7 +69,7 @@ function App() {
           }
         >
           <Route index element={<UserHome />} />
-          <Route path={path.STUDENT_MEETING} element={<Meeting />} />
+          <Route path={path.USER_MEETING} element={<Meeting />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
           <Route path={path.USER_BOOKING} element={<BookingList />} />
@@ -81,6 +82,7 @@ function App() {
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
           <Route path={path.STUDENT_PROGRESS} element={<Progress />} />
           <Route path={path.STUDENT_HISTORY_POINT} element={<ListHistoryPoint />} />
+          <Route path={path.USER_REVIEW} element={<ReviewList/>} />
         </Route>
 
         {/* Route cho trang mentor */}
@@ -102,7 +104,9 @@ function App() {
           <Route path={path.USER_LIST_NOTIFICATION} element={<ListNotification />} />
           <Route path={`${path.USER_VIEW_CLASS}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
+          <Route path={path.USER_MEETING} element={<Meeting />} />
           <Route path={path.USER_BOOKING} element={<BookingList />} />
+          <Route path={path.USER_REVIEW} element={<ReviewList/>} />
         </Route>
         <Route path="*" element={<Navigate to={path.PUBLIC} replace />} />
 

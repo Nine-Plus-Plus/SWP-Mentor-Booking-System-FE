@@ -32,24 +32,24 @@ const MentorList = () => {
     }
   }, [skillFromUrl]);
 
-  // useEffect(() => {
-  //   const fetchMentorByCondition = async () => {
-  //     const token = localStorage.getItem('token');
-  //     try {
-  //       const skills = searchPayload?.skill?.length > 0 ? searchPayload.skill.join(',') : undefined;
-  //       const name = searchPayload?.name || '';
-  //       const availableFrom = searchPayload?.date[0]?.format('DD-MM-YYYY HH:mm') || undefined;
-  //       const availableTo = searchPayload?.date[1]?.format('DD-MM-YYYY HH:mm') || undefined;
+  useEffect(() => {
+    const fetchMentorByCondition = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const skills = searchPayload?.skill?.length > 0 ? searchPayload.skill.join(',') : undefined;
+        const name = searchPayload?.name || '';
+        const availableFrom = searchPayload?.date[0]?.format('DD-MM-YYYY HH:mm') || undefined;
+        const availableTo = searchPayload?.date[1]?.format('DD-MM-YYYY HH:mm') || undefined;
 
-  //       const response = await getAllMentorByNameSkillDate(name, skills, availableFrom, availableTo, token);
-  //       if (response && response.statusCode === 200) setMentors(response.mentorsDTOList);
-  //       else setMentors([]);
-  //     } catch (error) {
-  //       setError(error.message || 'Đã xảy ra lỗi');
-  //     }
-  //   };
-  //   fetchMentorByCondition();
-  // }, []);
+        const response = await getAllMentorByNameSkillDate(name, skills, availableFrom, availableTo, token);
+        if (response && response.statusCode === 200) setMentors(response.mentorsDTOList);
+        else setMentors([]);
+      } catch (error) {
+        setError(error.message || 'Đã xảy ra lỗi');
+      }
+    };
+    fetchMentorByCondition();
+  }, []);
 
   useEffect(() => {
     const fetchMentorByCondition = async () => {
