@@ -16,6 +16,23 @@ export const getStudents = token =>
       reject(error);
     }
   });
+
+export const getStudentsBySemesterId = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/admin/get-students-by-semester/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 // Phương thức lấy người dùng bằng id
 export const getStudentById = (id, token) =>
   new Promise(async (resolve, reject) => {
@@ -126,6 +143,27 @@ export const getStudentNotGroup = (classId, token) =>
         url: `api/user/get-students-not-in-group/${classId}`,
         headers: {
           Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const importExcelStudent = (file, token) =>
+  new Promise(async (resolve, reject) => {
+    const formData = new FormData();
+    formData.append('file', file); // Thêm tệp tin vào formData
+
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: 'api/admin/import-student',
+        data: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
         }
       });
       resolve(response.data);

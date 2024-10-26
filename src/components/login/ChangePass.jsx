@@ -2,14 +2,38 @@ import React, { useState } from 'react';
 import { Form, Input } from 'antd';
 import { EyeInvisibleFilled, EyeTwoTone, LockOutlined } from '@ant-design/icons';
 import { Button } from '../index';
+import { useUserStore } from '../../store/useUserStore';
+import icons from '../../utils/icon';
+import { changePassword } from '../../apis/UserServices';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const ChangePass = () => {
   const [form] = Form.useForm();
   const [isShowPass, setIsShowPass] = useState(false);
-  const [payload, setPayload] = useState({});
+  const { email, otp, resetChangePass } = useUserStore();
+  const { FaSignInAlt } = icons;
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onFinish = values => {
-    setPayload(values);
+    const dataSent = {
+      newPassword: values.confirmNewPassword,
+      otpCode: otp,
+      email: email
+    };
+    handleChangePass(dataSent);
+  };
+
+  const handleChangePass = async dataSent => {
+    setIsLoading(true);
+    const response = await changePassword(dataSent);
+    setIsLoading(false);
+    if (response?.statusCode === 200) {
+      toast.success('Change password successFully!');
+    } else toast.error('Change password fail, please try again!');
+    navigate('/public/login');
+    resetChangePass();
   };
 
   return (
@@ -79,7 +103,14 @@ const ChangePass = () => {
 
             {/* Submit button */}
             <Form.Item className="flex items-center justify-center w-full">
-              <Button textColor="text-white" bgColor="bg-main-1" bgHover="bg-main-2" text="Confirm" />
+              <Button
+                textColor="text-white"
+                bgColor="bg-main-1"
+                bgHover="hover:bg-main-2"
+                text="Confirm"
+                IcBefore={FaSignInAlt}
+                isLoading={isLoading}
+              />
             </Form.Item>
           </Form>
         </div>

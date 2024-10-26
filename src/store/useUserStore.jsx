@@ -1,4 +1,3 @@
-import React from 'react';
 import { create } from 'zustand';
 
 export const useUserStore = create(set => ({
@@ -9,6 +8,8 @@ export const useUserStore = create(set => ({
   userData: null,
   mentorOfClass: null,
   fullData: null,
+  email: null,
+  otp: null,
 
   setModal: (token, role, isLoggedIn) => {
     localStorage.setItem('token', token);
@@ -43,10 +44,29 @@ export const useUserStore = create(set => ({
     set(() => ({ current }));
   },
 
+  setEmail: email => {
+    set(() => ({
+      email
+    }));
+  },
+
+  setStoreOTP: otp => {
+    set(() => ({
+      otp
+    }));
+  },
+
+  resetChangePass: () => {
+    set(() => ({
+      email: null,
+      otp: null
+    }));
+  },
+
   resetUserStore: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('isLoggedIn');
+    localStorage?.removeItem('token');
+    localStorage?.removeItem('role');
+    localStorage?.removeItem('isLoggedIn');
     set(() => ({
       token: null,
       role: null,
@@ -54,7 +74,9 @@ export const useUserStore = create(set => ({
       fullData: null,
       mentorOfClass: null,
       userData: null,
-      current: null
+      current: null,
+      email: null,
+      otp: null
     }));
   }
 }));

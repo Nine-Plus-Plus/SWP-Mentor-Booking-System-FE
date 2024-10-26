@@ -200,21 +200,21 @@ function StudentProfile() {
         // Cập nhật state với dữ liệu từ API
         setProfile({
           code: roleProfile == 'MENTOR' ? user?.mentorCode : user?.studentCode,
-          userName: user?.user?.username || 'N/A',
-          fullName: user?.user?.fullName || 'N/A',
-          email: user?.user?.email || 'N/A',
-          birthDate: user?.user?.birthDate || 'N/A',
+          userName: user?.user?.username || '',
+          fullName: user?.user?.fullName || '',
+          email: user?.user?.email || '',
+          birthDate: user?.user?.birthDate || '',
           photo: user?.user?.avatar || '/public/cover.jpg',
-          address: user?.user?.address || 'N/A',
-          phone: user?.user?.phone || 'N/A',
-          gender: user?.user?.gender || 'N/A',
+          address: user?.user?.address || '',
+          phone: user?.user?.phone || '',
+          gender: user?.user?.gender || '',
           point: roleProfile === 'MENTOR' ? user?.star : user?.point,
           expertise:
             roleProfile === 'MENTOR' ? user?.skills?.map(skill => skill.skillName).join(', ') : user?.expertise,
           className: roleProfile === 'MENTOR' ? user?.assignedClass?.className : user?.aclass?.className,
-          timeRemain: user?.totalTimeRemain || 'N/A',
-          groupProject: group?.project?.projectName || 'N/A',
-          groupRole: user?.groupRole || 'N/A'
+          timeRemain: user?.totalTimeRemain || '',
+          groupProject: group?.project?.projectName || '',
+          groupRole: user?.groupRole || ''
         });
       } catch (err) {
         console.error('Lỗi khi gọi API:', err);
@@ -242,7 +242,7 @@ function StudentProfile() {
         <div className="h-[calc(20vh+100px)]">
           <img
             // Background image
-            src={'/public/cover.jpg'}
+            src="https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/cover.jpg"
             alt="Profile"
             className="w-full object-cover h-[20vh] rounded-tl-md rounded-tr-md"
           />
@@ -317,7 +317,11 @@ function StudentProfile() {
               focusStateEnabled={false}
               hoverStateEnabled={false}
             >
-              <img src="/public/clipboard-icon.png" alt="Copy to clipboard" className="inline-block w-4 h-4 ml-1" />
+              <img
+                src="https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/clipboard-icon.png"
+                alt="Copy to clipboard"
+                className="inline-block w-4 h-4 ml-1"
+              />
             </CopyAction>
           </div>
         </div>
@@ -328,7 +332,7 @@ function StudentProfile() {
         {/* Contact and Address Section */}
         <div className="bg-white p-8 rounded-lg shadow-lg w-2/5">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">Contact & Address</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
             <div>
               <label className="block text-gray-700 text-sm font-medium">Phone</label>
               <input

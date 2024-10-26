@@ -592,7 +592,7 @@ const StudentGroup = () => {
         open={addModal}
         onCancel={handleCancel}
         onOk={() => {
-          form.submit();
+          setAddModal(false);
         }}
         width={1500}
         style={{ top: 40 }}
@@ -612,6 +612,7 @@ const StudentGroup = () => {
               code={student?.studentCode}
               studentAdd={userData?.user?.id}
               groupName={inGroup?.groupName}
+              avatar={student?.user?.avatar}
             />
           ))}
         </div>

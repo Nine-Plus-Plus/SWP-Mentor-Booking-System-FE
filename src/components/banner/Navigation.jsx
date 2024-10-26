@@ -20,7 +20,7 @@ const Navigation = ({ children, menuNavbar }) => {
   const { IoIosNotifications } = icons;
   const [notificationCount, setNotificationCount] = useState(3);
   const [loading, setLoading] = useState(false);
-  const { resetUserStore, role, current } = useUserStore();
+  const { resetUserStore, role, current, userData } = useUserStore();
   const [collapsed, setCollapsed] = useState(false);
   const { Content } = Layout;
   const location = useLocation();
@@ -124,7 +124,11 @@ const Navigation = ({ children, menuNavbar }) => {
               setVariant('/public');
             }}
           >
-            <img src="/public/logoFPT.svg" className="object-contain h-full" alt="logo" />
+            <img
+              src="https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/logoFPT.svg"
+              className="object-contain h-full"
+              alt="logo"
+            />
           </NavLink>
         </div>
         <Menu
@@ -169,7 +173,7 @@ const Navigation = ({ children, menuNavbar }) => {
               <Dropdown menu={{ items }} trigger={['click']}>
                 <Space>
                   <img
-                    src="/public/avatar-default.jpg"
+                    src={userData?.user?.avatar}
                     alt="avatar"
                     className="object-cover h-[6vh] w-[6vh] rounded-full cursor-pointer"
                   />

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { getStudents, getStudentById, updateStudent, deleteStudent, createStudent } from '../../apis/StudentServices';
+import {
+  getStudents,
+  getStudentById,
+  updateStudent,
+  deleteStudent,
+  createStudent,
+  importExcelStudent,
+  getStudentsBySemesterId
+} from '../../apis/StudentServices';
 import { Table, Button, message, Form, Modal, Input, Radio, Select, DatePicker } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -13,32 +21,15 @@ function StudentManager() {
   const [error, setError] = useState(null);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [isImportModalVisible, setIsImportModalVisible] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [semesters, setSemesters] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState(null);
   const [form] = Form.useForm();
   const [uploadedAvatar, setUploadedAvatar] = useState(null); // Lưu URL ảnh sau khi upload
   const [fileList, setFileList] = useState([]);
-
-  useEffect(() => {
-    const fetchStudents = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await getStudents(token);
-        console.log(response);
-
-        setStudents(response.studentsDTOList);
-      } catch (err) {
-        setError(err.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStudents();
-  }, []);
+  const [filterSemester, setFilterSemester] = useState(null);
 
   useEffect(() => {
     const fetchSemesters = async () => {
@@ -54,6 +45,28 @@ function StudentManager() {
     };
     fetchSemesters();
   }, []);
+
+  useEffect(() => {
+    if (semesters?.length > 0) {
+      setFilterSemester(semesters[0].id);
+    }
+  }, [semesters]);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await getStudentsBySemesterId(filterSemester, token);
+        setStudents(response.studentsDTOList);
+      } catch (err) {
+        setError(err.message || 'Đã xảy ra lỗi');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [filterSemester]);
 
   useEffect(() => {
     const fetchClassBySemesterId = async () => {
@@ -220,6 +233,65 @@ function StudentManager() {
     setFileList([]);
   };
 
+  // Import Excel
+  const showImportModal = () => {
+    setIsImportModalVisible(true);
+  };
+
+  const handleCancelImport = () => {
+    setIsImportModalVisible(false);
+    setFileList([]);
+  };
+
+  const handleFileChange = info => {
+    if (info.fileList.length > 0) {
+      setFileList(info.fileList.slice(-1)); // Chỉ giữ lại file cuối cùng được tải lên
+    } else {
+      setFileList([]);
+    }
+  };
+
+  const handleImportExcel = async () => {
+    const token = localStorage.getItem('token');
+
+    // Đảm bảo rằng một tệp đã được chọn
+    if (fileList.length === 0) {
+      message.error('Please select a file to import!');
+      return;
+    }
+
+    try {
+      const response = await importExcelStudent(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+
+      if (response && response.statusCode === 200) {
+        // Cập nhật lại danh sách người dùng với thông tin mới
+        await fetchStudents(token); // Cập nhật lại danh sách mentors
+        setIsUpdateModalVisible(false);
+        setFileList([]);
+        message.success('Mentors imported successfully');
+      } else {
+        message.error('Import Excel thất bại');
+      }
+    } catch (error) {
+      console.error('Import Excel error:', error);
+      message.error('Import Excel thất bại: ' + error.message);
+    }
+  };
+
+  const fetchStudents = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await getStudents(token);
+      console.log(response);
+
+      setStudents(response.studentsDTOList);
+    } catch (err) {
+      setError(err.message || 'Đã xảy ra lỗi');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return <div className="text-center text-gray-700">Loading...</div>;
   }
@@ -321,8 +393,25 @@ function StudentManager() {
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Student
       </Button>
+      <Button type="primary" onClick={showImportModal} style={{ marginBottom: '10px', marginLeft: '10px' }}>
+        Import Excel
+      </Button>
+      <div className="w-[10vw] mb-3">
+        <Select
+          placeholder="Select Semester"
+          value={filterSemester}
+          onChange={value => setFilterSemester(value)}
+          style={{ backgroundColor: '#F3F4F6', width: '100%' }}
+          className="rounded-lg shadow-sm border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition"
+        >
+          {semesters?.map(semester => (
+            <Select.Option key={semester.id} value={semester.id}>
+              {semester.semesterName}
+            </Select.Option>
+          ))}
+        </Select>
+      </div>
       <Table columns={columns} bordered dataSource={students} rowKey="id" pagination={{ pageSize: 10 }} />
-
       {/* Modal for updating student */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
         <div className="max-h-96 overflow-y-auto p-5">
@@ -649,6 +738,26 @@ function StudentManager() {
             </Form.Item>
           </Form>
         </div>
+      </Modal>
+      {/* Modal for importing Excel */}
+      <Modal
+        title="Import Mentor từ Excel"
+        open={isImportModalVisible}
+        onOk={handleImportExcel}
+        onCancel={handleCancelImport}
+      >
+        <Dragger
+          accept=".xlsx, .xls"
+          beforeUpload={() => false} // Ngăn không cho upload tự động
+          fileList={fileList}
+          onChange={handleFileChange}
+        >
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">Click hoặc kéo thả file để tải lên</p>
+          <p className="ant-upload-hint">Chỉ chấp nhận file Excel (.xls, .xlsx)</p>
+        </Dragger>
       </Modal>
     </div>
   );

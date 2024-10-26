@@ -1,28 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
-import { getAllBookingByStats } from '../../apis/BookingServices';
-import { getAllGroup } from '../../apis/GroupServices';
+import { getAllBookingBySemesterId, getAllBookingByStats } from '../../apis/BookingServices';
+import { getAllGroup, getAllGroupBySemesterId } from '../../apis/GroupServices';
 import { getAllSemester } from '../../apis/SemesterServices';
 import { Select } from 'antd';
+import { getAllMentors } from '../../apis/MentorServices';
+import { getStudents, getStudentsBySemesterId } from '../../apis/StudentServices';
+import { getTopicByIdSemester } from '../../apis/TopicServices';
 
 export const AdminHome = () => {
   const [mentorRatings, setMentorRatings] = useState([]);
-  const [bookingStatus, setBookingStatus] = useState({
-    CONFIRMED: 0,
-    REJECTED: 0,
-    PENDING: 0,
-    CANCELLED: 0
-  });
   const [totalMentors, setTotalMentors] = useState(0);
   const [totalStudents, setTotalStudents] = useState(0);
   const [totalBookings, setTotalBookings] = useState(0);
+  const [totalTopics, setTotalTopics] = useState(0);
   const [totalGroups, setTotalGroups] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [semesters, setSemesters] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState(null);
   const token = localStorage.getItem('token');
+  const [bookingStatus, setBookingStatus] = useState({
+    CONFIRMED: 0,
+    REJECTED: 0,
+    PENDING: 0,
+    CANCELLED: 0
+  });
 
   useEffect(() => {
     const fetchSemesters = async () => {
@@ -40,63 +44,80 @@ export const AdminHome = () => {
   }, []);
 
   useEffect(() => {
-    // bookingStatus?.map(item => console.log(item));
-    const fetchAllBooking = async status => {
-      const response = await getAllBookingByStats(status, token);
-      if (response?.statusCode === 200) {
-        setBookingStatus(prev => ({
-          ...prev,
-          [status]: response.bookingDTOList.length || 0
-        }));
-        setTotalBookings(prevTotal => prevTotal + response.bookingDTOList.length);
-      }
-    };
-    setTotalBookings(0);
-    Object.keys(bookingStatus).forEach(status => {
-      fetchAllBooking(status);
-    });
-  }, []);
+    if (semesters?.length > 0) {
+      setSelectedSemester(semesters[0].id);
+    }
+  }, [semesters]);
 
   useEffect(() => {
-    // bookingStatus?.map(item => console.log(item));
+    const fetchAllBooking = async () => {
+      const response = await getAllBookingBySemesterId(selectedSemester, token);
+      if (response?.statusCode === 200) {
+        response.bookingDTOList.map(booking => {
+          const { status } = booking;
+          setBookingStatus(prev => ({
+            ...prev,
+            [status]: (prev[status] || 0) + 1
+          }));
+        });
+        setTotalBookings(prevTotal => prevTotal + response.bookingDTOList.length);
+      } else
+        setBookingStatus({
+          CONFIRMED: 0,
+          REJECTED: 0,
+          PENDING: 0,
+          CANCELLED: 0
+        });
+    };
+    setTotalBookings(0);
+    fetchAllBooking();
+  }, [selectedSemester]);
+
+  useEffect(() => {
+    const fetchAllStudent = async () => {
+      const response = await getStudentsBySemesterId(selectedSemester, token);
+      if (response?.statusCode === 200) {
+        setTotalStudents(prevTotal => prevTotal + response.studentsDTOList.length);
+      }
+    };
+    setTotalStudents(0);
+    fetchAllStudent();
+  }, [selectedSemester]);
+
+  useEffect(() => {
     const fetchAllGroup = async () => {
-      const response = await getAllGroup(semesters, token);
+      const response = await getAllGroupBySemesterId(selectedSemester, token);
       if (response?.statusCode === 200) {
         setTotalGroups(prevTotal => prevTotal + response.groupDTOList.length);
       }
     };
     setTotalGroups(0);
     fetchAllGroup();
-  }, [semesters]);
+  }, [selectedSemester]);
 
-  // useEffect(() => {
-  //   const fetchMockData = () => {
-  //     const mockMentorRatings = Array.from({ length: 724 }, () => Math.random() * 5);
-  //     const mockBookingStatus = {
-  //       accepted: 65,
-  //       rejected: 25,
-  //       Pending: 10
-  //     };
+  useEffect(() => {
+    const fetchAllTopic = async () => {
+      const response = await getTopicByIdSemester(selectedSemester, token);
+      if (response?.statusCode === 200) {
+        setTotalTopics(prevTotal => prevTotal + response.topicDTOList.length);
+      }
+    };
+    setTotalTopics(0);
+    fetchAllTopic();
+  }, [selectedSemester]);
 
-  //     const mockTotals = {
-  //       mentors: 120,
-  //       students: 450,
-  //       bookings: 300,
-  //       groups: 15
-  //     };
-
-  //     setTimeout(() => {
-  //       setMentorRatings(mockMentorRatings);
-  //       setBookingStatus(mockBookingStatus);
-  //       setTotalMentors(mockTotals.mentors);
-  //       setTotalStudents(mockTotals.students);
-  //       setTotalBookings(mockTotals.bookings);
-  //       setTotalGroups(mockTotals.groups);
-  //     }, 2000);
-  //   };
-
-  //   fetchMockData();
-  // }, []);
+  useEffect(() => {
+    const fetchAllMentor = async () => {
+      const response = await getAllMentors(token);
+      if (response?.statusCode === 200) {
+        setTotalMentors(prevTotal => prevTotal + response.mentorsDTOList.length);
+        const rating = response?.mentorsDTOList?.map(mentor => mentor.star);
+        setMentorRatings(rating);
+      }
+    };
+    setTotalMentors(0);
+    fetchAllMentor();
+  }, []);
 
   // Set giá trị star đến số gần nhất
   const roundStarRating = rating => {
@@ -211,27 +232,30 @@ export const AdminHome = () => {
           className="rounded-lg shadow-sm border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition"
         >
           {semesters?.map(semester => (
-            <Option key={semester.id} value={semester.id}>
+            <Select.Option key={semester.id} value={semester.id}>
               {semester.semesterName}
-            </Option>
+            </Select.Option>
           ))}
         </Select>
       </div>
-      <div className="gap-3 pb-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
-        <div className="bg-white p-8 rounded-lg border-2 border-sky-500 shadow-2xl flex flex-col items-center">
+      <div className="gap-3 pb-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
+        <div className="bg-white p-2 rounded-lg border-2 border-sky-500 shadow-2xl flex flex-col items-center">
           <h3 className="text-xl font-semibold">Total Mentors</h3>
           <p className="text-2xl font-bold">{totalMentors}</p>
         </div>
-        <div className="bg-white p-8 rounded-lg border-2 border-emerald-500 shadow-2xl flex flex-col items-center">
+        <div className="bg-white p-2 rounded-lg border-2 border-emerald-500 shadow-2xl flex flex-col items-center">
           <h3 className="text-xl font-semibold">Total Students</h3>
           <p className="text-2xl font-bold">{totalStudents}</p>
         </div>
-        <div className="bg-white p-8 rounded-lg border-2 border-orange-500 shadow-2xl flex flex-col items-center">
+        <div className="bg-white p-2 rounded-lg border-2 border-purple-500 shadow-2xl flex flex-col items-center">
+          <h3 className="text-xl font-semibold">Total Topics</h3>
+          <p className="text-2xl font-bold">{totalTopics}</p>
+        </div>
+        <div className="bg-white p-2 rounded-lg border-2 border-orange-500 shadow-2xl flex flex-col items-center">
           <h3 className="text-xl font-semibold">Total Bookings</h3>
           <p className="text-2xl font-bold">{totalBookings}</p>
         </div>
-        <div className="bg-white p-8 rounded-lg border-2 border-yellow-500 shadow-2xl flex flex-col items-center">
-          {/* chỉnh thành class */}
+        <div className="bg-white p-2 rounded-lg border-2 border-yellow-500 shadow-2xl flex flex-col items-center">
           <h3 className="text-xl font-semibold">Total Groups</h3>
           <p className="text-2xl font-bold">{totalGroups}</p>
         </div>
@@ -250,10 +274,20 @@ export const AdminHome = () => {
             <Pie data={pieData} options={pieOptions} />
           </div>
           <ul className="mt-4 text-center">
-            <li className="text-green-600 font-medium">Accepted: {bookingStatus.CONFIRMED}%</li>
-            <li className="text-red-600 font-medium">Rejected: {bookingStatus.REJECTED}%</li>
-            <li className="text-yellow-600 font-medium">Pending: {bookingStatus.PENDING}%</li>
-            <li className="text-gray-600 font-medium">Cancelled: {bookingStatus.CANCELLED}%</li>
+            <li className="text-green-600 font-medium">
+              Accepted: {bookingStatus.CONFIRMED > 0 ? ((bookingStatus.CONFIRMED / totalBookings) * 100).toFixed(2) : 0}
+              %
+            </li>
+            <li className="text-red-600 font-medium">
+              Rejected: {bookingStatus.CONFIRMED > 0 ? ((bookingStatus.REJECTED / totalBookings) * 100).toFixed(2) : 0}%
+            </li>
+            <li className="text-yellow-600 font-medium">
+              Pending: {bookingStatus.CONFIRMED > 0 ? ((bookingStatus.PENDING / totalBookings) * 100).toFixed(2) : 0}%
+            </li>
+            <li className="text-gray-600 font-medium">
+              Cancelled:{' '}
+              {bookingStatus.CONFIRMED > 0 ? ((bookingStatus.CANCELLED / totalBookings) * 100).toFixed(2) : 0}%
+            </li>
           </ul>
         </div>
       </div>

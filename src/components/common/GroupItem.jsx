@@ -17,11 +17,8 @@ const GroupItem = ({
   projectName,
   totalMember,
   process,
-  className,
   leader,
   leaderId
-  // setJoined,
-  // joined
 }) => {
   const [isShowMore, setIsShowMore] = useState(false);
   const [joined, setJoined] = useState(true);
@@ -207,7 +204,7 @@ const GroupItem = ({
         open={addModal}
         onCancel={handleCancel}
         onOk={() => {
-          form.submit();
+          setAddModal(false);
         }}
         width={1500}
         style={{ top: 40 }}
@@ -227,6 +224,7 @@ const GroupItem = ({
               code={student?.studentCode}
               mentorAdd={userData?.id}
               groupName={groupName}
+              avatar={student?.user?.avatar}
             />
           ))}
         </div>

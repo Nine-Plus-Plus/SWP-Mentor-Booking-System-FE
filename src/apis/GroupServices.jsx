@@ -5,7 +5,23 @@ export const getAllGroup = token =>
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: `api/admin/get-classes-by-semester/${semesterId}`,
+        url: `api/user/get-all-groups`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const getAllGroupBySemesterId = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/admin/get-groups-in-semester/${id}`,
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -31,15 +31,15 @@ import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, Pu
 import { ToastContainer } from 'react-toastify';
 import PrivateRoute from '../src/middlewares/PrivateRoute';
 import GuestRoute from '../src/middlewares/GuestRoute';
-import { useUserStore } from './store/useUserStore';
 import { useEffect } from 'react';
 import { roleForComponent } from './utils/constant';
 import { Meeting } from './components/common/Meeting';
+import { useUserStore } from './store/useUserStore';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
   useEffect(() => {
-    if (!localStorage.getItem('token') || localStorage.getItem('token') === 'null') resetUserStore();
+    if (!localStorage?.getItem('token') || localStorage?.getItem('token') === 'null') resetUserStore();
   }, []);
 
   return (
@@ -54,9 +54,9 @@ function App() {
           <Route index element={<PublicHome />} />
           <Route path={path.ABOUT_US} element={<PublicAboutUs />} />
           <Route path={path.LOGIN} element={<GuestRoute element={Login} />} />
-          <Route path={path.FORGOT_PASS} element={<GuestRoute element={ForgotPass} />} />
-          <Route path={path.CHANGE_PASS} element={<GuestRoute element={ChangePass} />} />
-          <Route path={path.OTP_INPUT} element={<GuestRoute element={OTPInput} />} />
+          <Route path={path.FORGOT_PASS} element={<ForgotPass />} />
+          <Route path={path.CHANGE_PASS} element={<ChangePass />} />
+          <Route path={path.OTP_INPUT} element={<OTPInput />} />
         </Route>
 
         {/* Route cho trang student */}
