@@ -9,6 +9,7 @@ const path = {
   OTP_INPUT: 'send-recovery-otp',
 
   // Common User
+  USER_HOME: 'home',
   USER_PROFILE_NAME_ID: 'profile-user/:name/:id',
   USER_PROFILE_ALL: 'profile-user/*',
   USER_PROFILE: 'profile-user',
@@ -16,11 +17,12 @@ const path = {
   USER_LIST_NOTIFICATION: 'list-notification',
   USER_VIEW_MENTOR: 'view-mentor',
   USER_VIEW_CLASS: 'view-class',
+  USER_MEETING: 'meeting',
   USER_BOOKING: 'booking',
+  USER_REVIEW: 'review',
 
   // Student
-  PUBLIC_STUDENT: 'student',
-  STUDENT_MEETING: 'meeting',
+  PUBLIC_STUDENT: 'student',  
   STUDENT_GROUP: 'group',
   STUDENT_PROGRESS: 'progress',
   STUDENT_HISTORY_POINT: 'history-point',

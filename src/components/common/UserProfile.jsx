@@ -19,32 +19,35 @@ import {
 import CropEasy from './CropEasy';
 import { Modal, message, Dropdown, Menu } from 'antd';
 import { UploadOutlined, EyeOutlined } from '@ant-design/icons';
+import { updateStudent } from '../../apis/StudentServices';
+import { updateMentor } from '../../apis/MentorServices';
+import dayjs from 'dayjs';
 
 function StudentProfile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { role } = useUserStore();
+  const { role, userData, setAvatar } = useUserStore();
   const [isDataChanged, setIsDataChanged] = useState(false);
-  const [isContentScrolled, setIsContentScrolled] = useState(false);
   const { name, id } = useParams();
   const [openCrop, setOpenCrop] = useState(false);
   const [photoURL, setPhotoURL] = useState(null); // Lưu URL ảnh sau khi upload
   const [file, setFile] = useState([]);
-  const [isCopied, setIsCopied] = useState(false);
-  const [openAvatarModal, setOpenAvatarModal] = useState(false); // Trạng thái mở modal
-  const [isAvatarVisible, setIsAvatarVisible] = useState(false); // Trạng thái hiển thị modal avatar
+  const [isAvatarVisible, setIsAvatarVisible] = useState(false);
   const [modalUpdateAvatar, setModalUpdateAvatar] = useState(false);
 
   let roleProfile = name ? name.toUpperCase() : role;
 
-  // Cập nhật trạng thái dữ liệu khi có thay đổi (có modal)
-  const handleDataChanged = e => {
-    const selectedFile = e.target.files[0];
+  const handleDataChanged = event => {
+    const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      setPhotoURL(URL.createObjectURL(selectedFile)); // Lưu URL của ảnh
-      setModalUpdateAvatar(true); // Mở modal
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoURL(reader.result); // Cập nhật URL ảnh để hiển thị
+        setFile(selectedFile); // Lưu file để cắt chỉnh sau này
+        setModalUpdateAvatar(true); // Mở modal cắt ảnh
+      };
+      reader.readAsDataURL(selectedFile);
     }
   };
 
@@ -69,58 +72,94 @@ function StudentProfile() {
     }
   ];
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setLoading(true);
-
+  const handleUpdateAvatarStudent = async () => {
+    const token = localStorage.getItem('token');
     try {
-      if (file) {
-        const url = await uploadFile(file); // Thêm xử lý upload ảnh
-        profile.photo = url; // Cập nhật avatar với URL mới
-        await updateAvatar(profile.photo); // Call the API to update the avatar in the backend
+      const updateData = {
+        student: {
+          username: userData?.user?.username,
+          email: userData?.user?.email,
+          fullName: userData?.user?.fullName,
+          birthDate: dayjs(userData?.user?.birthDate),
+          address: userData?.user?.address,
+          phone: userData?.user?.phone,
+          gender: userData?.user?.gender,
+          expertise: userData?.expertise,
+          studentCode: userData?.studentCode,
+          aclass: {
+            id: userData?.aclass?.id
+          }
+        },
+        avatarFile: file // Ensure this is a File or Blob
+      };
+
+      console.log(updateData);
+
+      const response = await updateStudent(userData?.user?.id, updateData, token);
+      console.log(response);
+
+      if (response && response?.statusCode === 200) {
+        setAvatar(response?.studentsDTO?.user?.avatar);
+        setModalUpdateAvatar(false);
+        setFile([]);
+        message.success('Avatar updated successfully');
+      } else {
+        message.error('Failed to update avatar');
       }
-      toast.success('Profile updated successfully!');
     } catch (error) {
-      toast.error('Failed to update profile.');
-    } finally {
-      setLoading(false);
+      console.error('Update avatar error:', error);
+      message.error('Failed to update avatar: ' + error.message);
+    }
+  };
+
+  const handleUpdateAvatarMentor = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const skillsArray = userData?.skills.map(skill => ({ id: skill.id }));
+      console.log(userData?.user?.id);
+
+      const updateData = {
+        mentor: {
+          username: userData?.user?.username,
+          email: userData?.user?.email,
+          fullName: userData?.user?.fullName,
+          birthDate: dayjs(userData?.user?.birthDate),
+          address: userData?.user?.address,
+          phone: userData?.user?.phone,
+          gender: userData?.user?.gender,
+          mentorCode: userData?.mentorCode,
+          star: userData?.star,
+          totalTimeRemain: userData?.totalTimeRemain,
+          skills: skillsArray
+        },
+        avatarFile: file // Ensure this is a File or Blob
+      };
+      console.log(skillsArray);
+      const response = await updateMentor(userData?.user?.id, updateData, token);
+      console.log(response);
+      if (response?.statusCode === 200) {
+        setModalUpdateAvatar(false);
+        setFile([]);
+        setAvatar(response?.mentorsDTO?.user?.avatar);
+        message.success('Avatar updated successfully');
+      } else {
+        message.error('Failed to update avatar');
+      }
+    } catch (error) {
+      console.error('Update avatar error:', error);
+      message.error('Failed to update avatar: ' + error.message);
     }
   };
 
   const handleCancel = () => {
-    setModalUpdateAvatar(false); // Đóng modal bằng cách thay đổi trạng thái modal
-    setPhotoURL(''); // Reset lại URL ảnh nếu cần
-    setFile(null); // Reset lại file nếu cần
-  };
-
-  // Hàm xử lý khi tải ảnh lên
-  const handleUpload = file => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPhotoURL(reader.result); // Cập nhật URL ảnh
-    };
-    reader.readAsDataURL(file);
-    return false;
-  };
-
-  // Hàm xử lý lưu avatar
-  const handleSaveAvatar = async () => {
-    if (photoURL) {
-      try {
-        // Thực hiện upload ảnh lên server tại đây
-        await uploadFile(file); // Upload file
-        message.success('Avatar updated successfully!');
-        setOpenAvatarModal(false); // Đóng modal sau khi lưu thành công
-      } catch (error) {
-        message.error('Failed to update avatar.');
-      }
-    } else {
-      message.error('Please upload an image first!');
-    }
+    setModalUpdateAvatar(false);
+    setPhotoURL(null);
+    setFile(null);
   };
 
   const copyToClipboard = text => event => {
-    window.navigator.clipboard ?.writeText(text)
+    window.navigator.clipboard
+      ?.writeText(text)
       .then(() => {
         const tipText = 'Text copied';
         toast.success(tipText, {
@@ -135,21 +174,8 @@ function StudentProfile() {
       .catch(err => console.error('Failed to copy text: ', err));
   };
 
-  const onCopyHandler = () => {
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 1000); // Hide the success message after 1 seconds
-  };
-
   const capitalizeFirstLetter = string => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-  };
-
-  const updateAvatar = async avatarUrl => {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('Token không tồn tại');
-
-    const response = await updateAvatarApi(token, { avatar: avatarUrl });
-    if (response.error) throw new Error(response.error); // Handle error response from API
   };
 
   useEffect(() => {
@@ -160,18 +186,8 @@ function StudentProfile() {
           setError('Token không tồn tại');
           return;
         }
-
-        // Gọi API để lấy profile
         const response = id ? await getProfileById(id, token) : await getMyProfile(token);
-        // console.log('get profile: ', response);
-
-        console.log('Role:', roleProfile);
         const user = roleProfile === 'MENTOR' ? response?.mentorsDTO : response?.studentsDTO;
-
-        // Kiểm tra dữ liệu trả về từ API
-        console.log('User DTO:', user);
-
-        // Lấy group cho STUDENT
         const group = response?.groupDTO;
 
         // Cập nhật state với dữ liệu từ API
@@ -219,13 +235,12 @@ function StudentProfile() {
         <div className="h-[calc(20vh+100px)]">
           <img
             // Background image
-            src={'/public/cover.jpg'}
+            src="https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/cover.jpg"
             alt="Profile"
             className="w-full object-cover h-[20vh] rounded-tl-md rounded-tr-md"
           />
           <div className="flex items-center justify-center absolute inset-0 mt-[10vh] mx-auto bg-white w-[170px] rounded-full z-[999] h-[170px]">
             <Dropdown menu={{ items: menuItems }} trigger={['click']}>
-              {/* Bọc img trong một thẻ div hoặc span */}
               <div>
                 <img
                   src={photoURL || profile?.photo || '/public/placeholder.jpg'}
@@ -241,40 +256,23 @@ function StudentProfile() {
               open={isAvatarVisible}
               onCancel={() => setIsAvatarVisible(false)}
               footer={null}
+              width={700}
             >
-              <img src={profile.photo} alt="Avatar" style={{ width: '100%', height: 'auto' }} />
+              <img src={profile.photo} alt="Avatar" className="w-[60vw] h-[60vh]" />
             </Modal>
 
             <Dialog open={modalUpdateAvatar}>
               <DialogTitle>Upload Avatar</DialogTitle>
-              {/* <DialogContent dividers sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden', height: 150 }}>                
-                <Box>
-                  <label htmlFor="profilePhoto">
-                    <input
-                      accept="image/*"
-                      id="profilePhoto"
-                      type="file"
-                      style={{ display: 'none' }}
-                      onChange={handleDataChanged}
-                    />
-                    <Avatar src={photoURL} sx={{ width: 75, height: 75, cursor: 'pointer' }} />
-                  </label>
-//                  {file && (
-//                    <IconButton aria-label="Crop" color="primary" onClick={() => setOpenCrop(true)}>
-//                      <Crop />
-//                    </IconButton>
-//                  )} 
-                </Box>
-              </DialogContent> */}
               <DialogContent
                 dividers
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column', // Stack children vertically
+                  flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                   overflow: 'hidden',
-                  height: 150
+                  height: 450,
+                  width: 500
                 }}
               >
                 <Box>
@@ -286,15 +284,8 @@ function StudentProfile() {
                       style={{ display: 'none' }}
                       onChange={handleDataChanged}
                     />
-                    <Avatar src={photoURL} sx={{ width: 75, height: 75, cursor: 'pointer' }} />
+                    <Avatar src={photoURL} sx={{ width: 350, height: 350, cursor: 'pointer' }} />
                   </label>
-
-                  {/* Uncomment if you want to show the crop button */}
-                  {/* {file && (
-                        <IconButton aria-label="Crop" color="primary" onClick={() => setOpenCrop(true)}>
-                          <Crop />
-                        </IconButton>
-                      )} */}
                 </Box>
               </DialogContent>
 
@@ -303,11 +294,19 @@ function StudentProfile() {
                 <Button variant="outlined" onClick={handleCancel}>
                   Cancel
                 </Button>
-                <Button variant="contained" endIcon={<Send />} type="submit">
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    userData?.user?.role?.roleName === 'STUDENT'
+                      ? handleUpdateAvatarStudent()
+                      : handleUpdateAvatarMentor();
+                  }}
+                  endIcon={<Send />}
+                  type="submit"
+                >
                   Submit
                 </Button>
               </DialogActions>
-              <CropEasy {...{ photoURL, setOpenCrop, setPhotoURL, setFile }} />
             </Dialog>
           </div>
         </div>
@@ -326,7 +325,11 @@ function StudentProfile() {
               focusStateEnabled={false}
               hoverStateEnabled={false}
             >
-              <img src="/public/clipboard-icon.png" alt="Copy to clipboard" className="inline-block w-4 h-4 ml-1" />
+              <img
+                src="https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/clipboard-icon.png"
+                alt="Copy to clipboard"
+                className="inline-block w-4 h-4 ml-1"
+              />
             </CopyAction>
           </div>
         </div>
@@ -337,7 +340,7 @@ function StudentProfile() {
         {/* Contact and Address Section */}
         <div className="bg-white p-8 rounded-lg shadow-lg w-2/5">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">Contact & Address</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
             <div>
               <label className="block text-gray-700 text-sm font-medium">Phone</label>
               <input

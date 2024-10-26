@@ -73,7 +73,7 @@ const MentorList = () => {
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
       <Search searchFor={'mentor'} setPayload={setSearchPayload} />
-      <div className="p-3 bg-white rounded-md flex flex-col gap-5" topRef={topRef}>
+      <div className="p-3 bg-white rounded-md flex flex-col gap-5" ref={topRef}>
         {currentMentors.length === 0 ? (
           <p className="text-red-500">No instructors were found.</p>
         ) : (
