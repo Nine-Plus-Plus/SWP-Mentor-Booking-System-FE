@@ -328,13 +328,15 @@ const UserItem = ({
   return (
     <div className="border shadow-md rounded-md h-[180px]">
       <div className="h-[179px] flex w-full gap-4">
-        <img
-          src={avatar ? avatar : '/public/avatar1.jpg'}
-          alt="avatar"
-          className="object-cover w-[160px] h-full rounded-md"
-        />
+        <div className="w-[180px]">
+          <img
+            src={avatar ? avatar : '/public/avatar1.jpg'}
+            alt="avatar"
+            className="object-cover w-[160px] h-full rounded-md"
+          />
+        </div>
         <div className="flex items-center justify-between w-full p-3">
-          <div className="flex flex-col h-full gap-3">
+          <div className="flex flex-col h-full gap-3 w-4/12">
             <div className="flex items-center gap-1">
               <h1
                 className={clsx(

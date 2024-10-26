@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
 const AboutUs = () => {
-  const images = ['banner1.png', 'banner2.png', 'banner3.png'];
+  const images = [
+    'https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/banner1.png',
+    'https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/banner2.png',
+    'https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/banner3.png'
+  ];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex(prevIndex => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
-    }, 3000); // 3s chuyển đổi hình ảnh
+    }, 2000); // 3s chuyển đổi hình ảnh
 
     return () => clearInterval(interval); // Dọn dẹp interval khi component bị unmount
   }, [images.length]);

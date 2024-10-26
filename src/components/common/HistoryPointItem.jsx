@@ -9,7 +9,11 @@ export const HistoryPointItem = ({ pointHistoryId, points, status, dateCreated, 
   return (
     <div className="bg-white flex flex-col gap-5 rounded-md w-full">
       <div className="flex items-center justify-between p-2 rounded-md border-2 shadow-xl w-full">
-        <img src="/LeetCoin.png" alt="transaction icon" className="w-12 h-12 rounded-full" />
+        <img
+          src="https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/LeetCoin.png"
+          alt="transaction icon"
+          className="w-12 h-12 rounded-full"
+        />
         <div className="flex justify-between items-center w-full">
           <div className="flex flex-col pl-5 gap-2 w-1/3">
             <h1 className="font-bold text-xl text-blue-500">{status}</h1>

@@ -120,7 +120,8 @@ function StudentProfile() {
   };
 
   const copyToClipboard = text => event => {
-    window.navigator.clipboard ?.writeText(text)
+    window.navigator.clipboard
+      ?.writeText(text)
       .then(() => {
         const tipText = 'Text copied';
         toast.success(tipText, {
@@ -219,7 +220,7 @@ function StudentProfile() {
         <div className="h-[calc(20vh+100px)]">
           <img
             // Background image
-            src={'/public/cover.jpg'}
+            src="https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/cover.jpg"
             alt="Profile"
             className="w-full object-cover h-[20vh] rounded-tl-md rounded-tr-md"
           />
@@ -236,36 +237,12 @@ function StudentProfile() {
               </div>
             </Dropdown>
 
-            <Modal
-              title="View Avatar"
-              open={isAvatarVisible}
-              onCancel={() => setIsAvatarVisible(false)}
-              footer={null}
-            >
+            <Modal title="View Avatar" open={isAvatarVisible} onCancel={() => setIsAvatarVisible(false)} footer={null}>
               <img src={profile.photo} alt="Avatar" style={{ width: '100%', height: 'auto' }} />
             </Modal>
 
             <Dialog open={modalUpdateAvatar}>
               <DialogTitle>Upload Avatar</DialogTitle>
-              {/* <DialogContent dividers sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden', height: 150 }}>                
-                <Box>
-                  <label htmlFor="profilePhoto">
-                    <input
-                      accept="image/*"
-                      id="profilePhoto"
-                      type="file"
-                      style={{ display: 'none' }}
-                      onChange={handleDataChanged}
-                    />
-                    <Avatar src={photoURL} sx={{ width: 75, height: 75, cursor: 'pointer' }} />
-                  </label>
-//                  {file && (
-//                    <IconButton aria-label="Crop" color="primary" onClick={() => setOpenCrop(true)}>
-//                      <Crop />
-//                    </IconButton>
-//                  )} 
-                </Box>
-              </DialogContent> */}
               <DialogContent
                 dividers
                 sx={{
@@ -288,13 +265,6 @@ function StudentProfile() {
                     />
                     <Avatar src={photoURL} sx={{ width: 75, height: 75, cursor: 'pointer' }} />
                   </label>
-
-                  {/* Uncomment if you want to show the crop button */}
-                  {/* {file && (
-                        <IconButton aria-label="Crop" color="primary" onClick={() => setOpenCrop(true)}>
-                          <Crop />
-                        </IconButton>
-                      )} */}
                 </Box>
               </DialogContent>
 
@@ -326,7 +296,11 @@ function StudentProfile() {
               focusStateEnabled={false}
               hoverStateEnabled={false}
             >
-              <img src="/public/clipboard-icon.png" alt="Copy to clipboard" className="inline-block w-4 h-4 ml-1" />
+              <img
+                src="https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/clipboard-icon.png"
+                alt="Copy to clipboard"
+                className="inline-block w-4 h-4 ml-1"
+              />
             </CopyAction>
           </div>
         </div>
@@ -337,7 +311,7 @@ function StudentProfile() {
         {/* Contact and Address Section */}
         <div className="bg-white p-8 rounded-lg shadow-lg w-2/5">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">Contact & Address</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
             <div>
               <label className="block text-gray-700 text-sm font-medium">Phone</label>
               <input

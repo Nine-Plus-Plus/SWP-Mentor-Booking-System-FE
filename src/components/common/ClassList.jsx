@@ -69,7 +69,7 @@ const ClassList = ({ addGroup }) => {
           <UserItem
             roleItem={'Mentor'}
             name={mentorOfClass?.mentorInf?.fullName}
-            specialized={convertSkillArray(mentorOfClass?.mentorSkill)}
+            specialized={convertSkillArray(userData?.aclass?.mentor?.skills)}
             gender={mentorOfClass?.mentorInf?.gender}
             star={userData?.aclass?.mentor?.star}
             sameClass={true}
