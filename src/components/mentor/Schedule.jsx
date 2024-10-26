@@ -136,9 +136,10 @@ const Schedule = () => {
       availableFrom: dateRange[0].format('DD-MM-YYYY HH:mm'),
       availableTo: dateRange[1].format('DD-MM-YYYY HH:mm')
     };
+    let response;
     try {
       if (!isEditing) {
-        const response = await createSchedule(data, token);
+        response = await createSchedule(data, token);
         console.log(response);
         const added = {
           id: response?.mentorScheduleDTO?.id,
@@ -146,19 +147,19 @@ const Schedule = () => {
           start: dayjs(response.mentorScheduleDTO.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
           end: dayjs(response.mentorScheduleDTO.availableTo, 'DD-MM-YYYY HH:mm').toDate()
         };
-        if (response && response?.statusCode === 200) {
+        if (response?.statusCode === 200) {
           toast.success('Event created successfully', {
             autoClose: 500
           });
           setEvents([...events, added]);
           setSelectedEvent(null);
         } else {
-          toast.error('Event create successfully' + response.data.message, {
+          toast.error('Event create successfully' + response.message, {
             autoClose: 500
           });
         }
       } else {
-        const response = await updateSchedule(selectedEvent.id, data, token);
+        response = await updateSchedule(selectedEvent.id, data, token);
         const updated = {
           id: response?.mentorScheduleDTO?.id,
           title: 'AVAILABLE',
@@ -173,15 +174,15 @@ const Schedule = () => {
           setSelectedEvent(null);
           // Thêm sự kiện mới vào danh sách
         } else {
-          toast.error('Failed to create event: ' + response.data.message, {
+          toast.error('Failed to update event: ' + response.data.message, {
             autoClose: 5000
           });
         }
       }
       handleModalCancel();
     } catch (error) {
-      console.error('Schedule handling error:', error);
-      toast.error('An error occurred: ' + error);
+      console.error('Schedule handling error:', error.message);
+      toast.error('An error occurred: ' + response.message);
     }
   };
 
@@ -202,7 +203,7 @@ const Schedule = () => {
       handleModalCancel(); // Đóng modal sau khi xóa
     } catch (error) {
       console.error('Delete Schedule error:', error);
-      message.error('Failed to delete Schedule: ' + error.message);
+      message.error('Failed to delete Schedule: ' + error);
     }
   };
 

@@ -124,7 +124,11 @@ const Navigation = ({ children, menuNavbar }) => {
               setVariant('/public');
             }}
           >
-            <img src="/public/logoFPT.svg" className="object-contain h-full" alt="logo" />
+            <img
+              src="https://mentor-booking-images.s3.ap-southeast-2.amazonaws.com/logoFPT.svg"
+              className="object-contain h-full"
+              alt="logo"
+            />
           </NavLink>
         </div>
         <Menu
