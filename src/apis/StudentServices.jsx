@@ -55,12 +55,12 @@ export const updateStudent = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const formData = new FormData();
-      console.log(data.student);
+      console.log(data);
       formData.append('student', new Blob([JSON.stringify(data.student)], { type: 'application/json' }));
       formData.append('avatarFile', data.avatarFile);
       const response = await axiosConfig({
         method: 'put',
-        url: `api/admin/update-student/${id}`,
+        url: `api/user/update-student/${id}`,
         data: formData,
         headers: {
           Authorization: `Bearer ${token}`

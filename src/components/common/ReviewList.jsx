@@ -47,7 +47,7 @@ export const ReviewList = () => {
   return (
     <div className="w-full h-full bg-gray-100 p-2">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Review List</h1>
-      <Table columns={columns} bordered dataSource={data} rowKey="id" pagination={{ pageSize: 10 }} />;
+      <Table columns={columns} bordered dataSource={data} rowKey="id" pagination={{ pageSize: 10 }} />
     </div>
   );
 };

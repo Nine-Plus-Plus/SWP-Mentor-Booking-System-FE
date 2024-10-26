@@ -112,7 +112,6 @@ function StudentManager() {
       status: 'done', // Trạng thái của file
       url: student.user.avatar || null // Liên kết avatar
     };
-    console.log(student);
 
     form.setFieldsValue({
       fullName: student.user.fullName,
@@ -128,8 +127,10 @@ function StudentManager() {
       gender: student.user.gender,
       avatar: avatarFile
     });
-    student.user.avatar && setFileList([avatarFile]);
+    console.log(student);
 
+    setFileList([avatarFile]);
+    setUploadedAvatar(avatarFile);
     setSelectedSemester(form.getFieldValue().semesterId);
     setIsUpdateModalVisible(true);
   };
@@ -173,6 +174,7 @@ function StudentManager() {
         setIsUpdateModalVisible(false);
         setFileList([]);
         message.success('Student updated successfully');
+        setUploadedAvatar(null);
       } else {
         message.error('Failed to update student');
       }

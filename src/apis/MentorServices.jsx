@@ -41,20 +41,17 @@ export const createMentor = (data, token) =>
 export const updateMentor = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     const formData = new FormData();
-    console.log(data.mentor);
     formData.append('mentor', new Blob([JSON.stringify(data.mentor)], { type: 'application/json' }));
     formData.append('avatarFile', data.avatarFile);
     try {
       const response = await axiosConfig({
         method: 'put',
-        url: `api/admin/update-mentor/${id}`,
+        url: `api/user/update-mentor/${id}`,
         data: formData,
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(response);
-
       resolve(response.data);
     } catch (error) {
       reject(error);
