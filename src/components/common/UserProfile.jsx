@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { getMyProfile, getProfileById, updateUser } from '../../apis/UserServices';
+import { getMyProfile, getProfileById } from '../../apis/UserServices';
 import CopyAction from './CopyAction';
 import { toast } from 'react-toastify';
 import { useUserStore } from '../../store/useUserStore';
@@ -19,12 +19,15 @@ import {
 import CropEasy from './CropEasy';
 import { Modal, message, Dropdown, Menu } from 'antd';
 import { UploadOutlined, EyeOutlined } from '@ant-design/icons';
+import { updateStudent } from '../../apis/StudentServices';
+import { updateMentor } from '../../apis/MentorServices';
 
 function StudentProfile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { role, userData } = useUserStore();
+  const [students, setStudents] = useState([]);
   const [isDataChanged, setIsDataChanged] = useState(false);
   const { name, id } = useParams();
   const [openCrop, setOpenCrop] = useState(false);
@@ -71,7 +74,7 @@ function StudentProfile() {
   //   setLoading(true);
 
   //   try {
-  //     if (file) {
+  //     if (file) {  
   //       const url = await uploadFile(file); // Thêm xử lý upload ảnh
   //       profile.photo = url; // Cập nhật avatar với URL mới
   //       await updateAvatar(profile.photo);
@@ -84,19 +87,26 @@ function StudentProfile() {
   //   }
   // };
 
-
   const handleUpdateAvatar = async () => {
     const token = localStorage.getItem('token');
     try {
-      const { avatar } = value;
+      const currentStudentData = userData?.user;
       const updateData = {
-       avatarFile: photoURL
-      }
-      console.log(updateData);
-      const response = await updateUser(userData?.user?.id, updateData, token);
-      console.log('Update avatar: ', response);
-
+        student: {
+          ...currentStudentData,
+          aclass: {
+            id: currentStudentData?.classId, 
+          }
+        },
+        avatarFile: photoURL // Ensure this is a File or Blob
+      };
+  
+      const response = await updateStudent(userData?.user?.id, updateData, token);
+  
       if (response && response?.statusCode === 200) {
+        setStudents(students.map(student => 
+          (student?.id === response?.studentsDTO.id ? response.studentsDTO : student)
+        ));
         setModalUpdateAvatar(false);
         setFile([]);
         message.success('Avatar updated successfully');
@@ -107,7 +117,8 @@ function StudentProfile() {
       console.error('Update avatar error:', error);
       message.error('Failed to update avatar: ' + error.message);
     }
-  }
+  };
+  
 
   const handleCancel = () => {
     setModalUpdateAvatar(false);

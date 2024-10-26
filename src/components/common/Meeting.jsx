@@ -62,7 +62,7 @@ export const Meeting = ({ mentorRating, mentorSchedule, meetUrl, pointPay }) => 
   const toggleViewAll = () => {
     setShowAllMeetings(!showAllMeetings);
   };
-  
+
   useEffect(() => {
     const token = localStorage.getItem('token');
 
@@ -88,8 +88,8 @@ export const Meeting = ({ mentorRating, mentorSchedule, meetUrl, pointPay }) => 
   //     console.log(response);
   //   } catch (error) {
   //     console.log('Review Error: ', error);
-  //   }  
-  // };  
+  //   }
+  // };
 
   const handleCreateReview = async () => {
     const token = localStorage.getItem('token');
@@ -104,12 +104,10 @@ export const Meeting = ({ mentorRating, mentorSchedule, meetUrl, pointPay }) => 
         },
         user_receive_id: {
           selectedMeeting
-        }   
-      }
-    } catch (error) {
-      
-    }
-  }
+        }
+      };
+    } catch (error) {}
+  };
 
   const handleRatingChange = (event, newValue) => {
     setRating(newValue);
@@ -150,7 +148,7 @@ export const Meeting = ({ mentorRating, mentorSchedule, meetUrl, pointPay }) => 
           <img src={userData?.user?.avatar} className="w-10 h-10 rounded-full" alt="Avatar" />
           <div className="text-left">
             <p className="font-semibold">Meeting for {userData?.user?.fullName}</p>
-            <p className="text-gray-500">{roleProfile === 'STUDENT'? (userData?.studentCode) : (userData?.mentorCode)}</p>
+            <p className="text-gray-500">{roleProfile === 'STUDENT' ? userData?.studentCode : userData?.mentorCode}</p>
           </div>
         </div>
 
@@ -170,7 +168,7 @@ export const Meeting = ({ mentorRating, mentorSchedule, meetUrl, pointPay }) => 
           </>
 
           <Modal
-            title={null} 
+            title={null}
             open={isModalOpen}
             onCancel={() => {
               form.resetFields();
@@ -179,8 +177,8 @@ export const Meeting = ({ mentorRating, mentorSchedule, meetUrl, pointPay }) => 
             }}
             footer={null} // Tắt footer mặc định
           >
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <form className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md" onSubmit={handleSendReview}>
+            <div className="">
+              <form className="bg-white p-8 rounded-lg  w-full max-w-md" onSubmit={handleSendReview}>
                 <h2 className="text-3xl font-bold text-center mb-4">
                   How are you feeling about {selectedMeeting?.mentor?.user?.fullName || ''}?
                 </h2>
@@ -189,16 +187,16 @@ export const Meeting = ({ mentorRating, mentorSchedule, meetUrl, pointPay }) => 
                 </p>
                 {roleProfile === 'STUDENT' ? (
                   <Stack spacing={2} className="mb-6">
-                  <div className="flex justify-center mb-6">
-                    <Rating
-                      name="Review-rating"
-                      value={rating}
-                      precision={0.5}
-                      onChange={handleRatingChange}
-                      size="large"
-                    />
-                  </div>
-                </Stack>
+                    <div className="flex justify-center mb-6">
+                      <Rating
+                        name="Review-rating"
+                        value={rating}
+                        precision={0.5}
+                        onChange={handleRatingChange}
+                        size="large"
+                      />
+                    </div>
+                  </Stack>
                 ) : null}
                 <div className="mb-6">
                   <textarea

@@ -28,7 +28,7 @@ export const menuNavbarItemsStudent = [
     key: 'home',
     icon: <HomeOutlined />,
     label: (
-      <NavLink to={'/'} className="text-white">
+      <NavLink to={path.USER_HOME} className="text-white">
         Home
       </NavLink>
     ),
@@ -137,7 +137,7 @@ export const menuNavbarItemsMentor = [
     key: 'home',
     icon: <HomeOutlined />,
     label: (
-      <NavLink to={'/'} className="text-white">
+      <NavLink to={path.USER_HOME} className="text-white">
         Home
       </NavLink>
     ),
