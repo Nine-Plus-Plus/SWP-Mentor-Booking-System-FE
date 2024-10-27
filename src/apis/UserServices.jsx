@@ -163,7 +163,7 @@ export const checkOtpCorrect = data =>
     }
   });
 
-export const changePassword = data =>
+export const changePassword  = data =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
@@ -187,3 +187,20 @@ export const updateAvatar = (id, data, token) =>
       formData.append('avatarFile', data.avatarFile);
     } catch (error) {}
   });
+
+  /**
+   * Setting change password for user
+   */
+  export const settingChangePassword = data =>
+    new Promise(async (resolve, reject) => {
+      try {
+        const response = await axiosConfig({
+          method: 'post',
+          url: `api/user/change-password-user`,
+          data: data
+        });
+        resolve(response.data);
+      } catch (error) {
+        reject(error);
+      }
+    });

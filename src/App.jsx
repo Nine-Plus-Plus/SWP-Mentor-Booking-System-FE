@@ -35,6 +35,7 @@ import { useEffect } from 'react';
 import { roleForComponent } from './utils/constant';
 import { Meeting } from './components/common/Meeting';
 import { useUserStore } from './store/useUserStore';
+import { Settings } from './components/common/Settings';
 
 function App() {
   const { token, role, resetUserStore } = useUserStore();
@@ -69,6 +70,7 @@ function App() {
           }
         >
           <Route index element={<UserHome />} />
+          <Route path={path.USER_SETTINGS} element={<Settings/>} />
           <Route path={path.USER_MEETING} element={<Meeting />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />

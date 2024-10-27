@@ -103,7 +103,11 @@ const Navigation = ({ children, menuNavbar }) => {
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: 'Settings'
+      label: (
+        <NavLink to={path.USER_SETTINGS} className="text-white">
+          Settings
+        </NavLink>
+      )
     },
     {
       key: 'logout',

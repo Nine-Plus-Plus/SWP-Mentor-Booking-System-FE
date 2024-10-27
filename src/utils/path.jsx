@@ -9,7 +9,7 @@ const path = {
   OTP_INPUT: 'send-recovery-otp',
 
   // Common User
-  USER_HOME: 'home',
+  USER_SETTINGS: 'settings',
   USER_PROFILE_NAME_ID: 'profile-user/:name/:id',
   USER_PROFILE_ALL: 'profile-user/*',
   USER_PROFILE: 'profile-user',
