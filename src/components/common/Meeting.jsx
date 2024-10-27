@@ -56,7 +56,6 @@ export const Meeting = () => {
   const handleReviewSent = async data => {
     const token = localStorage.getItem('token');
     console.log(data);
-
     let response;
     try {
       response = await createReview(data, token);
