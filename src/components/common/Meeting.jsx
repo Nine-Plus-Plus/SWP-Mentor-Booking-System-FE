@@ -120,11 +120,10 @@ export const Meeting = ({ mentorRating, mentorSchedule, meetUrl, pointPay }) => 
   const handleSubmit = event => {
     event.preventDefault();
     // Submit review logic here
-    setIsModalOpen(false); // Close modal after submission
+    setIsModalOpen(false); 
   };
 
-  const showReviewModal = () => {
-    // Check condition and display toast error if necessary
+  const showReviewModal = () => {    
     if (!selectedMeeting) {
       toast.error('Please select one Meeting first!');
       console.log('Not choosee Meeting');
