@@ -3,15 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import Button from './Button';
 import path from '../../utils/path';
 import { getAllSkill } from '../../apis/SkillServices';
-
-// Hàm lấy dữ liệu mentor giả lập
-const fetchMentors = async () => {
-  return [
-    { mentorCode: 'M001', mentorName: 'John Doe', skills: ['Database', 'ReactJS'] },
-    { mentorCode: 'M002', mentorName: 'John Wick', skills: ['NodeJS', 'HTML/CSS'] },
-    { mentorCode: 'M003', mentorName: 'John Stone', skills: ['Github', 'Spring Boot'] }
-  ];
-};
+import { getTop3Mentor } from '../../apis/MentorServices';
+import icons from '../../utils/icon';
 
 const UserHome = () => {
   const [mentors, setMentors] = useState([]);
@@ -20,15 +13,29 @@ const UserHome = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { FaStar, FaStarHalf } = icons;
+
+  const handleStar = star => {
+    let stars = [];
+    if (star > 0) for (let i = 1; i <= star; i++) stars.push(<FaStar color="#F8D72A" className="start-item" />);
+    if (star > 0 && star % 1 !== 0) stars.push(<FaStarHalf color="#F8D72A" className="start-item" />);
+    return stars;
+  };
 
   // Lấy danh sách top mentor
   useEffect(() => {
-    const loadMentors = async () => {
-      const fetchedMentors = await fetchMentors();
-      setMentors(fetchedMentors);
-    };
+    const fetchTop3Mentor = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await getTop3Mentor(token);
+        console.log(response);
 
-    loadMentors();
+        response?.statusCode === 200 ? setMentors(response?.mentorsDTOList) : setMentors([]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTop3Mentor();
   }, []);
 
   // Lấy danh sách skills
@@ -63,25 +70,26 @@ const UserHome = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg">
         <div className="row mb-5 flex justify-center font-bold text-xl text-main-1">Top3 Mentors of the Week</div>
         <div className="flex justify-between items-center p-3 ">
-          {mentors.map(mentor => (
-            <div key={mentor.mentorCode} className="w-1/3 p-2 border-2 shadow-2xl mr-5">
+          {mentors?.map(mentor => (
+            <div key={mentor.id} className="w-1/3 p-2 border-2 shadow-2xl mr-5">
               <div className="relative overflow-visible">
                 <div
                   className="relative overflow-hidden transition-transform duration-300 ease-in-out transform hover:-translate-y-8"
                   data-animation="true"
                 >
                   <div className="flex justify-center mt-n4 mx-3">
-                    <img
-                      src="/public/banner1.png"
-                      alt={mentor.mentorName}
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
+                    <img src={mentor?.user?.avatar} alt="avatar" className="w-full h-32 object-cover rounded-lg" />
                   </div>
                 </div>
                 <div className="flex flex-col flex-grow text-center p-2">
-                  <p className="text-lg font-bold text-red-500">{mentor.mentorName}</p>
-                  <p className="text-dark">{mentor.mentorCode}</p>
-                  <p className="text-dark">{mentor.skills.join(', ')}</p>
+                  <p className="text-lg font-bold text-red-500">{mentor.user.fullName}</p>
+                  <div className="flex justify-center">
+                    {handleStar(mentor.star).length > 0 &&
+                      handleStar(mentor.star).map((star, number) => {
+                        return <span key={number}>{star}</span>;
+                      })}
+                  </div>
+                  <p className="text-dark">{mentor.skills.map(skill => skill.skillName).join(', ')}</p>
                 </div>
                 <div className="flex justify-center">
                   <Button
@@ -91,7 +99,7 @@ const UserHome = () => {
                     bgColor={'bg-blue-500'}
                     textColor={'text-white'}
                     textSize={'text-sm'}
-                    to={`${path.USER_PROFILE}/hehe/haha`}
+                    to={`view-mentor/${path.USER_PROFILE}/Mentor/${mentor.user.id}`}
                   />
                 </div>
               </div>

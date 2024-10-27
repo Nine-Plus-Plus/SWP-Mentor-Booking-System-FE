@@ -70,7 +70,7 @@ function App() {
           }
         >
           <Route index element={<UserHome />} />
-          <Route path={path.USER_SETTINGS} element={<Settings/>} />
+          <Route path={path.USER_SETTINGS} element={<Settings />} />
           <Route path={path.USER_MEETING} element={<Meeting />} />
           <Route path={path.USER_VIEW_MENTOR} element={<MentorList />} />
           <Route path={path.USER_VIEW_CLASS} element={<ClassList />} />
@@ -84,7 +84,7 @@ function App() {
           <Route path={path.USER_PROFILE_ALL} element={<UserProfile />} />
           <Route path={path.STUDENT_PROGRESS} element={<Progress />} />
           <Route path={path.STUDENT_HISTORY_POINT} element={<ListHistoryPoint />} />
-          <Route path={path.USER_REVIEW} element={<ReviewList/>} />
+          <Route path={path.USER_REVIEW} element={<ReviewList />} />
         </Route>
 
         {/* Route cho trang mentor */}
@@ -108,7 +108,8 @@ function App() {
           <Route path={`${path.USER_VIEW_MENTOR}/${path.USER_PROFILE_NAME_ID}`} element={<UserProfile />} />
           <Route path={path.USER_MEETING} element={<Meeting />} />
           <Route path={path.USER_BOOKING} element={<BookingList />} />
-          <Route path={path.USER_REVIEW} element={<ReviewList/>} />
+          <Route path={path.USER_REVIEW} element={<ReviewList />} />
+          <Route path={path.USER_SETTINGS} element={<Settings />} />
         </Route>
         <Route path="*" element={<Navigate to={path.PUBLIC} replace />} />
 
