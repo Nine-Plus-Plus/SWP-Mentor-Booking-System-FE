@@ -99,7 +99,7 @@ const MentorList = () => {
         <Pagination
           current={currentPage}
           pageSize={pageSize}
-          total={currentMentors.length}
+          total={mentors.length}
           onChange={onChangePage}
           showSizeChanger={false}
         />
