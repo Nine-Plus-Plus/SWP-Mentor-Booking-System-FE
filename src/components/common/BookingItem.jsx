@@ -8,6 +8,7 @@ import { acceptBooking, cancelBookingMentor, cancelBookingStudent, rejectBooking
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { createNoti } from '../../apis/NotificationServices';
+import { createMeeting } from '../../apis/MeetingServices';
 
 export const BookingItem = ({
   className,
@@ -88,6 +89,19 @@ export const BookingItem = ({
     handleCreateNoti(dataSent);
   };
 
+  const createMeetingAccept = async id => {
+    let response;
+    const data = {
+      id: id
+    };
+    try {
+      response = await createMeeting(data, token);
+      console.log(response);
+    } catch (error) {
+      toast.error(response.error);
+    }
+  };
+
   const acceptByMentor = async id => {
     try {
       setIsLoading(true);
@@ -102,6 +116,7 @@ export const BookingItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        createMeetingAccept(id);
         handleSentNotiOptionMentor('accepted');
         setStatus('CONFIRMED');
       } else toast.error(response?.message);

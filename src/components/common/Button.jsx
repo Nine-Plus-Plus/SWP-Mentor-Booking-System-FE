@@ -21,7 +21,7 @@ const Button = ({
         type={htmlType}
         className={`${textColor} ${bgColor} w-full
             flex items-center justify-center gap-1 cursor-pointer ${textSize}
-            p-2 rounded-lg hover:underline px-9 font-semibold ${bgHover} `}
+            p-2 rounded-md hover:underline px-9 font-semibold ${bgHover} `}
         onClick={onClick}
         disabled={isLoading}
       >
@@ -35,7 +35,7 @@ const Button = ({
       type={htmlType}
       className={`${textColor} ${bgColor} ${fullWidth} 
             flex items-center justify-center gap-1 cursor-pointer ${textSize}
-            p-2 rounded-lg hover:underline px-9 ${acHover} font-semibold ${bgHover} `}
+            p-2 rounded-md hover:underline px-9 ${acHover} font-semibold ${bgHover} `}
       onClick={onClick}
       disabled={isLoading}
     >
