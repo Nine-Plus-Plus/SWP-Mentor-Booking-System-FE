@@ -53,15 +53,19 @@ function StudentProfile() {
 
   // Menu dropdown khi nhấn vào avatar
   const menuItems = [
-    {
-      key: 'upload',
-      label: (
-        <label style={{ cursor: 'pointer' }}>
-          <UploadOutlined className="pr-2" /> Upload Avatar
-          <input type="file" accept="image/*" hidden onChange={handleDataChanged} />
-        </label>
-      )
-    },
+    ...(!id || userData?.user?.id.toString() === id
+      ? [
+          {
+            key: 'upload',
+            label: (
+              <label style={{ cursor: 'pointer' }}>
+                <UploadOutlined className="pr-2" /> Upload Avatar
+                <input type="file" accept="image/*" hidden onChange={handleDataChanged} />
+              </label>
+            )
+          }
+        ]
+      : []),
     {
       key: 'view',
       label: (
