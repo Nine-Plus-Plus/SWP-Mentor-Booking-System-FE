@@ -43,7 +43,7 @@ const UserHome = () => {
     const fetchSkill = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getAllSkill(token);
+        const response = await getAllSkill('', token);
         setSkills(response.data.skillsDTOList);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');

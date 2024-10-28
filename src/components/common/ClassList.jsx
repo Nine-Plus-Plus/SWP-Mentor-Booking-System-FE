@@ -37,7 +37,7 @@ const ClassList = ({ addGroup }) => {
           searchPayload?.expertise || undefined,
           token
         );
-        if (response && response.statusCode === 200) setStudents(response.studentsDTOList);
+        if (response && response?.statusCode === 200) setStudents(response.studentsDTOList);
         else setStudents([]);
       } catch (error) {
         setError(error.message || 'Đã xảy ra lỗi');

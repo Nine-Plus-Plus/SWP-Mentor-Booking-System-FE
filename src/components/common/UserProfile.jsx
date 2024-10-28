@@ -53,15 +53,19 @@ function StudentProfile() {
 
   // Menu dropdown khi nhấn vào avatar
   const menuItems = [
-    {
-      key: 'upload',
-      label: (
-        <label style={{ cursor: 'pointer' }}>
-          <UploadOutlined className="pr-2" /> Upload Avatar
-          <input type="file" accept="image/*" hidden onChange={handleDataChanged} />
-        </label>
-      )
-    },
+    ...(!id || userData?.user?.id.toString() === id
+      ? [
+          {
+            key: 'upload',
+            label: (
+              <label style={{ cursor: 'pointer' }}>
+                <UploadOutlined className="pr-2" /> Upload Avatar
+                <input type="file" accept="image/*" hidden onChange={handleDataChanged} />
+              </label>
+            )
+          }
+        ]
+      : []),
     {
       key: 'view',
       label: (
@@ -187,6 +191,8 @@ function StudentProfile() {
           return;
         }
         const response = id ? await getProfileById(id, token) : await getMyProfile(token);
+        console.log(response);
+
         const user = roleProfile === 'MENTOR' ? response?.mentorsDTO : response?.studentsDTO;
         const group = response?.groupDTO;
 
@@ -218,7 +224,7 @@ function StudentProfile() {
     };
 
     fetchProfile();
-  }, []);
+  }, [id]);
 
   if (loading) {
     return <div className="text-center text-gray-700">Loading...</div>;

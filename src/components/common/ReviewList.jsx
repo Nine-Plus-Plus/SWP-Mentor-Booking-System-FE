@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useUserStore } from '../../store/useUserStore';
 import { Table, Form, Modal } from 'antd';
 import { getAllReviewsByReceiverId } from '../../apis/ReviewServices';
@@ -7,12 +8,13 @@ import Button from './Button';
 import Rating from '@mui/material/Rating';
 import { Stack } from '@mui/material';
 
-export const ReviewList = (reviewId, comment, rating, dateCreated) => {
+export const ReviewList = () => {
   const { userData, role } = useUserStore();
   const [reviews, setReviews] = useState([]);
   const [isReviewModal, setIsReviewModalVisible] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
   const [form] = Form.useForm();
+  const { name, id } = useParams();
   let roleProfile = name ? name.toUpperCase() : role;
 
   const columns = [
@@ -23,7 +25,7 @@ export const ReviewList = (reviewId, comment, rating, dateCreated) => {
     },
     {
       title: 'Sender',
-      dataIndex: 'sender',
+      dataIndex: ['user', 'fullName'],
       key: 'name'
     },
     {
@@ -79,12 +81,14 @@ export const ReviewList = (reviewId, comment, rating, dateCreated) => {
         }}
         footer={null}
       >
-        <div className="bg-white p-8 rounded-lg w-full max-w-md">
-          <h2 className="text-3xl font-bold text-center mb-4">How are you feeling about?</h2>
+        <Form form={form} className="bg-white p-8 rounded-lg w-full max-w-md">
+          <h2 className="text-3xl font-bold text-center mb-4">
+            How are you feeling about {selectedReview?.user?.fullName}?
+          </h2>
           <p className="text-center mb-4 text-gray-400 text-sm">
             Your input is valuable in helping us better understand your needs and tailor our service accordingly.
           </p>
-          {roleProfile === 'STUDENT' && (
+          {roleProfile === 'MENTOR' && (
             <Stack spacing={2} className="mb-6">
               <div className="flex justify-center mb-6">
                 <Rating
@@ -120,7 +124,7 @@ export const ReviewList = (reviewId, comment, rating, dateCreated) => {
           >
             Cancel
           </button>
-        </div>
+        </Form>
       </Modal>
     </div>
   );

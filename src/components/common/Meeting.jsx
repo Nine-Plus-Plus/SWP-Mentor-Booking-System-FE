@@ -27,6 +27,7 @@ export const Meeting = () => {
   const [comment, setComment] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
+  const [isReviewed, setIsReviewed] = useState(false);
 
   let roleProfile = name ? name.toUpperCase() : role;
 
@@ -44,7 +45,7 @@ export const Meeting = () => {
       }
     };
     userData?.user?.id && fetchAllMeeting();
-  }, [userData?.user?.id]);
+  }, [userData?.user?.id, isReviewed]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -69,6 +70,7 @@ export const Meeting = () => {
           timer: 3000,
           timerProgressBar: true
         });
+        setIsReviewed(true);
         setIsModalOpen(false);
       }
     } catch (error) {
@@ -89,7 +91,7 @@ export const Meeting = () => {
     }).then(result => {
       if (result.isConfirmed) {
         let createData;
-        if (userData?.user?.role === 'STUDENT') {
+        if (userData?.user?.role?.roleName === 'STUDENT') {
           createData = {
             ...values,
             user_id: {
@@ -97,6 +99,9 @@ export const Meeting = () => {
             },
             user_receive_id: {
               id: selectedMeeting?.booking?.mentor?.user?.id
+            },
+            meeting: {
+              id: selectedMeeting?.id
             }
           };
           handleReviewSent(createData);
@@ -109,6 +114,9 @@ export const Meeting = () => {
               },
               user_receive_id: {
                 id: student?.user?.id
+              },
+              meeting: {
+                id: selectedMeeting?.id
               }
             };
             handleReviewSent(createData);
@@ -128,6 +136,18 @@ export const Meeting = () => {
   const handleCommentChange = event => {
     setComment(event.target.value);
   };
+
+  useEffect(() => {
+    return setIsReviewed(
+      selectedMeeting?.reviews && selectedMeeting?.reviews?.find(review => review.user_id.id === userData?.user?.id)
+        ? true
+        : false
+    );
+  }, [selectedMeeting, userData]);
+
+  useEffect(() => {
+    console.log(isReviewed);
+  }, [isReviewed]);
 
   const currentMeeting = meetings.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   useEffect(() => {
@@ -240,13 +260,13 @@ export const Meeting = () => {
                   Join Meeting
                 </a>
                 <Button
-                  text={'View review'}
-                  htmlType={'button'}
-                  bgColor={'bg-orange-500'}
+                  text={!isReviewed ? 'Review' : 'Reviewed'}
+                  htmlType={!isReviewed ? 'button' : 'text'}
+                  bgColor={!isReviewed ? 'bg-orange-500' : 'bg-gray-500'}
                   textColor={'text-white'}
                   textSize={'text-sm'}
                   bgHover={'hover:text-gray-100'}
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={!isReviewed ? () => setIsModalOpen(true) : undefined}
                 />
               </div>
             </div>

@@ -13,7 +13,7 @@ const Search = ({ searchFor, setPayload }) => {
     const fetchAllSkill = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getAllSkill(token);
+        const response = await getAllSkill('', token);
         setSkills(response?.data?.skillsDTOList);
       } catch (error) {}
     };

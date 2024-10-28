@@ -17,12 +17,12 @@ export const getStudents = token =>
     }
   });
 
-export const getStudentsBySemesterId = (id, token) =>
+export const getStudentsBySemesterId = (id, name, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: `api/admin/get-students-by-semester/${id}`,
+        url: `api/admin/get-students-by-semester/${id}?name=${name}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -55,7 +55,7 @@ export const updateStudent = (id, data, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const formData = new FormData();
-      console.log(data);
+      console.log(data.student);
       formData.append('student', new Blob([JSON.stringify(data.student)], { type: 'application/json' }));
       formData.append('avatarFile', data.avatarFile);
       const response = await axiosConfig({

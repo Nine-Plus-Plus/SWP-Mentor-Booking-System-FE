@@ -1,11 +1,11 @@
 import axiosConfig from '../axiosConfig';
 
-export const getAllSkill = token =>
+export const getAllSkill = (name, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: 'api/user/get-all-skills',
+        url: `api/user/get-all-skills?name=${name}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
