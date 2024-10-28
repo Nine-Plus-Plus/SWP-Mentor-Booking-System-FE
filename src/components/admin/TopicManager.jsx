@@ -12,6 +12,7 @@ import {
 import { getAllMentors } from '../../apis/MentorServices';
 import Dragger from 'antd/es/upload/Dragger';
 import { InboxOutlined } from '@ant-design/icons';
+import Search from 'antd/es/transfer/search';
 
 const TopicManager = () => {
   const [semesters, setSemesters] = useState([]);
@@ -27,6 +28,7 @@ const TopicManager = () => {
   const [isImportModalVisible, setIsImportModalVisible] = useState(false);
   const [fileList, setFileList] = useState([]);
   const { Option } = Select;
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const fetchSemesters = async () => {
@@ -54,7 +56,7 @@ const TopicManager = () => {
       const token = localStorage.getItem('token');
       try {
         console.log(selectedSemester);
-        const response = await getTopicByIdSemester(selectedSemester, token);
+        const response = await getTopicByIdSemester(selectedSemester, searchText, token);
         console.log(response);
         response?.statusCode === 200 ? setTopics(response?.topicDTOList) : setTopics([]);
       } catch (err) {
@@ -65,7 +67,7 @@ const TopicManager = () => {
     };
     setLoading(false);
     fetchAllTopicBySemesterId();
-  }, [selectedSemester]);
+  }, [selectedSemester, searchText]);
 
   useEffect(() => {
     const fetchMentors = async () => {
@@ -403,6 +405,10 @@ const TopicManager = () => {
     }
   ];
 
+  const onChange = e => {
+    setSearchText(e.target.value);
+  };
+
   return (
     <div className="w-full h-full bg-gray-100 p-2">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Topic List</h1>
@@ -413,12 +419,12 @@ const TopicManager = () => {
       <Button type="primary" onClick={showImportModal} style={{ marginBottom: '10px', marginLeft: '10px' }}>
         Import Excel
       </Button>
-      <div className="w-[10vw] mb-3">
+      <div className="w-full mb-3 flex gap-3">
         <Select
           placeholder="Select Semester"
           value={selectedSemester}
           onChange={value => setSelectedSemester(value)}
-          style={{ backgroundColor: '#F3F4F6', width: '100%' }}
+          style={{ backgroundColor: '#F3F4F6', width: 200 }}
           className="rounded-lg shadow-sm border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition"
         >
           {semesters?.map(semester => (
@@ -427,6 +433,9 @@ const TopicManager = () => {
             </Select.Option>
           ))}
         </Select>
+        <div className="w-[25vw] mb-3">
+          <Search placeholder="input search text" onChange={onChange} />
+        </div>
       </div>
       <Table
         columns={columns}

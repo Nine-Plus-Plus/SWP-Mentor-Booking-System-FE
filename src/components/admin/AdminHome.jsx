@@ -75,7 +75,7 @@ export const AdminHome = () => {
 
   useEffect(() => {
     const fetchAllStudent = async () => {
-      const response = await getStudentsBySemesterId(selectedSemester, token);
+      const response = await getStudentsBySemesterId(selectedSemester, '', token);
       if (response?.statusCode === 200) {
         setTotalStudents(prevTotal => prevTotal + response.studentsDTOList.length);
       }
@@ -97,7 +97,7 @@ export const AdminHome = () => {
 
   useEffect(() => {
     const fetchAllTopic = async () => {
-      const response = await getTopicByIdSemester(selectedSemester, token);
+      const response = await getTopicByIdSemester(selectedSemester, '', token);
       if (response?.statusCode === 200) {
         setTotalTopics(prevTotal => prevTotal + response.topicDTOList.length);
       }
@@ -108,7 +108,7 @@ export const AdminHome = () => {
 
   useEffect(() => {
     const fetchAllMentor = async () => {
-      const response = await getAllMentors(token);
+      const response = await getAllMentors('', token);
       if (response?.statusCode === 200) {
         setTotalMentors(prevTotal => prevTotal + response.mentorsDTOList.length);
         const rating = response?.mentorsDTOList?.map(mentor => mentor.star);

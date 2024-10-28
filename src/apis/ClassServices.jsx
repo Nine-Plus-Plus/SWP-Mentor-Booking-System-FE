@@ -1,11 +1,11 @@
 import axiosConfig from '../axiosConfig';
 
-export const getClassBySemesterId = (semesterId, token) =>
+export const getClassBySemesterId = (semesterId, name, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: `api/admin/get-classes-by-semester/${semesterId}`,
+        url: `api/admin/get-classes-by-semester/${semesterId}?name=${name}`,
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -1,11 +1,11 @@
 import axiosConfig from '../axiosConfig';
 
-export const getAllMentors = token =>
+export const getAllMentors = (name, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: 'api/admin/get-all-mentors',
+        url: `api/admin/get-all-mentors?name=${name}`,
         headers: {
           Authorization: `Bearer ${token}`
         }

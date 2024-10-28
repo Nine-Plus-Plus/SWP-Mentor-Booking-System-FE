@@ -14,6 +14,7 @@ import dayjs from 'dayjs';
 import { getAllSemester } from '../../apis/SemesterServices';
 import { getClassBySemesterId } from '../../apis/ClassServices';
 import Dragger from 'antd/es/upload/Dragger';
+import Search from 'antd/es/transfer/search';
 
 function StudentManager() {
   const [students, setStudents] = useState([]);
@@ -30,6 +31,7 @@ function StudentManager() {
   const [uploadedAvatar, setUploadedAvatar] = useState(null); // Lưu URL ảnh sau khi upload
   const [fileList, setFileList] = useState([]);
   const [filterSemester, setFilterSemester] = useState(null);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const fetchSemesters = async () => {
@@ -56,7 +58,7 @@ function StudentManager() {
     const fetchStudents = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getStudentsBySemesterId(filterSemester, token);
+        const response = await getStudentsBySemesterId(filterSemester, searchText, token);
         setStudents(response.studentsDTOList);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
@@ -66,7 +68,7 @@ function StudentManager() {
     };
 
     fetchStudents();
-  }, [filterSemester]);
+  }, [filterSemester, searchText]);
 
   useEffect(() => {
     const fetchClassBySemesterId = async () => {
@@ -381,6 +383,10 @@ function StudentManager() {
     }
   ];
 
+  const onChange = e => {
+    setSearchText(e.target.value);
+  };
+
   if (loading) {
     return <div className="text-center text-gray-700">Loading...</div>;
   }
@@ -398,12 +404,12 @@ function StudentManager() {
       <Button type="primary" onClick={showImportModal} style={{ marginBottom: '10px', marginLeft: '10px' }}>
         Import Excel
       </Button>
-      <div className="w-[10vw] mb-3">
+      <div className="w-full mb-3 flex gap-3">
         <Select
           placeholder="Select Semester"
           value={filterSemester}
           onChange={value => setFilterSemester(value)}
-          style={{ backgroundColor: '#F3F4F6', width: '100%' }}
+          style={{ backgroundColor: '#F3F4F6', width: 200 }}
           className="rounded-lg shadow-sm border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition"
         >
           {semesters?.map(semester => (
@@ -412,7 +418,13 @@ function StudentManager() {
             </Select.Option>
           ))}
         </Select>
+
+        {/* search */}
+        <div className="w-[25vw]">
+          <Search placeholder="input search text" onChange={onChange} />
+        </div>
       </div>
+
       <Table columns={columns} bordered dataSource={students} rowKey="id" pagination={{ pageSize: 10 }} />
       {/* Modal for updating student */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
@@ -564,7 +576,6 @@ function StudentManager() {
           </Form>
         </div>
       </Modal>
-
       {/* Modal for creating student */}
       <Modal
         title="Create student"

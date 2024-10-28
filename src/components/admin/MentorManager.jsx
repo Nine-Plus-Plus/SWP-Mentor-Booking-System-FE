@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { colors } from '../../utils/constant';
 import Dragger from 'antd/es/upload/Dragger';
 import { InboxOutlined } from '@ant-design/icons';
+import Search from 'antd/es/transfer/search';
 
 const MentorManager = () => {
   const [mentors, setMentors] = useState([]);
@@ -21,12 +22,13 @@ const MentorManager = () => {
   const { Option } = Select;
   const [uploadedAvatar, setUploadedAvatar] = useState(null); // Lưu URL ảnh sau khi upload
   const [fileList, setFileList] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const fetchMentors = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getAllMentors(token);
+        const response = await getAllMentors(searchText, token);
         console.log(response);
 
         setMentors(response.mentorsDTOList);
@@ -38,7 +40,7 @@ const MentorManager = () => {
     };
 
     fetchMentors();
-  }, []);
+  }, [searchText]);
 
   useEffect(() => {
     const fetchSkill = async () => {
@@ -353,6 +355,10 @@ const MentorManager = () => {
     }
   ];
 
+  const onChange = e => {
+    setSearchText(e.target.value);
+  };
+
   if (loading) {
     return <div className="text-center text-gray-700">Loading...</div>;
   }
@@ -370,6 +376,10 @@ const MentorManager = () => {
       <Button type="primary" onClick={showImportModal} style={{ marginBottom: '10px', marginLeft: '10px' }}>
         Import Excel
       </Button>
+      {/* search */}
+      <div className="w-[25vw] mb-3">
+        <Search placeholder="input search text" onChange={onChange} />
+      </div>
       <Table columns={columns} bordered dataSource={mentors} rowKey="id" pagination={{ pageSize: 10 }} />
 
       {/* Modal for updating mentor */}
