@@ -8,6 +8,7 @@ import {
   getMentorNoClass,
   updateClass
 } from '../../apis/ClassServices';
+import Search from 'antd/es/transfer/search';
 
 const ClassManager = () => {
   const [classes, setClasses] = useState([]);
@@ -21,6 +22,7 @@ const ClassManager = () => {
   const [selectedClass, setSelectedClass] = useState(null);
   const [form] = Form.useForm();
   const { Option } = Select;
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const fetchSemesters = async () => {
@@ -65,7 +67,7 @@ const ClassManager = () => {
     const fetchClassBySemesterId = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getClassBySemesterId(selectedSemester, token);
+        const response = await getClassBySemesterId(selectedSemester, searchText, token);
         setClasses(response?.classDTOList || []);
         console.log(response);
       } catch (err) {
@@ -76,7 +78,7 @@ const ClassManager = () => {
     };
     setLoading(false);
     selectedSemester && fetchClassBySemesterId();
-  }, [selectedSemester]);
+  }, [selectedSemester, searchText]);
 
   const handleCreateClass = async () => {
     const token = localStorage.getItem('token');
@@ -238,6 +240,11 @@ const ClassManager = () => {
       )
     }
   ];
+
+  const onChange = e => {
+    setSearchText(e.target.value);
+  };
+
   if (loading) {
     return <div className="text-center text-gray-700">Loading...</div>;
   }
@@ -252,18 +259,25 @@ const ClassManager = () => {
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px', width: '10vw' }}>
         Create Class
       </Button>
-      <Select
-        placeholder="Semester"
-        value={selectedSemester}
-        onChange={value => setSelectedSemester(value)}
-        style={{ backgroundColor: '#D1D5DB', width: '10vw' }}
-      >
-        {semesters?.map(semester => (
-          <Option key={semester.id} value={semester.id}>
-            {semester.semesterName}
-          </Option>
-        ))}
-      </Select>
+
+      <div className="flex gap-3">
+        <Select
+          placeholder="Semester"
+          value={selectedSemester}
+          onChange={value => setSelectedSemester(value)}
+          style={{ backgroundColor: '#D1D5DB', width: '10vw' }}
+        >
+          {semesters?.map(semester => (
+            <Option key={semester.id} value={semester.id}>
+              {semester.semesterName}
+            </Option>
+          ))}
+        </Select>
+        {/* search */}
+        <div className="w-[25vw] mb-3">
+          <Search placeholder="input search text" onChange={onChange} />
+        </div>
+      </div>
       <Table columns={columns} bordered dataSource={classes} rowKey="id" pagination={{ pageSize: 10 }} />
 
       {/* Modal for updating class */}

@@ -1,6 +1,7 @@
 import { Button, Form, Input, message, Modal, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { createSkill, deleteSkill, getAllSkill, updateSkill } from '../../apis/SkillServices';
+import Search from 'antd/es/transfer/search';
 
 const SkillManager = () => {
   const [skills, setSkills] = useState([]);
@@ -11,12 +12,13 @@ const SkillManager = () => {
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [form] = Form.useForm();
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const fetchSkills = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getAllSkill(token);
+        const response = await getAllSkill(searchText, token);
         setSkills(response.data.skillsDTOList);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
@@ -25,7 +27,7 @@ const SkillManager = () => {
       }
     };
     fetchSkills();
-  }, []);
+  }, [searchText]);
 
   const showCreateModal = () => {
     setSelectedSkill(null);
@@ -116,6 +118,10 @@ const SkillManager = () => {
     setIsUpdateModalVisible(false);
   };
 
+  const onChange = e => {
+    setSearchText(e.target.value);
+  };
+
   if (loading) {
     return <div className="text-center text-gray-700">Loading...</div>;
   }
@@ -167,8 +173,11 @@ const SkillManager = () => {
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Skill
       </Button>
+      {/* search */}
+      <div className="w-[25vw] mb-3">
+        <Search placeholder="input search text" onChange={onChange} />
+      </div>
       <Table columns={columns} bordered dataSource={skills} rowKey="id" pagination={{ pageSize: 10 }} />
-
       {/* Modal for updating skill */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
         <div className="max-h-96 overflow-y-auto p-5">

@@ -32,12 +32,12 @@ export const getAllTopicUnchosenClass = (classID, token) =>
     }
   });
 
-export const getTopicByIdSemester = (id, token) =>
+export const getTopicByIdSemester = (id, name, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: `api/user/get-topic-by-semester-id/${id}`,
+        url: `api/user/get-topic-by-semester-id/${id}?name=${name}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
