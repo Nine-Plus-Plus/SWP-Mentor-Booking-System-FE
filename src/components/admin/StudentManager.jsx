@@ -74,7 +74,7 @@ function StudentManager() {
     const fetchClassBySemesterId = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getClassBySemesterId(selectedSemester, token);
+        const response = await getClassBySemesterId(selectedSemester, '', token);
         setClasses(response?.classDTOList);
         // Đặt giá trị mặc định là tùy chọn cuối cùng
       } catch (err) {
@@ -307,8 +307,10 @@ function StudentManager() {
   const columns = [
     {
       title: 'No',
+      width: 60,
       dataIndex: 'no',
       key: 'no',
+      fixed: 'left',
       render: (text, record, index) => index + 1
     },
     {
@@ -325,11 +327,14 @@ function StudentManager() {
     },
     {
       title: 'Full Name',
+      width: 250,
       dataIndex: ['user', 'fullName'],
-      key: 'fullName'
+      key: 'fullName',
+      fixed: 'left',
     },
     {
       title: 'Email',
+      width: 280,
       dataIndex: ['user', 'email'],
       key: 'email'
     },
@@ -366,6 +371,7 @@ function StudentManager() {
     {
       title: 'Actions',
       key: 'actions',
+      fixed: 'right',
       render: (text, record) => (
         <div className="flex flex-col gap-2">
           <Button
@@ -396,8 +402,8 @@ function StudentManager() {
   }
 
   return (
-    <div className="w-full h-full bg-gray-100 p-2">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Student List</h1>
+    <div className="w-full h-full bg-gray-100">
+      <h1 className="text-2xl font-bold mb-3 text-gray-800">Student List</h1>
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Student
       </Button>
@@ -425,7 +431,14 @@ function StudentManager() {
         </div>
       </div>
 
-      <Table columns={columns} bordered dataSource={students} rowKey="id" pagination={{ pageSize: 10 }} />
+      <Table
+        columns={columns}
+        bordered
+        dataSource={students}
+        rowKey="id"
+        pagination={{ pageSize: 10 }}
+        scroll={{ x:'1600px', y: 400 }}
+      />
       {/* Modal for updating student */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
         <div className="max-h-96 overflow-y-auto p-5">

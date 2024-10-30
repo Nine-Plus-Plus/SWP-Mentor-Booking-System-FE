@@ -10,14 +10,15 @@ export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingI
   const [pageSize] = useState(10);
   const topRef = useRef(null);
 
-  const { userData } = useUserStore();
+  const { userData, setIsUpdate, isUpdate } = useUserStore();
 
   useEffect(() => {
+    setIsUpdate(!isUpdate);
     const token = localStorage.getItem('token');
-
     const fetchAllHistoryPoint = async () => {
       if (!userData?.id || !token) return;
       try {
+        console.log(isUpdate);
         const response = await getHistoryPointByStudentId(userData?.id, token);
         console.log('Response from API:', response);
         if (response?.statusCode === 200) {
@@ -32,7 +33,7 @@ export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingI
     };
 
     fetchAllHistoryPoint();
-  }, [userData]);
+  }, []);
 
   const onChangePage = page => {
     setCurrentPage(page);
@@ -50,7 +51,7 @@ export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingI
       </div>
 
       {/* Tạo các HistoryPointItem trực tiếp */}
-      <div className="p-3 bg-white rounded-md flex flex-col gap-5" topRef={topRef}>
+      <div className="p-3 bg-white rounded-md flex flex-col gap-5" ref={topRef}>
         {currentPoints?.length === 0 ? (
           <p className="text-red-500">Do not have any transaction point!!!</p>
         ) : (

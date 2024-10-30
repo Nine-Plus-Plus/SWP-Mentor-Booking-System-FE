@@ -76,8 +76,9 @@ const GroupItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, join it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         const dataSent = {
@@ -98,7 +99,13 @@ const GroupItem = ({
         handleCreateNoti(dataSent);
         setJoined(!joined);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -109,16 +116,32 @@ const GroupItem = ({
       <h1 className="font-bold text-xl text-main-1"> Group name: {groupName}</h1>
       <div className="flex p-2 justify-between">
         <div className="flex flex-col gap-2 text-md">
-          <p>Project Name: {projectName}</p>
-          <p>Topic: {idTopic}</p>
-          <p>Leader: {leader}</p>
+          <p>
+            <span className="font-bold">Project Name: </span> {projectName}
+          </p>
+          <p>
+            <span className="font-bold">Topic: </span>
+            {idTopic}
+          </p>
+          <p>
+            <span className="font-bold">Leader: </span>
+            {leader}
+          </p>
         </div>
         <div className="flex flex-col gap-2 text-md">
-          <p>Process: {process}%</p>
-          <p>Total Point: {totalPoint} FUP</p>
-          <p>Total member: {totalMember?.length}/5</p>
+          <p>
+            <span className="font-bold">Process: </span>
+            {process || 0}%
+          </p>
+          <p>
+            <span className="font-bold">Total Point: </span> {totalPoint} FUP
+          </p>
+          <p>
+            <span className="font-bold">Total member: </span>
+            {totalMember?.length}
+          </p>
         </div>
-        <div className="flex justify-center h-full flex-col gap-3 w-1/5">
+        <div className="flex justify-center h-full flex-col gap-3 w-1/6">
           <Button
             text={isShowMore ? 'Show Less' : 'Show More'}
             textColor={'text-white'}

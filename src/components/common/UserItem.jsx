@@ -166,13 +166,20 @@ const UserItem = ({
       icon: 'warning', // Hiển thị biểu tượng cảnh báo
       showCancelButton: true, // Hiển thị nút hủy
       confirmButtonText: 'Yes, remove', // Văn bản nút xác nhận
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel.', // Văn bản nút hủy
-      reverseButtons: true // Đảo ngược vị trí các nút
+      reverseButtons: false // Đảo ngược vị trí các nút
     }).then(result => {
       if (result.isConfirmed) {
         handleRemove(id);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({ 
+          title: 'Cancelled', 
+          text: 'Cancelled this action!', 
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33', // Màu nút xác nhận
+        });
       }
     });
   };
@@ -183,9 +190,10 @@ const UserItem = ({
       text: 'Add student in Group!', // Nội dung chính của hộp thoại
       icon: 'warning', // Hiển thị biểu tượng cảnh báo
       showCancelButton: true, // Hiển thị nút hủy
-      confirmButtonText: 'Yes, Update', // Văn bản nút xác nhận
+      confirmButtonText: 'Yes, Update', // Văn bản nút  xác nhận
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel.', // Văn bản nút hủy
-      reverseButtons: true // Đảo ngược vị trí các nút
+      reverseButtons: false // Đảo ngược vị trí các nút
     }).then(result => {
       if (result.isConfirmed) {
         if (mentorAdd) {
@@ -207,7 +215,13 @@ const UserItem = ({
           handleNotiAddMember(dataSent);
         }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({ 
+          title: 'Cancelled', 
+          text: 'Cancelled this action!', 
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33', // Màu nút xác nhận
+        });
       }
     });
   };
@@ -287,16 +301,19 @@ const UserItem = ({
     if (selectMeeting) {
       Swal.fire({
         title: 'Are you sure?',
-        html: `Are you sure to book the meeting?<br><br>Price: ${calculatePointDeduction(
+        html: `Are you sure to book the meeting?<br><br>Price: <span style="color: red;">${calculatePointDeduction(
           selectMeeting?.availableFrom,
           selectMeeting?.availableTo,
           fullData?.groupDTO?.students?.length
-        )} FPoint<br><br>Schedule: ${convertDateMeeting(selectMeeting)}`,
+        )}</span><span style="color: orange;">  FUP</span><br><br>Schedule: <span style="color: green;">${convertDateMeeting(
+          selectMeeting
+        )}</span>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, booking it',
+        confirmButtonColor: '#dd6633',
         cancelButtonText: 'No, cancel!',
-        reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+        reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
       }).then(result => {
         if (result.isConfirmed) {
           const bookingData = {
@@ -309,7 +326,13 @@ const UserItem = ({
           };
           handleCreateBooking(bookingData, convertDateMeeting(selectMeeting));
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-          Swal.fire('Cancelled', 'Cancelled this booking!', 'error');
+          Swal.fire({
+            title: 'Cancelled',
+            text: 'Cancelled this booking!',
+            icon: 'error',
+            confirmButtonText: 'OK', // Văn bản nút xác nhận
+            confirmButtonColor: '#d33' // Màu nút xác nhận
+          });
         }
       });
     } else {
@@ -357,17 +380,22 @@ const UserItem = ({
             </div>
             <div className="flex flex-col gap-2 text-md">
               <p>
-                {roleItem === 'Mentor' ? 'Mentor' : 'Student'} name: {name}
+                <span className="font-bold">{roleItem === 'Mentor' ? 'Mentor' : 'Student'} name: </span>
+                {name}
               </p>
               {code && (
                 <p>
-                  {roleItem === 'Mentor' ? 'Mentor' : 'Student'} code: {code}
+                  <span className="font-bold">{roleItem === 'Mentor' ? 'Mentor' : 'Student'} code: </span>
+                  {code}
                 </p>
               )}
               <p>
-                {roleItem === 'Mentor' ? 'Skill' : 'Specialized'}: {specialized}
+                <span className="font-bold">{roleItem === 'Mentor' ? 'Skill' : 'Specialized'}:</span> {specialized}
               </p>
-              <p>Gender: {gender}</p>
+              <p>
+                <span className="font-bold">Gender: </span>
+                {gender}
+              </p>
             </div>
           </div>
 

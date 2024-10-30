@@ -140,7 +140,7 @@ const Schedule = () => {
     try {
       if (!isEditing) {
         response = await createSchedule(data, token);
-        console.log(response);
+        console.log('schedule create: ', response);
         const added = {
           id: response?.mentorScheduleDTO?.id,
           title: 'AVAILABLE',
@@ -280,11 +280,16 @@ const Schedule = () => {
                     text: 'Do you want to delete this event?',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonColor: '#dd6633',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: false // Đảo ngược vị trí
                   }).then(result => {
-                    handleDelete(selectedEvent.id);
+                    if (result.isConfirmed) {
+                      handleDelete(selectedEvent.id);
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                      Swal.fire('Cancelled', 'Cancelled delete schedule!', 'error');
+                    }
                   })
                 }
               >

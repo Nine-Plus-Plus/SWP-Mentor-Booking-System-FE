@@ -31,7 +31,7 @@ export const HistoryPointItem = ({ pointHistoryId, points, status, dateCreated, 
 
           <div className="w-1/3 flex justify-end items-start">
             <p className={`font-semibold ${points > 0 ? 'text-blue-500' : 'text-red-500'}`}>
-              {points > 0 ? `+${points}` : points} Points
+              {points > 0 ? `+${points}` : points} FUP
             </p>
           </div>
         </div>

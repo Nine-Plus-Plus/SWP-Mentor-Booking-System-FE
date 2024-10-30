@@ -54,16 +54,6 @@ const UserHome = () => {
     fetchSkill();
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex(prevIndex => (prevIndex === skills.length - 1 ? 0 : prevIndex + 1));
-    }, 2000); // 3s chuyển đổi hình ảnh
-
-    return () => clearInterval(interval); // Dọn dẹp interval khi component bị unmount
-  }, [skills.length]);
-
-  //chuyển đổi skill
-
   return (
     <div className="flex flex-col">
       {/* Header: Top Mentor */}
@@ -112,7 +102,7 @@ const UserHome = () => {
       <div className="gap-3 pt-5">
         <div className="bg-white p-8 rounded-lg border-2 shadow-2xl">
           <div className="row mb-5 flex justify-center font-bold text-xl text-main-1">Skills</div>
-          <div className="flex justify-between overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
+          {/*<div className="flex justify-between overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
             {skills && skills.length > 0 ? (
               skills.map(skill => (
                 <Link
@@ -122,14 +112,30 @@ const UserHome = () => {
                   style={{ flex: '0 0 15.35%' }}
                 >
                   <div className="mt-2 text-dark text-center" title={skill?.skillDescription}>
-                    {/* {skills[currentIndex].skillName} */}
-                    {skill?.skillName}
+          {skill?.skillName}
                   </div>
                 </Link>
               ))
             ) : (
               <div className="text-center w-full text-gray-500">The skill list is null</div>
             )}
+          </div>*/}
+          <div className="overflow-hidden justify-between w-full">
+            <div className="inline-flex animate-scrollLeftLoop">
+              {/* Nhân đôi danh sách skills */}
+              {[...skills, ...skills].map((skill, index) => (
+                <Link
+                  key={`${skill.id}-${index}`}
+                  to={`${path.USER_VIEW_MENTOR}?skill=${skill?.id}`}
+                  className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105"
+                  style={{ flex: '0 0 15.35%' }}
+                >
+                  <div className="mt-2 text-dark text-center" title={skill?.skillDescription}>
+                    {skill?.skillName}
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

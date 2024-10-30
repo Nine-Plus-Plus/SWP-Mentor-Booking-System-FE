@@ -6,7 +6,7 @@ import { getMyProfile } from '../../apis/UserServices';
 import { useUserStore } from '../../store/useUserStore';
 
 const PublicStudent = () => {
-  const { setUserData, setCurrent, setMentorOfClass, setFullData, setAvatar } = useUserStore();
+  const { setUserData, setCurrent, setMentorOfClass, setFullData, setAvatar, isUpdate } = useUserStore();
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
@@ -28,7 +28,7 @@ const PublicStudent = () => {
     };
 
     fetchUserData();
-  }, [localStorage.getItem('token')]);
+  }, [localStorage.getItem('token'), isUpdate]);
   return (
     <div className="w-full flex-wrap flex justify-end">
       <Navigation menuNavbar={menuNavbarItemsStudent}>

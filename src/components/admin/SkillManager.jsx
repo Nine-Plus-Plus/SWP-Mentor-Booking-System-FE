@@ -168,8 +168,8 @@ const SkillManager = () => {
   ];
 
   return (
-    <div className="w-full h-full bg-gray-100 p-2">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Skill List</h1>
+    <div className="w-full h-full bg-gray-100">
+      <h1 className="text-2xl font-bold mb-3 text-gray-800">Skill List</h1>
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Skill
       </Button>
@@ -177,7 +177,14 @@ const SkillManager = () => {
       <div className="w-[25vw] mb-3">
         <Search placeholder="input search text" onChange={onChange} />
       </div>
-      <Table columns={columns} bordered dataSource={skills} rowKey="id" pagination={{ pageSize: 10 }} />
+      <Table
+        columns={columns}
+        bordered
+        dataSource={skills}
+        rowKey="id"
+        pagination={{ pageSize: 10 }}
+        scroll={{ y: 400 }}
+      />
       {/* Modal for updating skill */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
         <div className="max-h-96 overflow-y-auto p-5">

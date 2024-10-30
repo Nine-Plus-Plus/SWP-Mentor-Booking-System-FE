@@ -124,6 +124,7 @@ function App() {
         >
           <Route index element={<AdminHome />} />
           <Route path={path.USER_PROFILE} element={<UserProfile />} />
+          <Route path={path.USER_SETTINGS} element={<Settings />} />
           <Route path={path.ADMIN_STUDENT_MANAGER} element={<StudentManager />} />
           <Route path={path.ADMIN_MENTOR_MANAGER} element={<MentorManager />} />
           <Route path={path.ADMIN_SKILL_MANAGER} element={<SkillManager />} />
