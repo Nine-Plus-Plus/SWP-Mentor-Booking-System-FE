@@ -11,6 +11,7 @@ export const useUserStore = create(set => ({
   email: null,
   otp: null,
   avatar: null,
+  isUpdate: false,
 
   setModal: (token, role, isLoggedIn) => {
     localStorage.setItem('token', token);
@@ -43,6 +44,10 @@ export const useUserStore = create(set => ({
 
   setCurrent: current => {
     set(() => ({ current }));
+  },
+
+  setIsUpdate: isUpdate => {
+    set(() => ({ isUpdate }));
   },
 
   setAvatar: avatar => {
@@ -81,7 +86,9 @@ export const useUserStore = create(set => ({
       userData: null,
       current: null,
       email: null,
-      otp: null
+      otp: null,
+      avatar: null,
+      isUpdate: false
     }));
   }
 }));

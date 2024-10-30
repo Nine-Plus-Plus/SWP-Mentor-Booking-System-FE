@@ -291,7 +291,7 @@ const UserItem = ({
           selectMeeting?.availableFrom,
           selectMeeting?.availableTo,
           fullData?.groupDTO?.students?.length
-        )} FPoint<br><br>Schedule: ${convertDateMeeting(selectMeeting)}`,
+        )} FUP<br><br>Schedule: ${convertDateMeeting(selectMeeting)}`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, booking it',

@@ -107,18 +107,18 @@ const GroupItem = ({
   return (
     <div className=" border shadow-md rounded-md p-3 w-full">
       <h1 className="font-bold text-xl text-main-1"> Group name: {groupName}</h1>
-      <div className="flex p-2 justify-between">
-        <div className="flex flex-col gap-2 text-md">
+      <div className="flex p-2 justify-between w-full">
+        <div className="flex flex-col gap-2 text-md w-4/12">
           <p>Project Name: {projectName}</p>
           <p>Topic: {idTopic}</p>
           <p>Leader: {leader}</p>
         </div>
-        <div className="flex flex-col gap-2 text-md">
-          <p>Process: {process}%</p>
+        <div className="flex flex-col gap-2 text-md w-4/12">
+          <p>Process: {process || 0}%</p>
           <p>Total Point: {totalPoint} FUP</p>
           <p>Total member: {totalMember?.length}/5</p>
         </div>
-        <div className="flex justify-center h-full flex-col gap-3 w-1/5">
+        <div className="flex justify-center h-full flex-col gap-3 w-1/6">
           <Button
             text={isShowMore ? 'Show Less' : 'Show More'}
             textColor={'text-white'}
