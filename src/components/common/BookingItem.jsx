@@ -299,16 +299,16 @@ export const BookingItem = ({
 
       <div className="flex p-2 justify-between w-full">
         <div className="flex flex-col gap-2 text-md w-1/3">
-          <p>Day Booking: {dateCreated}</p>
-          <p>Class: {className}</p>
-          <p>Group: {group}</p>
-          <p>Project: {project}</p>
+          <p><span className="font-bold">Day Booking: </span>{dateCreated}</p>
+          <p><span className="font-bold">Class: </span>{className}</p>
+          <p><span className="font-bold">Group: </span>{group}</p>
+          <p><span className="font-bold">Project: </span>{project}</p>
         </div>
         <div className="flex flex-col gap-2 text-md w-1/3">
-          <p> Schedule: {schedule}</p>
-          <p>Student Booking: {studentBook}</p>
-          <p>Point Manner: {point}</p>
-          <p>Total member: {members?.length}/5</p>
+          <p><span className="font-bold">Schedule: </span>{schedule}</p>
+          <p><span className="font-bold">Student Booking: </span>{studentBook}</p>
+          <p><span className="font-bold">Point Manner: </span>{point}</p>
+          <p><span className="font-bold">Total member: </span>{members?.length}/5</p>
         </div>
         <div className="flex flex-col items-end justify-center gap-y-3 w-1/3 ">
           {roleProfile === 'mentor' ? (

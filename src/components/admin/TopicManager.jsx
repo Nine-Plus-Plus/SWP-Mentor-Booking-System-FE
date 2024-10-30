@@ -97,7 +97,7 @@ const TopicManager = () => {
         problems: values.problems,
         actor: values.actors.split('\n'),
         requirement: values.requirements.split('\n'),
-        nonFunctionRequirement: values.nonFunctionRequirements.split('\n'),
+        nonFunctionRequirement: values.nonFunctionRequirements?.split('\n'),
         semesterDTO: {
           id: values.semesterId
         },
@@ -287,14 +287,17 @@ const TopicManager = () => {
   const columns = [
     {
       title: 'No',
+      width: 60,
       dataIndex: 'no',
       key: 'no',
+      fixed: 'left',
       render: (text, record, index) => index + 1
     },
     {
       title: 'Topic Name',
       dataIndex: 'topicName',
       key: 'topicName',
+      fixed: 'left',
       className: 'whitespace-pre-line text-left align-top w-[100px]'
     },
     {
@@ -356,7 +359,7 @@ const TopicManager = () => {
       className: 'whitespace-pre-line text-left align-top',
       render: nf_requirements => (
         <>
-          {nf_requirements.map((nf_requirement, index) => (
+          {nf_requirements?.map((nf_requirement, index) => (
             <p key={index} className="w-[300px]">
               {nf_requirement}
             </p>
@@ -388,6 +391,7 @@ const TopicManager = () => {
     {
       title: 'Actions',
       key: 'actions',
+      fixed: 'right',
       render: (text, record) => (
         <div className="flex flex-col gap-2">
           <Button
@@ -410,8 +414,8 @@ const TopicManager = () => {
   };
 
   return (
-    <div className="w-full h-full bg-gray-100 p-2">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Topic List</h1>
+    <div className="w-full h-full bg-gray-100">
+      <h1 className="text-2xl font-bold mb-3 text-gray-800">Topic List</h1>
 
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Topic
@@ -433,7 +437,7 @@ const TopicManager = () => {
             </Select.Option>
           ))}
         </Select>
-        <div className="w-[25vw] mb-3">
+        <div className="w-[25vw]">
           <Search placeholder="input search text" onChange={onChange} />
         </div>
       </div>
@@ -443,7 +447,7 @@ const TopicManager = () => {
         dataSource={topics}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        scroll={{ x: '1000px' }}
+        scroll={{ x: '2500px', y: 400 }}
       />
 
       {/* Modal for updating student */}

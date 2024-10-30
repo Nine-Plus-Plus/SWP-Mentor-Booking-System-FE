@@ -139,7 +139,7 @@ export const Meeting = () => {
 
   useEffect(() => {
     return setIsReviewed(
-      selectedMeeting?.reviews && selectedMeeting?.reviews?.find(review => review.user_id.id === userData?.user?.id)
+      selectedMeeting?.reviews && selectedMeeting?.reviews?.find(review => review?.user_id?.id === userData?.user?.id)
         ? true
         : false
     );

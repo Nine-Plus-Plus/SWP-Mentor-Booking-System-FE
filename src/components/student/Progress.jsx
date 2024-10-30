@@ -122,13 +122,20 @@ export const Progress = () => {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         deleteTaskLeader(taskId);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Delete', 'Delete Task!', 'error');
+        Swal.fire({ 
+          title: 'Cancelled', 
+          text: 'Cancelled this action!', 
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33', // Màu nút xác nhận
+        });
       }
     });
   };
@@ -190,7 +197,7 @@ export const Progress = () => {
       {fullData?.groupDTO ? (
         <div className="flex-col">
           {/* Team Progress Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-8 rounded-lg shadow-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-4 rounded-lg shadow-lg">
             {/* Total Projects */}
             <div className="border-2 border-sky-500 p-4 rounded-2xl shadow-lg bg-white">
               <div className="flex justify-between items-center">
@@ -223,17 +230,17 @@ export const Progress = () => {
             </div>
           </div>
 
-          <div className="flex gap-3 pt-5">
+          <div className="flex gap-3 pt-3">
             {/* Today's Task Section */}
-            <div className="bg-white p-8 rounded-lg shadow-lg w-2/3">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Project's Task</h2>
+            <div className="bg-white p-5 rounded-lg shadow-lg w-2/3">
+              <h2 className="text-2xl font-bold text-gray-800 mb-5">Project's Task</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {tasks?.slice(0, showAllTasks ? tasks?.length : 3)?.map(
                   (task, index) =>
                     task && (
                       <div
-                        key={task.id || index} // Sử dụng `index` làm key dự phòng nếu `task.id` bị thiếu
-                        className="border p-6 rounded-lg shadow-lg bg-white"
+                        key={task.id || index} 
+                        className="border p-5 rounded-lg shadow-lg bg-white"
                         onClick={() => handleTaskClick(task)}
                       >
                         <h3 className="text-xl text-red-500 font-bold mb-2">{task?.taskName}</h3>
@@ -269,7 +276,7 @@ export const Progress = () => {
                     )
                 )}
                 {/* Create Task Button */}
-                <div className="border p-6 rounded-lg shadow-lg flex items-center justify-center bg-white">
+                <div className="border p-5 rounded-lg shadow-lg flex items-center justify-center bg-white">
                   <button className="text-blue-500 font-semibold" onClick={showCreateModal}>
                     + Create Task
                   </button>

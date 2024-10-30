@@ -53,8 +53,9 @@ const Navigation = ({ children, menuNavbar }) => {
       icon: 'warning', // Hiển thị biểu tượng cảnh báo
       showCancelButton: true, // Hiển thị nút hủy
       confirmButtonText: 'Yes, Log Out', // Văn bản nút xác nhận
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel.', // Văn bản nút hủy
-      reverseButtons: true // Đảo ngược vị trí các nút
+      reverseButtons: false // Đảo ngược vị trí các nút
     }).then(result => {
       // Kiểm tra kết quả khi người dùng nhấn vào nút
       if (result.isConfirmed) {
