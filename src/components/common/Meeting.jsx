@@ -39,7 +39,10 @@ export const Meeting = () => {
       try {
         response = await getMeetingByUserId(userData?.user?.id, token);
         console.log(response);
-        response?.statusCode === 200 ? setMeetings(response?.meetingDTOList) : setMeetings([]);
+        if (response?.statusCode === 200) {
+          const meetingExceptCancelled = response?.meetingDTOList.filter(meeting => meeting.status !== 'CANCELLED');
+          setMeetings(meetingExceptCancelled);
+        } else setMeetings([]);
       } catch (error) {
         console.log('Meeting Error: ', response.message);
       }
@@ -82,22 +85,23 @@ export const Meeting = () => {
     const values = await form.validateFields();
     Swal.fire({
       title: 'Are you sure?',
-      html: `Are you sure accept this booking?`,
+      html: `Are you sure submit this review?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, accept it',
+      confirmButtonText: 'Yes, submit!',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí
     }).then(result => {
       if (result.isConfirmed) {
         let createData;
         if (userData?.user?.role?.roleName === 'STUDENT') {
           createData = {
             ...values,
-            user_id: {
+            user: {
               id: userData?.user?.id
             },
-            user_receive_id: {
+            userReceive: {
               id: selectedMeeting?.booking?.mentor?.user?.id
             },
             meeting: {
@@ -109,10 +113,10 @@ export const Meeting = () => {
           selectedMeeting?.booking?.group?.students?.map(student => {
             createData = {
               ...values,
-              user_id: {
+              user: {
                 id: userData?.user?.id
               },
-              user_receive_id: {
+              userReceive: {
                 id: student?.user?.id
               },
               meeting: {
@@ -123,7 +127,13 @@ export const Meeting = () => {
           });
         }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled accept booking!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -139,7 +149,7 @@ export const Meeting = () => {
 
   useEffect(() => {
     return setIsReviewed(
-      selectedMeeting?.reviews && selectedMeeting?.reviews?.find(review => review.user_id.id === userData?.user?.id)
+      selectedMeeting?.reviews && selectedMeeting?.reviews?.find(review => review?.user_id?.id === userData?.user?.id)
         ? true
         : false
     );
@@ -311,52 +321,50 @@ export const Meeting = () => {
                 {currentMeeting?.length === 0 ? (
                   <p>You have not had any meeting yet</p>
                 ) : (
-                  currentMeeting
-                    ?.filter(meeting => meeting.status !== 'CANCELLED')
-                    ?.map(meeting => (
-                      <div
-                        key={meeting.id}
-                        className="flex text-left items-center gap-4 mb-3 cursor-pointer"
-                        onClick={() => setSelectedMeeting(meeting)} // Lưu thông tin mentor đã chọn
-                      >
-                        {roleProfile === 'STUDENT' ? (
-                          <>
-                            <img
-                              src={meeting.booking.mentor.user.avatar}
-                              className="w-10 h-10 rounded-full"
-                              alt="Mentor"
-                            />
-                            <div>
-                              <p className="font-semibold">
-                                <span className="font-bold">Mentor: </span>
-                                {meeting.booking.mentor.user.fullName}
-                              </p>
-                              <p className="text-gray-500">
-                                <span className="font-bold">Skill: </span>
-                                {meeting.booking.mentor.skills.map(skill => skill.skillName).join(', ')}
-                              </p>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <img
-                              src={
-                                meeting.booking.group.students.find(student => student.groupRole === 'LEADER')?.user
-                                  ?.avatar
-                              }
-                              className="w-8 h-8 rounded-full"
-                              alt="Mentor"
-                            />
-                            <div>
-                              <p className="font-semibold">Group: {meeting.booking.group.groupName}</p>
-                              <p className="text-gray-500">
-                                <span className="font-bold">Class:</span> {meeting.booking.group.classDTO.className}
-                              </p>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    ))
+                  currentMeeting?.map(meeting => (
+                    <div
+                      key={meeting.id}
+                      className="flex text-left items-center gap-4 mb-3 cursor-pointer"
+                      onClick={() => setSelectedMeeting(meeting)} // Lưu thông tin mentor đã chọn
+                    >
+                      {roleProfile === 'STUDENT' ? (
+                        <>
+                          <img
+                            src={meeting.booking.mentor.user.avatar}
+                            className="w-10 h-10 rounded-full"
+                            alt="Mentor"
+                          />
+                          <div>
+                            <p className="font-semibold">
+                              <span className="font-bold">Mentor: </span>
+                              {meeting.booking.mentor.user.fullName}
+                            </p>
+                            <p className="text-gray-500">
+                              <span className="font-bold">Skill: </span>
+                              {meeting.booking.mentor.skills.map(skill => skill.skillName).join(', ')}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <img
+                            src={
+                              meeting.booking.group.students.find(student => student.groupRole === 'LEADER')?.user
+                                ?.avatar
+                            }
+                            className="w-8 h-8 rounded-full"
+                            alt="Mentor"
+                          />
+                          <div>
+                            <p className="font-semibold">Group: {meeting.booking.group.groupName}</p>
+                            <p className="text-gray-500">
+                              <span className="font-bold">Class:</span> {meeting.booking.group.classDTO.className}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))
                 )}
               </div>
             </div>

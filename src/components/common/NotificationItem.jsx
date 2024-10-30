@@ -19,7 +19,7 @@ const NotificationItem = ({
   updateActionClick,
   notiAction
 }) => {
-  const { userData } = useUserStore();
+  const { userData, isUpdate, setIsUpdate } = useUserStore();
 
   const handleCreateNoti = async data => {
     const token = localStorage.getItem('token');
@@ -51,6 +51,7 @@ const NotificationItem = ({
       const response = await addNewMember(groupId, addMemberData, token);
       console.log(response);
       if (response?.statusCode === 200) {
+        setIsUpdate(!isUpdate);
         if (idStudent !== userData?.id) {
           Swal.fire({
             title: 'Added Successful!',

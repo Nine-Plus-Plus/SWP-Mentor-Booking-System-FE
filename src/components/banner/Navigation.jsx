@@ -91,15 +91,19 @@ const Navigation = ({ children, menuNavbar }) => {
     {
       type: 'divider'
     },
-    {
-      key: 'profile',
-      icon: <UserOutlined />,
-      label: (
-        <NavLink to={path.USER_PROFILE} className="text-white">
-          View Profile
-        </NavLink>
-      )
-    },
+    ...(role !== 'ADMIN'
+      ? [
+          {
+            key: 'profile',
+            icon: <UserOutlined />,
+            label: (
+              <NavLink to={path.USER_PROFILE} className="text-white">
+                View Profile
+              </NavLink>
+            )
+          }
+        ]
+      : []),
     {
       key: 'settings',
       icon: <SettingOutlined />,
@@ -160,7 +164,7 @@ const Navigation = ({ children, menuNavbar }) => {
             }
           />
           <div className="flex gap-5 pr-[2rem] items-center">
-            <div
+            {/* <div
               className="relative cursor-pointer"
               onClick={() => {
                 setNotificationCount(0);
@@ -172,7 +176,7 @@ const Navigation = ({ children, menuNavbar }) => {
                   {notificationCount}
                 </span>
               )}
-            </div>
+            </div> */}
             <div className="flex items-center gap-2 ">
               <Dropdown menu={{ items }} trigger={['click']}>
                 <Space>
