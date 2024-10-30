@@ -292,7 +292,7 @@ const StudentGroup = () => {
       className: 'whitespace-pre-line text-left align-top',
       render: nf_requirements => (
         <>
-          {nf_requirements.map((nf_requirement, index) => (
+          {nf_requirements?.map((nf_requirement, index) => (
             <p key={index} className="w-[300px]">
               {nf_requirement}
             </p>
@@ -384,11 +384,20 @@ const StudentGroup = () => {
                 <h1 className="font-bold text-xl text-main-1"> Project name: {inProject?.projectName}</h1>
                 <div className="flex p-2 justify-between gap-2">
                   <div className="flex flex-col gap-2 text-md w-[65vw] border-r">
-                    <p>Topic: {inProject?.topic?.topicName}</p>
-                    <p>Process: {inProject?.percentage}%</p>
-                    <p>Description: {inProject?.description}</p>
+                    <p>
+                      <span className="font-bold">Topic: </span>
+                      {inProject?.topic?.topicName}
+                    </p>
+                    <p>
+                      <span className="font-bold">Process: </span>
+                      {inProject?.percentage}%
+                    </p>
+                    <p>
+                      <span className="font-bold">Description: </span>
+                      {inProject?.description}
+                    </p>
                     <ul>
-                      Requirement:
+                      <span className="font-bold">Requirement:</span>
                       {inProject?.topic?.requirement?.map((req, index) => (
                         <li key={index} className="p-2 my-1 rounded">
                           {req}
@@ -398,9 +407,12 @@ const StudentGroup = () => {
                   </div>
                   <div className="flex flex-col gap-2 text-md w-[60vw]">
                     {/* <p>Actor: {inProject?.topic?.actor?.join(', ')}</p> */}
-                    <div>Context: {inProject?.topic?.context}</div>
                     <div>
-                      Actor:{' '}
+                      <span className="font-bold">Context: </span>
+                      {inProject?.topic?.context}
+                    </div>
+                    <div>
+                      <span className="font-bold">Actor: </span>{' '}
                       {inProject?.topic?.actor?.map((actor, index) => (
                         <span key={index} className="inline-block bg-green-200 text-blue-800 px-1 py-1 rounded-sm mr-2">
                           {actor}
@@ -408,7 +420,7 @@ const StudentGroup = () => {
                       ))}
                     </div>
                     <ul>
-                      Non-Functional Requirement:
+                      <span className="font-bold">Non-Functional Requirement: </span>
                       {inProject?.topic?.nonFunctionRequirement?.map((req, index) => (
                         <li key={index} className="p-2 my-1 rounded">
                           {req}
@@ -426,9 +438,18 @@ const StudentGroup = () => {
                 <h1 className="font-bold text-xl text-main-1"> Group name: {inGroup?.groupName}</h1>
                 <div className="flex p-2 justify-between">
                   <div className="flex flex-col gap-2 text-md">
-                    <p>Class: {inGroup?.classDTO?.className}</p>
-                    <p>Total Point: {inGroup?.totalPoint}</p>
-                    <p>Total member: {inGroup?.students?.length}</p>
+                    <p>
+                      <span className="font-bold">Class: </span>
+                      {inGroup?.classDTO?.className}
+                    </p>
+                    <p>
+                      <span className="font-bold">Total Point: </span>
+                      {inGroup?.totalPoint} FUP
+                    </p>
+                    <p>
+                      <span className="font-bold">Total member: </span>
+                      {inGroup?.students?.length}
+                    </p>
                   </div>
                   <div className="flex justify-center h-full flex-col gap-3 ">
                     <Button
@@ -570,10 +591,21 @@ const StudentGroup = () => {
                 icon: 'warning', // Hiển thị biểu tượng cảnh báo
                 showCancelButton: true, // Hiển thị nút hủy
                 confirmButtonText: 'Yes, Update', // Văn bản nút xác nhận
+                confirmButtonColor: '#dd6633', // Màu nút xác nhận
                 cancelButtonText: 'No, cancel.', // Văn bản nút hủy
-                reverseButtons: true // Đảo ngược vị trí các nút
+                reverseButtons: false // Đảo ngược vị trí các nút
               }).then(result => {
-                handleUpdateGroup(inGroup?.id);
+                if(result.isConfirmed) {
+                  handleUpdateGroup(inGroup?.id);
+                } else if(result.dismiss === Swal.DismissReason.cancel) {
+                  Swal.fire({ 
+                    title: 'Cancelled', 
+                    text: 'Cancelled this action!', 
+                    icon: 'error',
+                    confirmButtonText: 'OK', // Văn bản nút xác nhận
+                    confirmButtonColor: '#d33', // Màu nút xác nhận
+                  });
+                }
               })
             }
           >

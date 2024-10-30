@@ -140,7 +140,7 @@ const Schedule = () => {
     try {
       if (!isEditing) {
         response = await createSchedule(data, token);
-        console.log(response);
+        console.log('schedule create: ', response);
         const added = {
           id: response?.mentorScheduleDTO?.id,
           title: 'AVAILABLE',

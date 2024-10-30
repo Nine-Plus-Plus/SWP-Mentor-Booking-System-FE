@@ -270,8 +270,10 @@ const MentorManager = () => {
   const columns = [
     {
       title: 'No',
+      width: 60,
       dataIndex: 'no',
       key: 'no',
+      fixed: 'left',
       render: (text, record, index) => index + 1
     },
     {
@@ -289,10 +291,12 @@ const MentorManager = () => {
     {
       title: 'Full Name',
       dataIndex: ['user', 'fullName'],
-      key: 'fullName'
+      key: 'fullName',
+      fixed: 'left',
     },
     {
       title: 'Email',
+      width: 280,
       dataIndex: ['user', 'email'],
       key: 'email'
     },
@@ -326,7 +330,7 @@ const MentorManager = () => {
       key: 'star'
     },
     {
-      title: 'Time-Remaining',
+      title: 'Time remain',
       dataIndex: 'totalTimeRemain',
       key: 'totalTimeRemain'
     },
@@ -338,6 +342,7 @@ const MentorManager = () => {
     {
       title: 'Actions',
       key: 'actions',
+      fixed: 'right',
       render: (text, record) => (
         <div className="flex flex-col gap-2">
           <Button
@@ -368,8 +373,8 @@ const MentorManager = () => {
   }
 
   return (
-    <div className="w-full h-full bg-gray-100 p-2">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Mentor List</h1>
+    <div className="w-full h-full bg-gray-100">
+      <h1 className="text-2xl font-bold mb-3 text-gray-800">Mentor List</h1>
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Mentor
       </Button>
@@ -380,7 +385,14 @@ const MentorManager = () => {
       <div className="w-[25vw] mb-3">
         <Search placeholder="input search text" onChange={onChange} />
       </div>
-      <Table columns={columns} bordered dataSource={mentors} rowKey="id" pagination={{ pageSize: 10 }} />
+      <Table
+        columns={columns}
+        bordered
+        dataSource={mentors}
+        rowKey="id"
+        pagination={{ pageSize: 10 }}
+        scroll={{ x:'1600px', y: 400 }}
+      />
 
       {/* Modal for updating mentor */}
       <Modal title="Update Mentor" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>

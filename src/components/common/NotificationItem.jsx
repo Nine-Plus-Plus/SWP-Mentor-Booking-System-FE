@@ -193,9 +193,17 @@ const NotificationItem = ({
       <h1 className="font-bold text-xl text-main-1"> Notification {type.toLowerCase()}: </h1>
       <div className="flex p-2 justify-between">
         <div className="flex flex-col gap-2 text-md">
-          <p>Day sent: {daySent}</p>
-          <p>Sender: {senderName}</p>
-          <p>Content: {content}</p>
+          <p>
+            <span className="font-bold">Day sent:</span> {daySent}
+          </p>
+          <p>
+            <span className="font-bold">Sender: </span>
+            {senderName}
+          </p>
+          <p>
+            <span className="font-bold">Content: </span>
+            {content}
+          </p>
         </div>
         <div className="flex items-center justify-center flex-col gap-3 w-1/6">
           {type === 'ADDGROUP' && !notiAction ? (

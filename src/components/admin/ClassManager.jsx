@@ -254,8 +254,8 @@ const ClassManager = () => {
   }
 
   return (
-    <div className="w-full h-full bg-gray-100 p-2 flex flex-col gap-2">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Class List</h1>
+    <div className="w-full h-full bg-gray-100">
+      <h1 className="text-2xl font-bold mb-3 text-gray-800">Class List</h1>
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px', width: '10vw' }}>
         Create Class
       </Button>
@@ -278,7 +278,14 @@ const ClassManager = () => {
           <Search placeholder="input search text" onChange={onChange} />
         </div>
       </div>
-      <Table columns={columns} bordered dataSource={classes} rowKey="id" pagination={{ pageSize: 10 }} />
+      <Table
+        columns={columns}
+        bordered
+        dataSource={classes}
+        rowKey="id"
+        pagination={{ pageSize: 10 }}
+        scroll={{ y: 400 }}
+      />
 
       {/* Modal for updating class */}
       <Modal title="Update Class" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>

@@ -180,12 +180,19 @@ const SemesterManager = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-2">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Semester List</h1>
+    <div className="w-full h-full bg-gray-100">
+      <h1 className="text-2xl font-bold mb-3 text-gray-800">Semester List</h1>
       <Button type="primary" onClick={showCreateModal} style={{ marginBottom: '10px' }}>
         Create Semester
       </Button>
-      <Table columns={columns} dataSource={semesters} bordered rowKey="id" pagination={{ pageSize: 10 }} />
+      <Table
+        columns={columns}
+        dataSource={semesters}
+        bordered
+        rowKey="id"
+        pagination={{ pageSize: 10 }}
+        scroll={{ y: 430 }}
+      />
       {/* Modal for creating semester */}
 
       <Modal
