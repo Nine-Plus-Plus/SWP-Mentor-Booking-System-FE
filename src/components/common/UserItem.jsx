@@ -305,7 +305,7 @@ const UserItem = ({
           selectMeeting?.availableFrom,
           selectMeeting?.availableTo,
           fullData?.groupDTO?.students?.length
-        )}</span><span style="color: orange;">  FPoint</span><br><br>Schedule: <span style="color: green;">${convertDateMeeting(
+        )}</span><span style="color: orange;">  FUP</span><br><br>Schedule: <span style="color: green;">${convertDateMeeting(
           selectMeeting
         )}</span>`,
         icon: 'warning',

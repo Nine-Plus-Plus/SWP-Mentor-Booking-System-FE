@@ -442,7 +442,7 @@ const StudentGroup = () => {
                     </p>
                     <p>
                       <span className="font-bold">Total Point: </span>
-                      {inGroup?.totalPoint}
+                      {inGroup?.totalPoint} FUP
                     </p>
                     <p>
                       <span className="font-bold">Total member: </span>

@@ -218,7 +218,7 @@ export const Meeting = () => {
                     Schedule: {convertDateMeeting(selectedMeeting.booking.mentorSchedule)}
                   </div>
                   <div className="bg-gray-100 p-3 rounded-2xl g-5 mb-2">
-                    PointPay: {selectedMeeting.booking.pointPay}
+                    PointPay: {selectedMeeting.booking.pointPay} FUP
                   </div>
                 </div>
               ) : (
@@ -236,7 +236,7 @@ export const Meeting = () => {
                     Schedule: {convertDateMeeting(selectedMeeting.booking.mentorSchedule)}
                   </div>
                   <div className="bg-gray-100 p-3 rounded-2xl g-5 mb-2">
-                    PointPay: {selectedMeeting.booking.pointPay}
+                  PointPay: {selectedMeeting.booking.pointPay} FUP
                   </div>
                 </div>
               )}
