@@ -25,7 +25,7 @@ const StudentGroup = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [topics, setTopics] = useState([]);
-  const { userData, role, fullData, setFullData } = useUserStore();
+  const { userData, role, fullData, setFullData, setIsUpdate, isUpdate } = useUserStore();
   const [form] = Form.useForm();
   const [inGroup, setInGroup] = useState(null);
   const [inProject, setInProject] = useState(inGroup?.project);
@@ -109,6 +109,7 @@ const StudentGroup = () => {
         setInProject(response?.projectsDTO);
         setIsCreateProjectModalVisible(false);
         setSelectedTopic(null);
+        setIsUpdate(!isUpdate);
       } else toast.error(response?.message);
     } catch (error) {
       toast.error(error.message);
@@ -135,6 +136,7 @@ const StudentGroup = () => {
         toast.success(response?.message);
         setInGroup(response?.groupDTO);
         setIsCreateGroupModalVisible(false);
+        setIsUpdate(isUpdate);
       } else toast.error(response?.message);
     } catch (error) {
       console.error('Create group error:', error);

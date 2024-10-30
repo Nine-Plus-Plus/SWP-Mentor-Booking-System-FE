@@ -9,6 +9,8 @@ import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { createNoti } from '../../apis/NotificationServices';
 import { createMeeting } from '../../apis/MeetingServices';
+import { Form, Input, Modal } from 'antd';
+import TextArea from 'antd/es/input/TextArea';
 
 export const BookingItem = ({
   className,
@@ -26,13 +28,16 @@ export const BookingItem = ({
   mentorUserId
 }) => {
   const { role } = useUserStore();
-
+  const [form] = Form.useForm();
   const [status, setStatus] = useState(initialStatus);
   const roleProfile = role.toLowerCase();
   const { userData } = useUserStore(); // Lấy userData từ store
-  const sameGroup = mentor?.assignedClass?.className === userData?.aclass?.className; // Kiểm tra xem mentor có cùng group không
+  const sameGroup = className === userData?.aclass?.className; // Kiểm tra xem mentor có cùng group không
   const token = localStorage.getItem('token');
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [reason, setReason] = useState('');
+  const [cancelBy, setCancelBy] = useState('');
 
   const handleCreateNoti = async data => {
     const token = localStorage.getItem('token');
@@ -44,13 +49,16 @@ export const BookingItem = ({
       console.log(error);
     } finally {
       setIsLoading(false);
+      setReason('');
     }
   };
 
   const handleSentNotiOptionMentor = status => {
     members?.map(member => {
       const dataSent = {
-        message: `Mentor ${userData.user.fullName} ${status} your booking: ${schedule}!`,
+        message: `Mentor ${userData.user.fullName} ${status} your booking: ${schedule}.\n\n${
+          reason ? `Reason: ${reason}` : ''
+        }`,
         type: 'MESSAGE',
         sender: {
           id: userData.user.id
@@ -65,13 +73,16 @@ export const BookingItem = ({
           id: idBooking
         }
       };
+      console.log(dataSent);
       handleCreateNoti(dataSent);
     });
   };
 
   const handleSentNotiOptionStudent = status => {
     const dataSent = {
-      message: `Student ${studentBook} was ${status} your booking: ${schedule}!`,
+      message: `Mentor ${userData.user.fullName} ${status} your booking: ${schedule}!${
+        reason ? `\nReason: ${reason}` : ''
+      }`,
       type: 'MESSAGE',
       sender: {
         id: userData.user.id
@@ -167,6 +178,7 @@ export const BookingItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        console.log(reason);
         handleSentNotiOptionMentor('canceled');
         setStatus('CANCELED');
       } else toast.error(response?.message);
@@ -192,6 +204,7 @@ export const BookingItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        console.log(reason);
         handleSentNotiOptionStudent('canceled');
         setStatus('CANCELED');
       } else toast.error(response?.message);
@@ -250,7 +263,8 @@ export const BookingItem = ({
       reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
-        cancelByMentor(idBooking);
+        setCancelBy('mentor');
+        setIsOpen(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Cancelled', 'Cancelled this action!', 'error');
       }
@@ -279,11 +293,26 @@ export const BookingItem = ({
       reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
-        cancelByStudent(idBooking);
+        setCancelBy('student');
+        setIsOpen(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Cancelled', 'Cancelled this action!', 'error');
       }
     });
+  };
+
+  const handleOnChange = e => {
+    setReason(e.target.value);
+  };
+
+  const handleOkReasonCancel = async () => {
+    cancelBy === 'mentor' ? cancelByMentor(idBooking) : cancelByStudent(idBooking);
+    setIsOpen(false);
+  };
+
+  const handleCancel = () => {
+    form.resetFields();
+    setIsOpen(false);
   };
 
   return (
@@ -440,6 +469,29 @@ export const BookingItem = ({
           )}
         </div>
       </div>
+      <Modal
+        title="Reason Cancel"
+        open={isOpen}
+        onCancel={handleCancel}
+        onOk={handleOkReasonCancel}
+        width={1000}
+        style={{ top: 200 }}
+      >
+        <Form form={form}>
+          <Form.Item
+            label="Reason"
+            name="reason"
+            rules={[
+              {
+                required: true,
+                message: 'Please input reason cancel!'
+              }
+            ]}
+          >
+            <Input.TextArea rows={10} placeholder="Enter your reason cancel!!!" onChange={handleOnChange} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

@@ -131,17 +131,17 @@ const GroupItem = ({
         <div className="flex flex-col gap-2 text-md">
           <p>
             <span className="font-bold">Process: </span>
-            {process}%
+            {process || 0}%
           </p>
           <p>
             <span className="font-bold">Total Point: </span> {totalPoint} FUP
           </p>
           <p>
             <span className="font-bold">Total member: </span>
-            {totalMember?.length}/5
+            {totalMember?.length}
           </p>
         </div>
-        <div className="flex justify-center h-full flex-col gap-3 w-1/5">
+        <div className="flex justify-center h-full flex-col gap-3 w-1/6">
           <Button
             text={isShowMore ? 'Show Less' : 'Show More'}
             textColor={'text-white'}

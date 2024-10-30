@@ -74,7 +74,7 @@ function StudentManager() {
     const fetchClassBySemesterId = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getClassBySemesterId(selectedSemester, token);
+        const response = await getClassBySemesterId(selectedSemester, '', token);
         setClasses(response?.classDTOList);
         // Đặt giá trị mặc định là tùy chọn cuối cùng
       } catch (err) {

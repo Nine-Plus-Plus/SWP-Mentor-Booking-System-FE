@@ -7,7 +7,7 @@ import { getMyProfile } from '../../apis/UserServices';
 import { getClassByIdMentor } from '../../apis/MentorServices';
 
 const PublicMentor = () => {
-  const { setUserData, setCurrent, setAvatar } = useUserStore();
+  const { setUserData, setCurrent, setAvatar, isUpdate } = useUserStore();
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
@@ -28,7 +28,7 @@ const PublicMentor = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [localStorage.getItem('token'), isUpdate]);
   return (
     <div className="w-full flex-wrap flex justify-end">
       <Navigation menuNavbar={menuNavbarItemsMentor}>

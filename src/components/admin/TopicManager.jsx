@@ -73,7 +73,7 @@ const TopicManager = () => {
     const fetchMentors = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await getAllMentors(token);
+        const response = await getAllMentors('', token);
         setMentors(response.mentorsDTOList);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
