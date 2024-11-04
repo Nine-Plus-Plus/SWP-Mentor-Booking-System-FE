@@ -165,6 +165,7 @@ const SemesterManager = () => {
     {
       title: 'Actions',
       key: 'actions',
+      width: 150,
       render: (text, record) => (
         <div className="flex flex-col gap-2">
           <Button
