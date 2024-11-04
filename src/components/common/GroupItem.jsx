@@ -115,7 +115,7 @@ const GroupItem = ({
     <div className=" border shadow-md rounded-md p-3 w-full">
       <h1 className="font-bold text-xl text-main-1"> Group name: {groupName}</h1>
       <div className="flex p-2 justify-between">
-        <div className="flex flex-col gap-2 text-md">
+        <div className="flex flex-col gap-2 text-md w-4/12">
           <p>
             <span className="font-bold">Project Name: </span> {projectName}
           </p>
@@ -128,7 +128,7 @@ const GroupItem = ({
             {leader}
           </p>
         </div>
-        <div className="flex flex-col gap-2 text-md">
+        <div className="flex flex-col gap-2 text-md w-4/12">
           <p>
             <span className="font-bold">Process: </span>
             {process || 0}%

@@ -292,7 +292,7 @@ const MentorManager = () => {
       title: 'Full Name',
       dataIndex: ['user', 'fullName'],
       key: 'fullName',
-      fixed: 'left',
+      fixed: 'left'
     },
     {
       title: 'Email',
@@ -327,7 +327,8 @@ const MentorManager = () => {
     {
       title: 'Star',
       dataIndex: 'star',
-      key: 'star'
+      key: 'star',
+      render: value => (Math.round(value * 2) / 2).toFixed(1)
     },
     {
       title: 'Time remain',
@@ -391,7 +392,7 @@ const MentorManager = () => {
         dataSource={mentors}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        scroll={{ x:'1600px', y: 400 }}
+        scroll={{ x: '1600px', y: 400 }}
       />
 
       {/* Modal for updating mentor */}

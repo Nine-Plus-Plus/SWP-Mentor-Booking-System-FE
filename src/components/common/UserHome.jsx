@@ -46,7 +46,7 @@ const UserHome = () => {
         const response = await getAllSkill('', token);
         setSkills(response.data.skillsDTOList);
       } catch (err) {
-        setError(err.message || 'Đã xảy ra lỗi');
+        console.log(err.message);
       } finally {
         setLoading(false);
       }
