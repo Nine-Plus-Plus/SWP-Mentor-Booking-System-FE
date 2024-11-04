@@ -71,7 +71,6 @@ const Login = () => {
         if (response?.data?.token) {
           const userRole = response.data.role;
           setModal(response.data.token, userRole, true);
-
           if (userRole && roleForComponent[userRole]) {
             navigate(roleForComponent[userRole]);
             toast.success('Login Successful');

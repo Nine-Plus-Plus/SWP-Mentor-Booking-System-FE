@@ -323,10 +323,10 @@ const MentorManager = () => {
       ),
     },
     {
-      title: "Full Name",
-      dataIndex: ["user", "fullName"],
-      key: "fullName",
-      fixed: "left",
+      title: 'Full Name',
+      dataIndex: ['user', 'fullName'],
+      key: 'fullName',
+      fixed: 'left'
     },
     {
       title: "Email",
@@ -359,9 +359,10 @@ const MentorManager = () => {
       key: "phone",
     },
     {
-      title: "Star",
-      dataIndex: "star",
-      key: "star",
+      title: 'Star',
+      dataIndex: 'star',
+      key: 'star',
+      render: value => (Math.round(value * 2) / 2).toFixed(1)
     },
     {
       title: "Time remain",

@@ -436,7 +436,7 @@ function StudentProfile() {
               </label>
               <input
                 type="text"
-                value={profile.point}
+                value={roleProfile === 'MENTOR' ? (Math.round(profile.point * 2) / 2).toFixed(1) : profile.point}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />

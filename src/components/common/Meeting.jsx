@@ -149,7 +149,7 @@ export const Meeting = () => {
 
   useEffect(() => {
     return setIsReviewed(
-      selectedMeeting?.reviews && selectedMeeting?.reviews?.find(review => review?.user_id?.id === userData?.user?.id)
+      selectedMeeting?.reviews && selectedMeeting?.reviews?.find(review => review?.user?.id === userData?.user?.id)
         ? true
         : false
     );
@@ -222,7 +222,7 @@ export const Meeting = () => {
               {roleProfile === 'STUDENT' ? (
                 <div className="flex flex-col gap-2">
                   <div className="bg-gray-100 p-3 rounded-2xl g-5 mb-2">
-                    Mentor Star: {selectedMeeting.booking.mentor.star}
+                    Mentor Star: {(Math.round(selectedMeeting.booking.mentor.star * 2) / 2).toFixed(1)}
                   </div>
                   <div className="bg-gray-100 p-3 rounded-2xl g-5 mb-2">
                     Schedule: {convertDateMeeting(selectedMeeting.booking.mentorSchedule)}
@@ -246,7 +246,7 @@ export const Meeting = () => {
                     Schedule: {convertDateMeeting(selectedMeeting.booking.mentorSchedule)}
                   </div>
                   <div className="bg-gray-100 p-3 rounded-2xl g-5 mb-2">
-                  PointPay: {selectedMeeting.booking.pointPay} FUP
+                    PointPay: {selectedMeeting.booking.pointPay} FUP
                   </div>
                 </div>
               )}
