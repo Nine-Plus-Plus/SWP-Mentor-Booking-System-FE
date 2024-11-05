@@ -131,3 +131,23 @@ export const removeMember = (id, data, token) =>
       reject(error);
     }
   });
+
+export const uploadFilegroup = (data, token) =>
+  new Promise(async (resolve, reject) => {
+    const formData = new FormData();
+    formData.append('group', new Blob([JSON.stringify(data.group)], { type: 'application/json' }));
+    formData.append('file', data.file);
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: 'api/user/upload',
+        data: formData,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response);
+    } catch (error) {
+      reject(error);
+    }
+  });

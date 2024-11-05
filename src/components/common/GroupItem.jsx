@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { getStudentNotGroup } from '../../apis/StudentServices';
 import { createNoti } from '../../apis/NotificationServices';
 import Swal from 'sweetalert2';
+import { DownloadOutlined } from '@ant-design/icons';
 
 const GroupItem = ({
   idGroup,
@@ -18,7 +19,8 @@ const GroupItem = ({
   totalMember,
   process,
   leader,
-  leaderId
+  leaderId,
+  urlFile
 }) => {
   const [isShowMore, setIsShowMore] = useState(false);
   const [joined, setJoined] = useState(true);
@@ -127,6 +129,14 @@ const GroupItem = ({
             <span className="font-bold">Leader: </span>
             {leader}
           </p>
+          {userData.user.role.roleName === 'MENTOR' && urlFile && (
+            <a
+              className="text-blue-500 hover:underline text-left border p-1 rounded-sm border-blue-300 inline-block max-w-max"
+              href={urlFile}
+            >
+              Get specification <DownloadOutlined />
+            </a>
+          )}
         </div>
         <div className="flex flex-col gap-2 text-md w-4/12">
           <p>

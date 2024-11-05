@@ -39,7 +39,8 @@ const path = {
   ADMIN_SEMESTER_MANAGER: 'semester-manager',
   ADMIN_CLASS_MANAGER: 'class-manager',
   ADMIN_SKILL_MANAGER: 'skill-manager',
-  ADMIN_TOPIC_MANAGER: 'topic-manager'
+  ADMIN_TOPIC_MANAGER: 'topic-manager',
+  ADMIN_GROUP_MANAGER: 'group-manager'
 };
 
 export default path;

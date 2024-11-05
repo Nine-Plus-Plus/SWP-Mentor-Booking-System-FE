@@ -25,7 +25,8 @@ import {
   Schedule,
   ListNotification,
   Progress,
-  ReviewList
+  ReviewList,
+  GroupManager
 } from './components/index';
 import { PublicLayout, PublicAdmin, PublicHome, PublicAboutUs, PublicStudent, PublicMentor } from './pages/index';
 import { ToastContainer } from 'react-toastify';
@@ -131,6 +132,7 @@ function App() {
           <Route path={path.ADMIN_SEMESTER_MANAGER} element={<SemesterManager />} />
           <Route path={path.ADMIN_CLASS_MANAGER} element={<ClassManager />} />
           <Route path={path.ADMIN_TOPIC_MANAGER} element={<TopicManager />} />
+          <Route path={path.ADMIN_GROUP_MANAGER} element={<GroupManager />} />
         </Route>
       </Routes>
     </div>

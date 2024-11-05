@@ -13,10 +13,8 @@ export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingI
   const { userData, setIsUpdate, isUpdate } = useUserStore();
 
   useEffect(() => {
-    setIsUpdate(!isUpdate);
     const token = localStorage.getItem('token');
     const fetchAllHistoryPoint = async () => {
-      if (!userData?.id || !token) return;
       try {
         console.log(isUpdate);
         const response = await getHistoryPointByStudentId(userData?.id, token);
@@ -33,7 +31,8 @@ export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingI
     };
 
     fetchAllHistoryPoint();
-  }, []);
+    setIsUpdate(!isUpdate);
+  }, [userData?.id]);
 
   const onChangePage = page => {
     setCurrentPage(page);

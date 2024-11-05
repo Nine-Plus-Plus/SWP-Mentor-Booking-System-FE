@@ -43,6 +43,7 @@ const ListGroup = () => {
               projectName={group?.project?.projectName}
               leader={group?.students?.find(student => student?.groupRole === 'LEADER')?.user?.fullName}
               leaderId={group?.students?.find(student => student?.groupRole === 'LEADER')?.user?.id}
+              urlFile={group?.fileURL}
             />
           ))
         )}

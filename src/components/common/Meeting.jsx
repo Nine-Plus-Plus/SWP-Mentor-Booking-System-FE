@@ -13,6 +13,7 @@ import TextArea from 'antd/es/input/TextArea';
 import Swal from 'sweetalert2';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { DownloadOutlined } from '@ant-design/icons';
 
 export const Meeting = () => {
   const { role, userData } = useUserStore();
@@ -298,6 +299,14 @@ export const Meeting = () => {
                 <p className="text-gray-500 mb-2">
                   <span className="font-bold">Percentage:</span> {selectedMeeting?.booking?.group?.project?.percentage}%
                 </p>
+                {selectedMeeting?.booking?.group?.fileURL && (
+                  <a
+                    className="text-blue-500 hover:underline text-left border p-1 rounded-sm border-blue-300"
+                    href={selectedMeeting?.booking?.group?.fileURL}
+                  >
+                    Get specification <DownloadOutlined />
+                  </a>
+                )}
               </>
             ) : (
               <p className="text-gray-500 mb-2">No booking yet</p>
@@ -315,7 +324,7 @@ export const Meeting = () => {
                 onChange={onPageChange}
               />
               <div className="mb-3">
-                <h3 className="font-bold text-xl">Meeting Infomation</h3>
+                <h3 className="font-bold text-xl">Meeting Information</h3>
               </div>
               <div>
                 {currentMeeting?.length === 0 ? (
