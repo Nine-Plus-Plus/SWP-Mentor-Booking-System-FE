@@ -86,7 +86,7 @@ export const AdminHome = () => {
 
   useEffect(() => {
     const fetchAllGroup = async () => {
-      const response = await getAllGroupBySemesterId(selectedSemester, token);
+      const response = await getAllGroupBySemesterId(selectedSemester, '', token);
       if (response?.statusCode === 200) {
         setTotalGroups(prevTotal => prevTotal + response.groupDTOList.length);
       }
