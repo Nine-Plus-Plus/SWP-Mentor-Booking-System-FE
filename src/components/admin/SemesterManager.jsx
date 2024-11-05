@@ -229,7 +229,7 @@ const SemesterManager = () => {
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
-              label="Birth end"
+              label="Date end"
               name="dateEnd"
               rules={[
                 {
@@ -277,7 +277,7 @@ const SemesterManager = () => {
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
-              label="Birth end"
+              label="Date end"
               name="dateEnd"
               rules={[
                 {
