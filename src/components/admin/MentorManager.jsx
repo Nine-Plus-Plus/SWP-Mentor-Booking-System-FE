@@ -6,7 +6,7 @@ import { getAllSkill } from '../../apis/SkillServices';
 import dayjs from 'dayjs';
 import { colors } from '../../utils/constant';
 import Dragger from 'antd/es/upload/Dragger';
-import { InboxOutlined } from '@ant-design/icons';
+import { InboxOutlined, Loading3QuartersOutlined } from '@ant-design/icons';
 import Search from 'antd/es/transfer/search';
 
 const MentorManager = () => {
@@ -28,6 +28,7 @@ const MentorManager = () => {
     const fetchMentors = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllMentors(searchText, token);
         console.log(response);
 
@@ -50,8 +51,6 @@ const MentorManager = () => {
         setSkills(response.data.skillsDTOList);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
       }
     };
     fetchSkill();
@@ -67,6 +66,7 @@ const MentorManager = () => {
   const handleCreateMentor = async () => {
     const token = localStorage.getItem('token');
     try {
+      setLoading(true);
       const values = await form.validateFields();
       const { avatar, ...mentorValue } = values;
 
@@ -103,6 +103,8 @@ const MentorManager = () => {
     } catch (error) {
       console.error('Create mentor error:', error);
       message.error('Failed to create mentor: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -180,29 +182,34 @@ const MentorManager = () => {
     }
 
     try {
+      setLoading(true);
       const response = await importExcelMentor(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
 
       if (response && response.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
         await fetchMentors(token); // Cập nhật lại danh sách mentors
-        setIsUpdateModalVisible(false);
+        setIsImportModalVisible(false);
         setFileList([]);
         message.success('Mentors imported successfully');
       } else {
-        message.error('Import Excel thất bại');
+        await fetchMentors(token);
+        message.error(response.message);
       }
     } catch (error) {
       console.error('Import Excel error:', error);
       message.error('Import Excel thất bại: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchMentors = async token => {
+  const fetchMentors = async () => {
+    const token = localStorage.getItem('token');
     try {
-      const response = await getAllMentors(token);
+      setLoading(true);
+      const response = await getAllMentors(searchText, token);
       console.log(response);
 
-      // Cập nhật danh sách mentors từ API
       setMentors(response.mentorsDTOList);
     } catch (err) {
       setError(err.message || 'Đã xảy ra lỗi');
@@ -292,7 +299,7 @@ const MentorManager = () => {
       title: 'Full Name',
       dataIndex: ['user', 'fullName'],
       key: 'fullName',
-      fixed: 'left',
+      fixed: 'left'
     },
     {
       title: 'Email',
@@ -327,7 +334,8 @@ const MentorManager = () => {
     {
       title: 'Star',
       dataIndex: 'star',
-      key: 'star'
+      key: 'star',
+      render: value => (Math.round(value * 2) / 2).toFixed(1)
     },
     {
       title: 'Time remain',
@@ -364,10 +372,6 @@ const MentorManager = () => {
     setSearchText(e.target.value);
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
-
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
@@ -391,7 +395,8 @@ const MentorManager = () => {
         dataSource={mentors}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        scroll={{ x:'1600px', y: 400 }}
+        scroll={{ x: '1600px', y: 600 }}
+        loading={loading}
       />
 
       {/* Modal for updating mentor */}
@@ -628,18 +633,6 @@ const MentorManager = () => {
               ]}
             >
               <Input />
-            </Form.Item>
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your password!'
-                }
-              ]}
-            >
-              <Input.Password />
             </Form.Item>
             <Form.Item
               label="Birth Date"

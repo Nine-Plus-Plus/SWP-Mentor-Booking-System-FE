@@ -22,12 +22,13 @@ import { UploadOutlined, EyeOutlined } from '@ant-design/icons';
 import { updateStudent } from '../../apis/StudentServices';
 import { updateMentor } from '../../apis/MentorServices';
 import dayjs from 'dayjs';
+import Loading from './Loading';
 
 function StudentProfile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { role, userData, setAvatar } = useUserStore();
+  const { role, userData, setAvatar, setLoadingGlobal, loadingGlobal } = useUserStore();
   const [isDataChanged, setIsDataChanged] = useState(false);
   const { name, id } = useParams();
   const [openCrop, setOpenCrop] = useState(false);
@@ -98,7 +99,7 @@ function StudentProfile() {
       };
 
       console.log(updateData);
-
+      setLoading(true);
       const response = await updateStudent(userData?.user?.id, updateData, token);
       console.log(response);
 
@@ -113,6 +114,8 @@ function StudentProfile() {
     } catch (error) {
       console.error('Update avatar error:', error);
       message.error('Failed to update avatar: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -139,6 +142,7 @@ function StudentProfile() {
         avatarFile: file // Ensure this is a File or Blob
       };
       console.log(skillsArray);
+      setLoading(true);
       const response = await updateMentor(userData?.user?.id, updateData, token);
       console.log(response);
       if (response?.statusCode === 200) {
@@ -152,6 +156,8 @@ function StudentProfile() {
     } catch (error) {
       console.error('Update avatar error:', error);
       message.error('Failed to update avatar: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -190,9 +196,9 @@ function StudentProfile() {
           setError('Token không tồn tại');
           return;
         }
+        setLoading(true);
         const response = id ? await getProfileById(id, token) : await getMyProfile(token);
         console.log(response);
-
         const user = roleProfile === 'MENTOR' ? response?.mentorsDTO : response?.studentsDTO;
         const group = response?.groupDTO;
 
@@ -222,12 +228,15 @@ function StudentProfile() {
         setLoading(false);
       }
     };
-
     fetchProfile();
   }, [id]);
 
   if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
+    return (
+      <div className="p-2 overflow-auto h-[calc(100vh-8vh)] w-full">
+        <Loading />
+      </div>
+    );
   }
 
   if (error) {
@@ -436,7 +445,7 @@ function StudentProfile() {
               </label>
               <input
                 type="text"
-                value={profile.point}
+                value={roleProfile === 'MENTOR' ? (Math.round(profile.point * 2) / 2).toFixed(1) : profile.point}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />

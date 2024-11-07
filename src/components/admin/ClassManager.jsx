@@ -67,6 +67,7 @@ const ClassManager = () => {
     const fetchClassBySemesterId = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getClassBySemesterId(selectedSemester, searchText, token);
         setClasses(response?.classDTOList || []);
         console.log(response);
@@ -99,6 +100,8 @@ const ClassManager = () => {
       console.log(dataCreate);
 
       // Gọi API tạo lớp học
+      setLoading(true);
+
       const response = await createClass(dataCreate, token);
 
       // Kiểm tra phản hồi từ API và cập nhật danh sách lớp học
@@ -112,6 +115,8 @@ const ClassManager = () => {
     } catch (error) {
       console.error('Create class error:', error);
       message.error('Failed to create class: ' + (error.message || 'Unknown error'));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -124,7 +129,7 @@ const ClassManager = () => {
         mentor: { id: values.mentorId },
         semester: { id: values.semesterId }
       };
-
+      setLoading(true);
       const response = await updateClass(selectedClass.id, updateData, token);
       if (response && response?.statusCode === 200) {
         // Kiểm tra xem semesterId đã thay đổi hay chưa
@@ -147,12 +152,16 @@ const ClassManager = () => {
     } catch (error) {
       console.error('Update class error:', error);
       message.error('Failed to update class: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async idClass => {
     const token = localStorage.getItem('token');
     try {
+      setLoading(true);
+
       const response = await deleteClass(idClass, token);
 
       if (response && response.statusCode === 200) {
@@ -164,6 +173,8 @@ const ClassManager = () => {
     } catch (error) {
       console.error('Delete class error:', error);
       message.error('Failed to delete class: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -172,9 +183,9 @@ const ClassManager = () => {
     console.log(classU);
 
     form.setFieldsValue({
-      className: classU.className,
-      semesterId: classU.semester.id,
-      mentorId: classU.mentor.id
+      className: classU?.className,
+      semesterId: classU?.semester?.id,
+      mentorId: classU?.mentor?.id
     });
     setIsUpdateModalVisible(true);
   };
@@ -226,13 +237,20 @@ const ClassManager = () => {
       key: 'actions',
       render: (text, record) => (
         <div className="flex flex-col gap-2">
-          <Button
-            className="bg-blue-500 text-white  w-full"
-            onClick={() => showUpdateModal(record)}
-            style={{ marginRight: '10px' }}
-          >
-            Update
-          </Button>
+          {record.availableStatus === 'INACTIVE' ? (
+            <Button className="bg-gray-500 text-white  w-full hover:cursor-not-allowed" style={{ marginRight: '10px' }}>
+              Inactive
+            </Button>
+          ) : (
+            <Button
+              className="bg-blue-500 text-white  w-full"
+              onClick={() => showUpdateModal(record)}
+              style={{ marginRight: '10px' }}
+            >
+              Update
+            </Button>
+          )}
+
           <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.id)}>
             Delete
           </Button>
@@ -244,10 +262,6 @@ const ClassManager = () => {
   const onChange = e => {
     setSearchText(e.target.value);
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -285,6 +299,7 @@ const ClassManager = () => {
         rowKey="id"
         pagination={{ pageSize: 10 }}
         scroll={{ y: 400 }}
+        loading={loading}
       />
   
       {/* Modal for updating class */}

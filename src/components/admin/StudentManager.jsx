@@ -37,6 +37,7 @@ function StudentManager() {
     const fetchSemesters = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllSemester(token);
         setSemesters(response.data?.semesterDTOList);
       } catch (err) {
@@ -58,6 +59,7 @@ function StudentManager() {
     const fetchStudents = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getStudentsBySemesterId(filterSemester, searchText, token);
         setStudents(response.studentsDTOList);
       } catch (err) {
@@ -74,6 +76,7 @@ function StudentManager() {
     const fetchClassBySemesterId = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getClassBySemesterId(selectedSemester, '', token);
         setClasses(response?.classDTOList);
         // Đặt giá trị mặc định là tùy chọn cuối cùng
@@ -265,29 +268,32 @@ function StudentManager() {
     }
 
     try {
-      const response = await importExcelStudent(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+      setLoading(true);
+      const response = await importExcelStudent(fileList[0].originFileObj, token, selectedSemester);
 
       if (response && response.statusCode === 200) {
-        // Cập nhật lại danh sách người dùng với thông tin mới
-        await fetchStudents(token); // Cập nhật lại danh sách mentors
-        setIsUpdateModalVisible(false);
+        await fetchStudents(token);
+        setIsImportModalVisible(false);
         setFileList([]);
-        message.success('Mentors imported successfully');
+        message.success('Students imported successfully');
       } else {
-        message.error('Import Excel thất bại');
+        await fetchStudents(token);
+        message.error('Import Excel thất bại' + response.message);
       }
     } catch (error) {
+      ``;
       console.error('Import Excel error:', error);
       message.error('Import Excel thất bại: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchStudents = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await getStudents(token);
-      console.log(response);
-
+      setLoading(true);
+      const response = await getStudentsBySemesterId(filterSemester, searchText, token);
       setStudents(response.studentsDTOList);
     } catch (err) {
       setError(err.message || 'Đã xảy ra lỗi');
@@ -295,10 +301,6 @@ function StudentManager() {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -374,13 +376,19 @@ function StudentManager() {
       fixed: 'right',
       render: (text, record) => (
         <div className="flex flex-col gap-2">
-          <Button
-            className="bg-blue-500 text-white  w-full"
-            onClick={() => showUpdateModal(record)}
-            style={{ marginRight: '10px' }}
-          >
-            Update
-          </Button>
+          {record?.avalableStatus !== 'ACTIVE' ? (
+            <Button className="bg-gray-500 text-white  w-full hover:cursor-not-allowed" style={{ marginRight: '10px' }}>
+              Inactive
+            </Button>
+          ) : (
+            <Button
+              className="bg-blue-500 text-white  w-full"
+              onClick={() => showUpdateModal(record)}
+              style={{ marginRight: '10px' }}
+            >
+              Update
+            </Button>
+          )}
           <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.user.id)}>
             Delete
           </Button>
@@ -392,10 +400,6 @@ function StudentManager() {
   const onChange = e => {
     setSearchText(e.target.value);
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -438,6 +442,7 @@ function StudentManager() {
         rowKey="id"
         pagination={{ pageSize: 10 }}
         scroll={{ x: '1600px', y: 400 }}
+        loading={loading}
       />
       {/* Modal for updating student */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
@@ -654,18 +659,6 @@ function StudentManager() {
               <Input />
             </Form.Item>
             <Form.Item
-              label="Password"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your password!'
-                }
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item
               label="Birth Date"
               name="birthDate"
               rules={[
@@ -802,6 +795,24 @@ function StudentManager() {
         onOk={handleImportExcel}
         onCancel={handleCancelImport}
       >
+        <Form.Item
+          label="Semester"
+          name="semesterId"
+          rules={[
+            {
+              required: true,
+              message: 'Please select a semester!'
+            }
+          ]}
+        >
+          <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
+            {semesters?.map(semester => (
+              <Select.Option key={semester.id} value={semester.id}>
+                {semester.semesterName}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
         <Dragger
           accept=".xlsx, .xls"
           beforeUpload={() => false} // Ngăn không cho upload tự động

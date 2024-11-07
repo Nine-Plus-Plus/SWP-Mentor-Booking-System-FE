@@ -8,6 +8,7 @@ import { useUserStore } from '../../store/useUserStore';
 import { getStudentByIdAndSearch } from '../../apis/StudentServices';
 import { capitalizeFirstLetter, convertSkillArray } from '../../utils/commonFunction';
 import { Pagination } from 'antd';
+import Loading from './Loading';
 
 const ClassList = ({ addGroup }) => {
   const [countMember, setCountMember] = useState(0);
@@ -16,6 +17,7 @@ const ClassList = ({ addGroup }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const topRef = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   const [searchPayload, setSearchPayload] = useState({
     name: '',
@@ -31,6 +33,7 @@ const ClassList = ({ addGroup }) => {
       const token = localStorage.getItem('token');
 
       try {
+        setLoading(true);
         const response = await getStudentByIdAndSearch(
           userData?.aclass.id,
           searchPayload?.name || undefined,
@@ -41,6 +44,8 @@ const ClassList = ({ addGroup }) => {
         else setStudents([]);
       } catch (error) {
         setError(error.message || 'Đã xảy ra lỗi');
+      } finally {
+        setLoading(false);
       }
     };
     fetchStudentByIdAndSearch();
@@ -62,6 +67,11 @@ const ClassList = ({ addGroup }) => {
 
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       <Search setPayload={setSearchPayload} />
       {addGroup && <p className="text-2xl font-semibold text-red-500">Limit member: {countMember}/4</p>}
       <div className=" bg-white flex flex-col gap-5 p-3 rounded-md" ref={topRef}>

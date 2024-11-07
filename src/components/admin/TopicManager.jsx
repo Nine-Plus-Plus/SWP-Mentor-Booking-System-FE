@@ -19,6 +19,7 @@ const TopicManager = () => {
   const [mentors, setMentors] = useState([]);
   const [topics, setTopics] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState(null);
+  const [selectedSemesterImport, setSelectedSemesterImport] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -244,41 +245,45 @@ const TopicManager = () => {
       return;
     }
 
+    if (selectedSemesterImport === null) {
+      message.error('Chọn kì để import topics');
+      return;
+    }
+
     try {
-      const response = await importExcelTopic(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+      setLoading(true);
+      const response = await importExcelTopic(fileList[0].originFileObj, token, selectedSemesterImport); // Gọi hàm với tệp tin
 
       if (response && response.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
         await fetchAllTopicBySemesterId(token); // Cập nhật lại danh sách mentors
-        setIsUpdateModalVisible(false);
+        setIsImportModalVisible(false);
         setFileList([]);
         message.success('Topic imported successfully');
       } else {
-        message.error('Import Excel thất bại');
+        await fetchAllTopicBySemesterId(token);
+        message.error(response.message);
       }
     } catch (error) {
       console.error('Import Excel error:', error);
       message.error('Import Excel thất bại: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchAllTopicBySemesterId = async () => {
     const token = localStorage.getItem('token');
     try {
-      console.log(selectedSemester);
-      const response = await getTopicByIdSemester(selectedSemester, token);
-      console.log(response);
-      response?.statusCode === 200 ? setTopics(response?.topicDTOList) : setTopics([]);
+      setLoading(true);
+      const response = await getTopicByIdSemester(selectedSemesterImport, searchText, token);
+      setTopics(response.topicDTOList);
     } catch (err) {
       setError(err?.message || 'Đã xảy ra lỗi');
     } finally {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -392,6 +397,7 @@ const TopicManager = () => {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
+      width: 150,
       render: (text, record) => (
         <div className="flex flex-col gap-2">
           <Button
@@ -447,7 +453,8 @@ const TopicManager = () => {
         dataSource={topics}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        scroll={{ x: '2500px', y: 400 }}
+        scroll={{ x: '2500px', y: 600 }}
+        loading={loading}
       />
 
       {/* Modal for updating student */}
@@ -711,6 +718,24 @@ const TopicManager = () => {
         onOk={handleImportExcel}
         onCancel={handleCancelImport}
       >
+        <Form.Item
+          label="Semester"
+          name="semesterId"
+          rules={[
+            {
+              required: true,
+              message: 'Please select a semester!'
+            }
+          ]}
+        >
+          <Select placeholder="Select Semester" onChange={value => setSelectedSemesterImport(value)}>
+            {semesters?.map(semester => (
+              <Select.Option key={semester.id} value={semester.id}>
+                {semester.semesterName}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
         <Dragger
           accept=".xlsx, .xls"
           beforeUpload={() => false} // Ngăn không cho upload tự động

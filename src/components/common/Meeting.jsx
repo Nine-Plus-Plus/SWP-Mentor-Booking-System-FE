@@ -13,6 +13,8 @@ import TextArea from 'antd/es/input/TextArea';
 import Swal from 'sweetalert2';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { DownloadOutlined } from '@ant-design/icons';
+import Loading from './Loading';
 
 export const Meeting = () => {
   const { role, userData } = useUserStore();
@@ -37,6 +39,7 @@ export const Meeting = () => {
     const fetchAllMeeting = async () => {
       let response;
       try {
+        setLoading(true);
         response = await getMeetingByUserId(userData?.user?.id, token);
         console.log(response);
         if (response?.statusCode === 200) {
@@ -45,6 +48,8 @@ export const Meeting = () => {
         } else setMeetings([]);
       } catch (error) {
         console.log('Meeting Error: ', response.message);
+      } finally {
+        setLoading(false);
       }
     };
     userData?.user?.id && fetchAllMeeting();
@@ -149,7 +154,7 @@ export const Meeting = () => {
 
   useEffect(() => {
     return setIsReviewed(
-      selectedMeeting?.reviews && selectedMeeting?.reviews?.find(review => review?.user_id?.id === userData?.user?.id)
+      selectedMeeting?.reviews && selectedMeeting?.reviews?.find(review => review?.user?.id === userData?.user?.id)
         ? true
         : false
     );
@@ -171,6 +176,11 @@ export const Meeting = () => {
 
   return (
     <div className="flex-col">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       {/* Content */}
       <div className="flex gap-3 pt-2 ">
         {/* Profile info */}
@@ -222,7 +232,7 @@ export const Meeting = () => {
               {roleProfile === 'STUDENT' ? (
                 <div className="flex flex-col gap-2">
                   <div className="bg-gray-100 p-3 rounded-2xl g-5 mb-2">
-                    Mentor Star: {selectedMeeting.booking.mentor.star}
+                    Mentor Star: {(Math.round(selectedMeeting.booking.mentor.star * 2) / 2).toFixed(1)}
                   </div>
                   <div className="bg-gray-100 p-3 rounded-2xl g-5 mb-2">
                     Schedule: {convertDateMeeting(selectedMeeting.booking.mentorSchedule)}
@@ -246,7 +256,7 @@ export const Meeting = () => {
                     Schedule: {convertDateMeeting(selectedMeeting.booking.mentorSchedule)}
                   </div>
                   <div className="bg-gray-100 p-3 rounded-2xl g-5 mb-2">
-                  PointPay: {selectedMeeting.booking.pointPay} FUP
+                    PointPay: {selectedMeeting.booking.pointPay} FUP
                   </div>
                 </div>
               )}
@@ -298,6 +308,14 @@ export const Meeting = () => {
                 <p className="text-gray-500 mb-2">
                   <span className="font-bold">Percentage:</span> {selectedMeeting?.booking?.group?.project?.percentage}%
                 </p>
+                {selectedMeeting?.booking?.group?.fileURL && (
+                  <a
+                    className="text-blue-500 hover:underline text-left border p-1 rounded-sm border-blue-300"
+                    href={selectedMeeting?.booking?.group?.fileURL}
+                  >
+                    Get specification <DownloadOutlined />
+                  </a>
+                )}
               </>
             ) : (
               <p className="text-gray-500 mb-2">No booking yet</p>
@@ -315,7 +333,7 @@ export const Meeting = () => {
                 onChange={onPageChange}
               />
               <div className="mb-3">
-                <h3 className="font-bold text-xl">Meeting Infomation</h3>
+                <h3 className="font-bold text-xl">Meeting Information</h3>
               </div>
               <div>
                 {currentMeeting?.length === 0 ? (

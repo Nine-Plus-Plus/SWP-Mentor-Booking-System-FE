@@ -16,6 +16,7 @@ const SemesterManager = () => {
     const fetchSemesters = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllSemester(token);
         setSemesters(
           response?.data?.semesterDTOList?.map(semester => ({
@@ -98,10 +99,6 @@ const SemesterManager = () => {
     }
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
-
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
@@ -165,15 +162,22 @@ const SemesterManager = () => {
     {
       title: 'Actions',
       key: 'actions',
+      width: 150,
       render: (text, record) => (
         <div className="flex flex-col gap-2">
-          <Button
-            className="bg-blue-500 text-white  w-full"
-            onClick={() => showUpdateModal(record)}
-            style={{ marginRight: '10px' }}
-          >
-            Update
-          </Button>
+          {record.availableStatus === 'INACTIVE' ? (
+            <Button className="bg-gray-500 text-white  w-full hover:cursor-not-allowed" style={{ marginRight: '10px' }}>
+              Inactive
+            </Button>
+          ) : (
+            <Button
+              className="bg-blue-500 text-white  w-full"
+              onClick={() => showUpdateModal(record)}
+              style={{ marginRight: '10px' }}
+            >
+              Update
+            </Button>
+          )}
         </div>
       )
     }
@@ -192,6 +196,7 @@ const SemesterManager = () => {
         rowKey="id"
         pagination={{ pageSize: 10 }}
         scroll={{ y: 430 }}
+        loading={loading}
       />
       {/* Modal for creating semester */}
 
@@ -308,7 +313,7 @@ const SemesterManager = () => {
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
-              label="Birth end"
+              label="Date end"
               name="dateEnd"
               dependencies={['dateStart']}
               rules={[

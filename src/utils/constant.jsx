@@ -309,16 +309,16 @@ export const menuNavbarItemsAdmin = [
       }
     ]
   },
-  // {
-  //   key: 'system-config',
-  //   icon: <ToolOutlined />,
-  //   label: (
-  //     <NavLink to={'/'} className="text-white">
-  //        Configuration
-  //     </NavLink>
-  //   ),
-  //   className: 'text-white text-lg'
-  // }
+  {
+    key: 'system-config',
+    icon: <TeamOutlined />,
+    label: (
+      <NavLink to={path.ADMIN_GROUP_MANAGER} className="text-white">
+        Group
+      </NavLink>
+    ),
+    className: 'text-white text-lg'
+  }
 ];
 
 export const roleForComponent = {
