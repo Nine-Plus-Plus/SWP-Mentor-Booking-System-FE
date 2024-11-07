@@ -52,3 +52,17 @@ export const parseStringStatus = string => {
 
   return stringWithoutSpaces.toUpperCase();
 };
+
+export const formattedContent = content => {
+  const result = content.split('Reason:').map((part, index) =>
+    index > 0 ? (
+      <p key={index}>
+        <span className="font-bold">Reason:</span>
+        {part}
+      </p>
+    ) : (
+      part
+    )
+  );
+  return result;
+};

@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { DownloadOutlined } from '@ant-design/icons';
+import Loading from './Loading';
 
 export const Meeting = () => {
   const { role, userData } = useUserStore();
@@ -38,6 +39,7 @@ export const Meeting = () => {
     const fetchAllMeeting = async () => {
       let response;
       try {
+        setLoading(true);
         response = await getMeetingByUserId(userData?.user?.id, token);
         console.log(response);
         if (response?.statusCode === 200) {
@@ -46,6 +48,8 @@ export const Meeting = () => {
         } else setMeetings([]);
       } catch (error) {
         console.log('Meeting Error: ', response.message);
+      } finally {
+        setLoading(false);
       }
     };
     userData?.user?.id && fetchAllMeeting();
@@ -172,6 +176,11 @@ export const Meeting = () => {
 
   return (
     <div className="flex-col">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       {/* Content */}
       <div className="flex gap-3 pt-2 ">
         {/* Profile info */}

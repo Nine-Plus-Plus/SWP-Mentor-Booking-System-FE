@@ -18,6 +18,7 @@ const SkillManager = () => {
     const fetchSkills = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllSkill(searchText, token);
         setSkills(response.data.skillsDTOList);
       } catch (err) {
@@ -122,10 +123,6 @@ const SkillManager = () => {
     setSearchText(e.target.value);
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
-
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
@@ -184,6 +181,7 @@ const SkillManager = () => {
         rowKey="id"
         pagination={{ pageSize: 10 }}
         scroll={{ y: 400 }}
+        loading={loading}
       />
       {/* Modal for updating skill */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>

@@ -5,6 +5,7 @@ import path from '../../utils/path';
 import { getAllSkill } from '../../apis/SkillServices';
 import { getTop3Mentor } from '../../apis/MentorServices';
 import icons from '../../utils/icon';
+import Loading from './Loading';
 
 const UserHome = () => {
   const [mentors, setMentors] = useState([]);
@@ -27,12 +28,15 @@ const UserHome = () => {
     const fetchTop3Mentor = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getTop3Mentor(token);
         console.log(response);
 
         response?.statusCode === 200 ? setMentors(response?.mentorsDTOList) : setMentors([]);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchTop3Mentor();
@@ -43,6 +47,7 @@ const UserHome = () => {
     const fetchSkill = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllSkill('', token);
         setSkills(response.data.skillsDTOList);
       } catch (err) {
@@ -56,6 +61,11 @@ const UserHome = () => {
 
   return (
     <div className="flex flex-col">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       {/* Header: Top Mentor */}
       <div className="bg-white p-8 rounded-lg shadow-lg">
         <div className="row mb-5 flex justify-center font-bold text-xl text-main-1">Top3 Mentors of the Week</div>

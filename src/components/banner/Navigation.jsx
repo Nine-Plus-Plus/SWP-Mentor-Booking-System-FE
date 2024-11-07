@@ -19,12 +19,15 @@ const Navigation = ({ children, menuNavbar }) => {
   const { Header, Sider } = Layout;
   const { IoIosNotifications } = icons;
   const [notificationCount, setNotificationCount] = useState(3);
-  const [loading, setLoading] = useState(false);
-  const { resetUserStore, role, current, userData, avatar } = useUserStore();
+  const { resetUserStore, role, current, userData, avatar, loadingGlobal, setLoadingGlobal } = useUserStore();
   const [collapsed, setCollapsed] = useState(false);
   const { Content } = Layout;
   const location = useLocation();
   const [searchFor, setSearchFor] = useState('');
+
+  useEffect(() => {
+    console.log(loadingGlobal);
+  }, [loadingGlobal]);
 
   useEffect(() => {
     const subPath = location.pathname.split('/');
@@ -37,13 +40,6 @@ const Navigation = ({ children, menuNavbar }) => {
       setSearchFor('');
     else setSearchFor(subPath.pop());
   }, [location.pathname]);
-
-  const handleClick = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 200);
-  };
 
   const handleLogOut = () => {
     // Hiển thị hộp thoại xác nhận đăng xuất
@@ -145,7 +141,7 @@ const Navigation = ({ children, menuNavbar }) => {
           mode="inline"
           items={menuNavbar}
           theme={role === 'ADMIN' ? 'dark' : 'light'}
-          onClick={() => handleClick()}
+          // onClick={() => handleClick()}
         />
       </Sider>
       <Layout className="relative">
@@ -165,19 +161,6 @@ const Navigation = ({ children, menuNavbar }) => {
             }
           />
           <div className="flex gap-5 pr-[2rem] items-center">
-            {/* <div
-              className="relative cursor-pointer"
-              onClick={() => {
-                setNotificationCount(0);
-              }}
-            >
-              <IoIosNotifications className="text-yellow-600" size={30} />
-              {notificationCount > 0 && (
-                <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs">
-                  {notificationCount}
-                </span>
-              )}
-            </div> */}
             <div className="flex items-center gap-2 ">
               <Dropdown menu={{ items }} trigger={['click']}>
                 <Space>
@@ -196,13 +179,7 @@ const Navigation = ({ children, menuNavbar }) => {
 
         {/* Component con */}
         <Content className="p-2 overflow-auto h-[calc(100vh-8vh)] w-full">
-          <div>
-            {loading ? (
-              <Loading /> // Hiển thị component loading
-            ) : (
-              children // Không cần dấu ngoặc nhọn ở đây
-            )}
-          </div>
+          <div>{children}</div>
         </Content>
       </Layout>
     </Layout>

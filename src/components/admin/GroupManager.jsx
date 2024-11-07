@@ -18,6 +18,8 @@ const GroupManager = () => {
     const fetchSemesters = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
+
         const response = await getAllSemester(token);
         console.log(response?.data);
 
@@ -49,11 +51,17 @@ const GroupManager = () => {
 
     const token = localStorage.getItem('token');
     const fetchAllGroup = async () => {
-      const response = await getAllGroupBySemesterId(selectedSemester, searchText, token);
-      console.log(response);
-
-      if (response?.statusCode === 200) {
-        setGroups(response?.groupDTOList);
+      try {
+        setLoading(true);
+        const response = await getAllGroupBySemesterId(selectedSemester, searchText, token);
+        console.log(response);
+        if (response?.statusCode === 200) {
+          setGroups(response?.groupDTOList);
+        }
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchAllGroup();
@@ -151,6 +159,7 @@ const GroupManager = () => {
         rowKey="id"
         pagination={{ pageSize: 10 }}
         scroll={{ y: 430 }}
+        loading={loading}
       />
     </div>
   );
