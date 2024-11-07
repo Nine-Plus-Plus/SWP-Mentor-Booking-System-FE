@@ -221,20 +221,46 @@ const SemesterManager = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your date semester start!'
+                  message: 'Please input your semester start date!'
+                },
+                {
+                  validator: (_, value) =>
+                    value && value.isAfter(dayjs(), 'day')
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('The start date cannot be in the past.'))
                 }
               ]}
             >
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
-              label="Birth end"
+              label="Date end"
               name="dateEnd"
+              dependencies={['dateStart']}
               rules={[
                 {
                   required: true,
-                  message: 'Please input your date semester start!'
-                }
+                  message: 'Please input your semester end date!'
+                },
+                ({ getFieldValue }) => ({
+                  validator: (_, value) => {
+                    const dateStart = getFieldValue('dateStart');
+                    if (!value || !dateStart) {
+                      return Promise.resolve();
+                    }
+
+                    const minEndDate = dayjs(dateStart).add(3, 'months');
+                    if (value.isBefore(minEndDate)) {
+                      return Promise.reject(new Error('End date must be at least 3 months after the start date.'));
+                    }
+
+                    if (value.isBefore(dayjs(), 'day')) {
+                      return Promise.reject(new Error('End date cannot be in the past.'));
+                    }
+
+                    return Promise.resolve();
+                  }
+                })
               ]}
             >
               <DatePicker format="DD-MM-YYYY" />
@@ -270,6 +296,12 @@ const SemesterManager = () => {
                 {
                   required: true,
                   message: 'Please input your date semester start!'
+                },
+                {
+                  validator: (_, value) =>
+                    value && value.isAfter(dayjs(), 'day')
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('The start date cannot be in the past.'))
                 }
               ]}
             >
@@ -278,11 +310,31 @@ const SemesterManager = () => {
             <Form.Item
               label="Birth end"
               name="dateEnd"
+              dependencies={['dateStart']}
               rules={[
                 {
                   required: true,
-                  message: 'Please input your date semester end!'
-                }
+                  message: 'Please input your semester end date!'
+                },
+                ({ getFieldValue }) => ({
+                  validator: (_, value) => {
+                    const dateStart = getFieldValue('dateStart');
+                    if (!value || !dateStart) {
+                      return Promise.resolve();
+                    }
+
+                    const minEndDate = dayjs(dateStart).add(3, 'months');
+                    if (value.isBefore(minEndDate)) {
+                      return Promise.reject(new Error('End date must be at least 3 months after the start date.'));
+                    }
+
+                    if (value.isBefore(dayjs(), 'day')) {
+                      return Promise.reject(new Error('End date cannot be in the past.'));
+                    }
+
+                    return Promise.resolve();
+                  }
+                })
               ]}
             >
               <DatePicker format="DD-MM-YYYY" />

@@ -102,7 +102,7 @@ const UserHome = () => {
       <div className="gap-3 pt-5">
         <div className="bg-white p-8 rounded-lg border-2 shadow-2xl">
           <div className="row mb-5 flex justify-center font-bold text-xl text-main-1">Skills</div>
-          {/*<div className="flex justify-between overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
+          <div className="flex justify-between overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
             {skills && skills.length > 0 ? (
               skills.map(skill => (
                 <Link
@@ -119,10 +119,9 @@ const UserHome = () => {
             ) : (
               <div className="text-center w-full text-gray-500">The skill list is null</div>
             )}
-          </div>*/}
-          <div className="overflow-hidden justify-between w-full">
+          </div>
+          {/* <div className="overflow-hidden justify-between w-full">
             <div className="inline-flex animate-scrollLeftLoop">
-              {/* Nhân đôi danh sách skills */}
               {[...skills, ...skills].map((skill, index) => (
                 <Link
                   key={`${skill.id}-${index}`}
@@ -136,7 +135,7 @@ const UserHome = () => {
                 </Link>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

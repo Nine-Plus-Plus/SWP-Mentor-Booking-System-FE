@@ -223,13 +223,20 @@ export const BookingItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, accept it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         acceptByMentor(idBooking);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled accept booking!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -241,13 +248,20 @@ export const BookingItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, reject it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         rejectByMentor(idBooking);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled reject booking!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -259,14 +273,21 @@ export const BookingItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, cancel it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         setCancelBy('mentor');
         setIsOpen(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -289,14 +310,21 @@ export const BookingItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, cancel it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         setCancelBy('student');
         setIsOpen(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };

@@ -341,11 +341,11 @@ const TopicManager = () => {
       title: 'Functional Requirements',
       dataIndex: 'requirement',
       key: 'requirement',
-      className: 'whitespace-pre-line text-left align-top',
+      className: 'text-left align-top w-[600px]', // Adjusted width
       render: requirements => (
         <>
           {requirements.map((requirement, index) => (
-            <p key={index} className="w-[800px]">
+            <p key={index} className="whitespace-pre-wrap break-words"> {/* Allows line breaks */}
               {requirement}
             </p>
           ))}
@@ -356,11 +356,11 @@ const TopicManager = () => {
       title: 'Non-Functional Requirements',
       dataIndex: 'nonFunctionRequirement',
       key: 'nonFunctionRequirement',
-      className: 'whitespace-pre-line text-left align-top',
+      className: 'text-left align-top w-[400px]', // Adjusted width
       render: nf_requirements => (
         <>
           {nf_requirements?.map((nf_requirement, index) => (
-            <p key={index} className="w-[300px]">
+            <p key={index} className="whitespace-pre-wrap break-words">
               {nf_requirement}
             </p>
           ))}
