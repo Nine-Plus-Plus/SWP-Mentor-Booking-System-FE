@@ -15,6 +15,7 @@ import UserItem from '../common/UserItem';
 import { getStudentNotGroup } from '../../apis/StudentServices';
 import Dragger from 'antd/es/upload/Dragger';
 import { DownloadOutlined, InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import Loading from '../common/Loading';
 
 const StudentGroup = () => {
   // const [haveGroup, setHaveGroup] = useState(true);
@@ -42,11 +43,14 @@ const StudentGroup = () => {
     const token = localStorage.getItem('token');
     const groupId = fullData?.groupDTO?.id;
     try {
+      setLoading(true);
       const response = await getGroupById(groupId, token);
       console.log(response);
       response?.statusCode === 200 && setInGroup(response?.groupDTO);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -414,6 +418,11 @@ const StudentGroup = () => {
 
   return (
     <div className="w-full">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       {
         <div className="flex flex-col gap-5">
           {/* /// Add student to group */}
@@ -743,6 +752,7 @@ const StudentGroup = () => {
               code={student?.studentCode}
               studentAdd={userData?.user?.id}
               groupName={inGroup?.groupName}
+              addGroup={inGroup?.id}
               avatar={student?.user?.avatar}
             />
           ))}

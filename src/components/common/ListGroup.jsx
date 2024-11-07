@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import GroupItem from './GroupItem';
 import { useUserStore } from '../../store/useUserStore';
 import { getGroupByClassId } from '../../apis/GroupServices';
+import Loading from './Loading';
 
 const ListGroup = () => {
   const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { userData } = useUserStore();
 
   useEffect(() => {
@@ -12,6 +14,7 @@ const ListGroup = () => {
     const fetchGroupClass = async () => {
       try {
         const classId = userData?.aclass?.id;
+        setLoading(true);
         const response = await getGroupByClassId(classId, token);
         console.log(response);
 
@@ -19,6 +22,8 @@ const ListGroup = () => {
         else setGroups([]);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchGroupClass();
@@ -26,6 +31,11 @@ const ListGroup = () => {
 
   return (
     <div className="flex flex-col gap-3 p-3 bg-white rounded-md">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       <h1 className="text-2xl font-semibold"> Class: {userData?.aclass?.className}</h1>
       <div className="flex flex-col gap-3 p-3 bg-white rounded-md">
         {groups?.length === 0 ? (
