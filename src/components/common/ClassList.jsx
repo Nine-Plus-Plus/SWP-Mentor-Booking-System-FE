@@ -33,7 +33,6 @@ const ClassList = ({ addGroup }) => {
       const token = localStorage.getItem('token');
 
       try {
-        setLoading(true);
         const response = await getStudentByIdAndSearch(
           userData?.aclass.id,
           searchPayload?.name || undefined,
@@ -65,13 +64,17 @@ const ClassList = ({ addGroup }) => {
     topRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
+  if (loading) {
+    return <div className="text-center text-gray-700">Loading...</div>;
+  }
+
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
-      {loading && (
+      {/* {loading && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
           <Loading />
         </div>
-      )}
+      )} */}
       <Search setPayload={setSearchPayload} />
       {addGroup && <p className="text-2xl font-semibold text-red-500">Limit member: {countMember}/4</p>}
       <div className=" bg-white flex flex-col gap-5 p-3 rounded-md" ref={topRef}>
