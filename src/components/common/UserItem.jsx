@@ -276,7 +276,8 @@ const UserItem = ({
           title: 'Booking Failed!',
           text: `${response?.message}`, // Hiển thị thông báo lỗi
           icon: 'error',
-          confirmButtonText: 'Try Again'
+          confirmButtonText: 'Try Again',
+          confirmButtonColor: '#dd6633',
         });
     } catch (error) {
       console.log(error.message);

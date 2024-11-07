@@ -51,7 +51,13 @@ const ChangePass = () => {
         <div className="w-full">
           <Form name="change_password" initialValues={{ remember: true }} form={form} onFinish={onFinish}>
             {/* Password field */}
-            <Form.Item name="newPassword" rules={[{ required: true, message: 'Please input your new Password!' }]}>
+            <Form.Item
+              name="newPassword"
+              rules={[
+                { required: true, message: 'Please input your new Password!' },
+                { min: 8, message: 'Password must be at least 8 characters long' }
+              ]}
+            >
               <Input
                 prefix={<LockOutlined className="mr-2" />}
                 type={isShowPass ? 'text' : 'password'}

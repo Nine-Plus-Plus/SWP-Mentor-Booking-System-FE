@@ -301,7 +301,7 @@ const ClassManager = () => {
         scroll={{ y: 400 }}
         loading={loading}
       />
-
+  
       {/* Modal for updating class */}
       <Modal title="Update Class" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
         <div className="max-h-96 overflow-y-auto p-5">

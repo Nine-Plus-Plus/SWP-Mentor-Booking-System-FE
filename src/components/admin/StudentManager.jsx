@@ -441,7 +441,7 @@ function StudentManager() {
         dataSource={students}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        scroll={{ x: '1600px', y: 600 }}
+        scroll={{ x: '1600px', y: 400 }}
         loading={loading}
       />
       {/* Modal for updating student */}
@@ -500,7 +500,22 @@ function StudentManager() {
             >
               <Input />
             </Form.Item>
-            <Form.Item label="Birth Date" name="birthDate">
+            <Form.Item
+              label="Birth Date"
+              name="birthDate"
+              rules={[
+                {
+                  required: true, 
+                  message: 'Please select your birth date'
+                },
+                {
+                  validator: (_, value) =>
+                    value && value.isBefore(dayjs().subtract(18, 'years'))
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('You must be at least 18 years old'))
+                }
+              ]}
+            >
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
@@ -643,7 +658,22 @@ function StudentManager() {
             >
               <Input />
             </Form.Item>
-            <Form.Item label="Birth Date" name="birthDate">
+            <Form.Item
+              label="Birth Date"
+              name="birthDate"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select your birth date'
+                },
+                {
+                  validator: (_, value) =>
+                    value && value.isBefore(dayjs().subtract(18, 'years'))
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('You must be at least 18 years old'))
+                }
+              ]}
+            >
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item

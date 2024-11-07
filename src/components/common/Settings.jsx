@@ -62,7 +62,10 @@ export const Settings = () => {
               <Form.Item
                 label="New Password"
                 name="newPassword"
-                rules={[{ required: true, message: 'Please input your new password!' }]}
+                rules={[
+                  { required: true, message: 'Please input your new password!' },
+                  { min: 8, message: 'Password must be at least 8 characters long' }
+                ]}
               >
                 <Input.Password
                   placeholder="New Password"
