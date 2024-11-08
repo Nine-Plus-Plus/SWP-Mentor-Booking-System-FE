@@ -61,7 +61,10 @@ function StudentManager() {
       try {
         setLoading(true);
         const response = await getStudentsBySemesterId(filterSemester, searchText, token);
-        setStudents(response.studentsDTOList);
+        if (response?.statusCode === 200) {
+          const sortedStudents = response.studentsDTOList.sort((a, b) => b.id - a.id);
+          setStudents(sortedStudents);
+        }
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -222,7 +225,7 @@ function StudentManager() {
       console.log(response);
 
       if (response && response.statusCode === 200) {
-        setStudents([...students, response.studentsDTO]);
+        setStudents([response.studentsDTO, ...students]);
         setIsCreateModalVisible(false);
         message.success('Student created successfully');
         setUploadedAvatar(null);
@@ -376,7 +379,7 @@ function StudentManager() {
       fixed: 'right',
       render: (text, record) => (
         <div className="flex flex-col gap-2">
-          {record?.avalableStatus !== 'ACTIVE' ? (
+          {record?.availableStatus !== 'ACTIVE' ? (
             <Button className="bg-gray-500 text-white  w-full hover:cursor-not-allowed" style={{ marginRight: '10px' }}>
               Inactive
             </Button>
@@ -505,7 +508,7 @@ function StudentManager() {
               name="birthDate"
               rules={[
                 {
-                  required: true, 
+                  required: true,
                   message: 'Please select your birth date'
                 },
                 {
@@ -529,11 +532,13 @@ function StudentManager() {
               ]}
             >
               <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item
@@ -711,11 +716,13 @@ function StudentManager() {
               ]}
             >
               <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item
@@ -806,11 +813,13 @@ function StudentManager() {
           ]}
         >
           <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
-            {semesters?.map(semester => (
-              <Select.Option key={semester.id} value={semester.id}>
-                {semester.semesterName}
-              </Select.Option>
-            ))}
+            {semesters
+              ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+              ?.map(semester => (
+                <Select.Option key={semester.id} value={semester.id}>
+                  {semester.semesterName}
+                </Select.Option>
+              ))}
           </Select>
         </Form.Item>
         <Dragger

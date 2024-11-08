@@ -26,6 +26,8 @@ const GroupItem = ({
   const [joined, setJoined] = useState(true);
   const [addModal, setAddModal] = useState(false);
   const [studentNoGroup, setStudentNoGroup] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const { userData } = useUserStore();
 
   const showADdMemberModal = () => {
@@ -54,10 +56,13 @@ const GroupItem = ({
 
   const handleCreateNoti = async data => {
     const token = localStorage.getItem('token');
+    let response;
     try {
-      const response = await createNoti(data, token);
+      setLoading(true);
+
+      response = await createNoti(data, token);
       console.log(response);
-      response?.statusCode === 200 &&
+      if (response?.statusCode === 200) {
         Swal.fire({
           title: 'Sent Request Successful!',
           text: `Your request was sent successfully.`,
@@ -66,8 +71,13 @@ const GroupItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        setJoined(!joined);
+      }
     } catch (error) {
-      console.log(error);
+      toast.error(response.message);
+      console.log(response.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,9 +107,7 @@ const GroupItem = ({
           }
         };
         console.log(dataSent);
-
         handleCreateNoti(dataSent);
-        setJoined(!joined);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire({
           title: 'Cancelled',
@@ -163,7 +171,7 @@ const GroupItem = ({
               setIsShowMore(!isShowMore);
             }}
           />
-          {role === 'MENTOR' && totalMember?.length < 5 && (
+          {role === 'MENTOR' && totalMember?.length < 7 && (
             <Button
               text={'Add More'}
               textColor={'text-white'}
@@ -174,7 +182,7 @@ const GroupItem = ({
               onClick={showADdMemberModal}
             />
           )}
-          {totalMember?.length < 5 ? (
+          {totalMember?.length < 7 ? (
             role !== 'MENTOR' &&
             (joined ? (
               <Button
@@ -185,6 +193,7 @@ const GroupItem = ({
                 htmlType={'button'}
                 fullWidth={'w-4/5'}
                 onClick={() => handleJoinForStudent()}
+                isLoading={loading}
               />
             ) : (
               <Button

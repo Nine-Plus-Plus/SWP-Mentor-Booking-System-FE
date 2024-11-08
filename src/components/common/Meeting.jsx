@@ -128,6 +128,8 @@ export const Meeting = () => {
                 id: selectedMeeting?.id
               }
             };
+            console.log(createData);
+
             handleReviewSent(createData);
           });
         }

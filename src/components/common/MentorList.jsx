@@ -51,6 +51,7 @@ const MentorList = () => {
       } catch (error) {
         setError(error.message || 'Đã xảy ra lỗi');
       } finally {
+        setLoading(false);
       }
     };
     fetchMentorByCondition();
@@ -72,13 +73,12 @@ const MentorList = () => {
 
   const currentMentors = mentors.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
+  if (loading) {
+    return <div className="text-center text-gray-700">Loading...</div>;
+  }
+
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
-      {/* {loading && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
-          <Loading />
-        </div>
-      )} */}
       <Search searchFor={'mentor'} setPayload={setSearchPayload} />
       <div className="p-3 bg-white rounded-md flex flex-col gap-5" ref={topRef}>
         {currentMentors.length === 0 ? (

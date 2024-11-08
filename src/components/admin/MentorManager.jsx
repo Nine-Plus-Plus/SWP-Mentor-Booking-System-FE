@@ -31,8 +31,10 @@ const MentorManager = () => {
         setLoading(true);
         const response = await getAllMentors(searchText, token);
         console.log(response);
-
-        setMentors(response.mentorsDTOList);
+        if (response?.statusCode === 200) {
+          const sortedMentors = response.mentorsDTOList.sort((a, b) => b.id - a.id);
+          setMentors(sortedMentors);
+        }
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -65,11 +67,11 @@ const MentorManager = () => {
 
   const handleCreateMentor = async () => {
     const token = localStorage.getItem('token');
+    const fullSkill = skills;
     try {
       setLoading(true);
       const values = await form.validateFields();
       const { avatar, ...mentorValue } = values;
-
       const { skills, ...otherFields } = mentorValue;
       const skillsArray = skills.map(skillId => ({ id: skillId }));
       const createData = {
@@ -85,14 +87,14 @@ const MentorManager = () => {
 
       if (response && response.statusCode === 200) {
         setMentors(prevMentors => [
-          ...prevMentors,
           {
-            ...response.mentorsDTO,
-            skills: response.mentorsDTO?.skills.map(skill => {
-              const skillDetail = skills.find(s => s.id === skill.id);
+            ...response?.mentorsDTO,
+            skills: response?.mentorsDTO?.skills?.map(skill => {
+              const skillDetail = fullSkill?.find(s => s.id === skill.id);
               return skillDetail ? { id: skillDetail.id, skillName: skillDetail.skillName } : skill;
             })
-          }
+          },
+          ...prevMentors
         ]);
         setIsCreateModalVisible(false);
         message.success('Mentor created successfully');
@@ -503,7 +505,7 @@ const MentorManager = () => {
               name="birthDate"
               rules={[
                 {
-                  required: true, 
+                  required: true,
                   message: 'Please select your birth date'
                 },
                 {
