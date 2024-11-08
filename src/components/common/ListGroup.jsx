@@ -26,7 +26,8 @@ const ListGroup = () => {
         setLoading(false);
       }
     };
-    fetchGroupClass();
+    userData?.aclass?.id && fetchGroupClass();
+    setLoading(false);
   }, [userData?.aclass?.id]);
 
   return (

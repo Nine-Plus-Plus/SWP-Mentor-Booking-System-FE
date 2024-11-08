@@ -78,7 +78,7 @@ const TopicManager = () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getAllMentors('', token);
-        setMentors(response.mentorsDTOList);
+        if (response?.statusCode === 200) setMentors(response?.mentorsDTOList);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -91,6 +91,7 @@ const TopicManager = () => {
 
   const handleCreateTopic = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       // Xác thực form và lấy dữ liệu
       const values = await form.validateFields();
@@ -113,23 +114,24 @@ const TopicManager = () => {
         }
       };
       console.log(dataCreate);
-      const response = await createTopic(dataCreate, token);
+      response = await createTopic(dataCreate, token);
       console.log(response);
       if (response?.statusCode === 200 && response?.topicDTO) {
         setTopics([response.topicDTO, ...topics]);
         setIsCreateModalVisible(false);
         message.success('Topic created successfully');
       } else {
-        message.error('Failed to create topic');
+        message.error('Failed to create topic: ' + response?.message);
       }
     } catch (error) {
       console.error('Create topic error:', error);
-      message.error('Failed to create topic: ' + (error.message || 'Unknown error'));
+      message.error('Failed to create topic: ' + (response.message || 'Unknown error'));
     }
   };
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const dataUpdate = {
@@ -150,7 +152,7 @@ const TopicManager = () => {
         }
       };
 
-      const response = await updateTopic(selectedTopic.id, dataUpdate, token);
+      response = await updateTopic(selectedTopic.id, dataUpdate, token);
 
       if (response?.statusCode === 200 && response?.topicDTO) {
         // Cập nhật lại danh sách chủ đề với thông tin mới
@@ -160,11 +162,11 @@ const TopicManager = () => {
         setIsUpdateModalVisible(false);
         message.success('Topic updated successfully');
       } else {
-        message.error('Failed to update topic');
+        message.error('Failed to update topic: ' + response?.message);
       }
     } catch (error) {
       console.error('Update topic error:', error);
-      message.error('Failed to update topic: ' + error.message);
+      message.error('Failed to update topic: ' + response.message);
     }
   };
 
@@ -190,10 +192,11 @@ const TopicManager = () => {
 
   const handleDelete = async idTopic => {
     const token = localStorage.getItem('token');
+    let response;
     try {
-      const response = await deleteTopic(idTopic, token);
+      response = await deleteTopic(idTopic, token);
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         message.success('Topic deleted successfully');
         setTopics(prevTopic => prevTopic.filter(topic => topic.id !== idTopic)); // Cập nhật danh sách người dùng
       } else {
@@ -201,7 +204,7 @@ const TopicManager = () => {
       }
     } catch (error) {
       console.error('Delete topic error:', error);
-      message.error('Failed to delete topic: ' + error.message);
+      message.error('Failed to delete topic: ' + response?.message);
     }
   };
 

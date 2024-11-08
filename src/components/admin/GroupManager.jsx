@@ -47,8 +47,6 @@ const GroupManager = () => {
   }, [semesters]);
 
   useEffect(() => {
-    console.log(selectedSemester);
-
     const token = localStorage.getItem('token');
     const fetchAllGroup = async () => {
       try {
@@ -64,7 +62,7 @@ const GroupManager = () => {
         setLoading(false);
       }
     };
-    fetchAllGroup();
+    selectedSemester && fetchAllGroup();
   }, [selectedSemester, searchText]);
 
   const columns = [

@@ -41,10 +41,11 @@ const SkillManager = () => {
 
   const handleCreateSkill = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const createData = form.getFieldValue();
-      const response = await createSkill(createData, token);
+      response = await createSkill(createData, token);
       console.log(response);
 
       if (response?.statusCode === 200) {
@@ -52,10 +53,11 @@ const SkillManager = () => {
         setIsCreateModalVisible(false);
         message.success('Skill created successfully');
       } else {
-        message.error('Failed to create skill');
+        message.error('Failed to create skill: ' + response?.message);
       }
     } catch (error) {
-      message.error('Failed to create skill: ' + error.message);
+      console.log(error);
+      message.error('Failed to create skill: ' + response?.message);
     }
   };
 
@@ -71,10 +73,11 @@ const SkillManager = () => {
 
   const handleDelete = async idSkill => {
     const token = localStorage.getItem('token');
+    let response;
     try {
-      const response = await deleteSkill(idSkill, token);
+      response = await deleteSkill(idSkill, token);
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         message.success('Skill deleted successfully');
         setSkills(prevSkill => prevSkill.filter(skill => skill.id !== idSkill)); // Cập nhật danh sách người dùng
       } else {
@@ -82,19 +85,20 @@ const SkillManager = () => {
       }
     } catch (error) {
       console.error('Delete skill error:', error);
-      message.error('Failed to delete skill: ' + error.message);
+      message.error('Failed to delete skill: ' + response.message);
     }
   };
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const updateData = form.getFieldValue();
-      const response = await updateSkill(selectedSkill.id, updateData, token);
+      response = await updateSkill(selectedSkill.id, updateData, token);
       console.log(response);
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         // Cập nhật lại danh sách kỹ năng với thông tin mới
         console.log(response);
 
@@ -104,11 +108,11 @@ const SkillManager = () => {
         setIsUpdateModalVisible(false);
         message.success('Skill updated successfully');
       } else {
-        message.error('Failed to update skill');
+        message.error('Failed to update skill: ' + response?.message);
       }
     } catch (error) {
       console.error('Update skill error:', error);
-      message.error('Failed to update skill: ' + error.message);
+      message.error('Failed to update skill: ' + response?.message);
     }
   };
 

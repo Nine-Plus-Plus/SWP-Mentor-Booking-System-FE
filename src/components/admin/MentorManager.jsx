@@ -50,7 +50,9 @@ const MentorManager = () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getAllSkill('', token);
-        setSkills(response.data.skillsDTOList);
+        if (response?.statusCode === 200) {
+          setSkills(response?.data?.skillsDTOList);
+        }
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       }
@@ -68,6 +70,7 @@ const MentorManager = () => {
   const handleCreateMentor = async () => {
     const token = localStorage.getItem('token');
     const fullSkill = skills;
+    let response;
     try {
       setLoading(true);
       const values = await form.validateFields();
@@ -82,7 +85,7 @@ const MentorManager = () => {
         },
         avatarFile: uploadedAvatar
       };
-      const response = await createMentor(createData, token);
+      response = await createMentor(createData, token);
       console.log(response);
 
       if (response && response.statusCode === 200) {
@@ -100,11 +103,11 @@ const MentorManager = () => {
         message.success('Mentor created successfully');
         setFileList([]);
       } else {
-        message.error('Failed to create mentor');
+        message.error('Failed to create mentor: ' + response?.message);
       }
     } catch (error) {
       console.error('Create mentor error:', error);
-      message.error('Failed to create mentor: ' + error.message);
+      message.error('Failed to create mentor: ' + response?.message);
     } finally {
       setLoading(false);
     }
@@ -112,6 +115,7 @@ const MentorManager = () => {
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields([
         'fullName',
@@ -140,7 +144,7 @@ const MentorManager = () => {
       };
       console.log(updateData);
 
-      const response = await updateMentor(selectedMentor.user.id, updateData, token);
+      response = await updateMentor(selectedMentor.user.id, updateData, token);
 
       if (response && response?.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
@@ -149,28 +153,29 @@ const MentorManager = () => {
         setFileList([]);
         message.success('Mentor updated successfully');
       } else {
-        message.error('Failed to update mentor');
+        message.error('Failed to update mentor: ' + response?.message);
       }
     } catch (error) {
       console.error('Update mentor error:', error);
-      message.error('Failed to update mentor: ' + error.message);
+      message.error('Failed to update mentor: ' + response?.message);
     }
   };
 
   const handleDelete = async mentorId => {
     const token = localStorage.getItem('token');
+    let response;
     try {
-      const response = await deleteMentor(mentorId, token);
+      response = await deleteMentor(mentorId, token);
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         message.success('Mentor deleted successfully');
         setMentors(prevMentors => prevMentors.filter(mentor => mentor.user.id !== mentorId)); // Cập nhật danh sách người dùng
       } else {
-        message.error('Failed to delete mentor: ' + response.data.message);
+        message.error('Failed to delete mentor: ' + response?.data?.message);
       }
     } catch (error) {
       console.error('Delete mentor error:', error);
-      message.error('Failed to delete mentor: ' + error.message);
+      message.error('Failed to delete mentor: ' + response?.data?.message);
     }
   };
 
@@ -182,24 +187,24 @@ const MentorManager = () => {
       message.error('Please select a file to import!');
       return;
     }
-
+    let response;
     try {
       setLoading(true);
-      const response = await importExcelMentor(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+      response = await importExcelMentor(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
-        await fetchMentors(token); // Cập nhật lại danh sách mentors
+        await fetchMentors(); // Cập nhật lại danh sách mentors
         setIsImportModalVisible(false);
         setFileList([]);
         message.success('Mentors imported successfully');
       } else {
-        await fetchMentors(token);
+        await fetchMentors();
         message.error(response.message);
       }
     } catch (error) {
       console.error('Import Excel error:', error);
-      message.error('Import Excel thất bại: ' + error.message);
+      message.error('Import Excel failed: ' + response.message);
     } finally {
       setLoading(false);
     }

@@ -110,8 +110,9 @@ export const BookingItem = ({
     try {
       response = await createMeeting(data, token);
       console.log(response);
+      if (response?.statusCode !== 200) toast.error(response?.message);
     } catch (error) {
-      toast.error(response.error);
+      toast.error(response.message);
     }
   };
 

@@ -80,7 +80,7 @@ export const Meeting = () => {
         });
         setIsReviewed(true);
         setIsModalOpen(false);
-      }
+      } else toast.error(response?.message);
     } catch (error) {
       console.log(error);
       toast.error(response.message);

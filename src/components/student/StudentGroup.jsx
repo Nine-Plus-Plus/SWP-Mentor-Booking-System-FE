@@ -3,7 +3,7 @@ import Button from '../common/Button';
 import path from '../../utils/path';
 import ListGroup from '../common/ListGroup';
 import { useUserStore } from '../../store/useUserStore';
-import { Form, Input, Modal, Table, Tag, Spin } from 'antd';
+import { Form, Input, Modal, Table, Tag, Spin, message } from 'antd';
 import { getAllTopicUnchosenClass } from '../../apis/TopicServices';
 import { toast } from 'react-toastify';
 import { createGroup, getGroupByClassId, getGroupById, updateGroup, uploadFilegroup } from '../../apis/GroupServices';
@@ -56,6 +56,7 @@ const StudentGroup = () => {
 
   useEffect(() => {
     fullData?.groupDTO?.id && fetchGroup();
+    setLoading(false);
   }, [fullData]);
 
   useEffect(() => {
@@ -75,6 +76,7 @@ const StudentGroup = () => {
     const fetchTopicUnchosen = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllTopicUnchosenClass(userData?.aclass?.id, token);
         console.log(response);
         if (response?.statusCode === 200)
@@ -87,20 +89,25 @@ const StudentGroup = () => {
       }
     };
     userData?.aclass?.id && fetchTopicUnchosen();
+    setLoading(false);
   }, [userData]);
 
   useEffect(() => {
     const fetchStudentNoGroup = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getStudentNotGroup(userData?.aclass?.id, token);
-        if (response && response?.statusCode === 200) setStudentNoGroup(response?.studentsDTOList);
+        if (response?.statusCode === 200) setStudentNoGroup(response?.studentsDTOList);
         console.log(response);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchStudentNoGroup();
+    userData?.aclass?.id && fetchStudentNoGroup();
+    setLoading(false);
   }, [addModal]);
 
   useEffect(() => {
@@ -114,6 +121,7 @@ const StudentGroup = () => {
       if (!selectedTopic) {
         throw new Error('Please choose a topic before submitting.'); // Gây lỗi nếu không có topic
       }
+      setLoading(true);
       const values = await form.validateFields();
       const projectData = {
         projectName: values.projectName,
@@ -142,6 +150,8 @@ const StudentGroup = () => {
       toast.error(error.message);
       toast.error(response.message);
       console.error('Create group error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -149,6 +159,7 @@ const StudentGroup = () => {
     const token = localStorage.getItem('token');
     let response;
     try {
+      setLoading(true);
       const values = await form.validateFields();
       const data = {
         groupName: values.groupName,
@@ -169,6 +180,8 @@ const StudentGroup = () => {
     } catch (error) {
       console.error('Create group error:', error);
       message.error('Failed to create group: ' + response.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -214,7 +227,7 @@ const StudentGroup = () => {
       const dataUpdate = { groupName: values.groupName };
       const response = await updateGroup(id, dataUpdate, token);
 
-      if (response && response?.statusCode === 200) {
+      if (response?.statusCode === 200) {
         setInGroup(response?.groupDTO);
         setIsUpdateGroupModalVisible(false);
         Swal.fire({
@@ -224,7 +237,7 @@ const StudentGroup = () => {
           timer: 2000, // Đóng sau 2 giây
           showConfirmButton: false // Ẩn nút OK
         });
-      }
+      } else message.error('Failed to update group: ' + response.message);
     } catch (error) {
       console.error('Update group error:', error);
       message.error('Failed to update group: ' + error.message);
@@ -263,8 +276,10 @@ const StudentGroup = () => {
       setIsUploadFile(false);
       return;
     }
+    let response;
     try {
-      const response = await uploadFilegroup(data, token);
+      setLoading(true);
+      response = await uploadFilegroup(data, token);
       if (response?.status === 200) {
         console.log(response);
         const url = response?.data?.split('File uploaded successfully. URL: ')[1]; // Lấy phần sau "URL: "
@@ -277,11 +292,13 @@ const StudentGroup = () => {
         setFileList([file]);
         setUploadedFile(file);
         toast.success('Upload file successfully!!!');
-      }
+        setIsUploadFile(false);
+      } else toast.error('Upload file fail: ' + response?.message);
     } catch (error) {
       console.log(error);
+      toast.error('Upload file fail: ' + response?.message);
     } finally {
-      setIsUploadFile(false);
+      setLoading(false);
     }
   };
 

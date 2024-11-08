@@ -26,10 +26,9 @@ const ClassList = ({ addGroup }) => {
 
   const navigate = useNavigate();
   const { userData, mentorOfClass, role } = useUserStore();
-  console.log(mentorOfClass);
 
   useEffect(() => {
-    const fetchStudentByIdAndSearch = async () => {
+    const fetchStudentByClassIdAndSearch = async () => {
       const token = localStorage.getItem('token');
 
       try {
@@ -39,7 +38,7 @@ const ClassList = ({ addGroup }) => {
           searchPayload?.expertise || undefined,
           token
         );
-        if (response && response?.statusCode === 200) setStudents(response.studentsDTOList);
+        if (response?.statusCode === 200) setStudents(response.studentsDTOList);
         else setStudents([]);
       } catch (error) {
         setError(error.message || 'Đã xảy ra lỗi');
@@ -47,7 +46,8 @@ const ClassList = ({ addGroup }) => {
         setLoading(false);
       }
     };
-    fetchStudentByIdAndSearch();
+    fetchStudentByClassIdAndSearch();
+    setLoading(false);
   }, [userData, searchPayload]);
 
   useEffect(() => {

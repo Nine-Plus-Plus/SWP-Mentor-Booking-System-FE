@@ -69,7 +69,8 @@ export const ReviewList = () => {
       }
     };
 
-    fetchAllReviewByReceiverId();
+    userData?.user?.id && fetchAllReviewByReceiverId();
+    setLoading(false);
   }, [userData]);
 
   return (

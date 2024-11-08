@@ -19,15 +19,11 @@ const Navigation = ({ children, menuNavbar }) => {
   const { Header, Sider } = Layout;
   const { IoIosNotifications } = icons;
   const [notificationCount, setNotificationCount] = useState(3);
-  const { resetUserStore, role, current, userData, avatar, loadingGlobal, setLoadingGlobal } = useUserStore();
+  const { resetUserStore, role, current, userData, avatar } = useUserStore();
   const [collapsed, setCollapsed] = useState(false);
   const { Content } = Layout;
   const location = useLocation();
   const [searchFor, setSearchFor] = useState('');
-
-  useEffect(() => {
-    console.log(loadingGlobal);
-  }, [loadingGlobal]);
 
   useEffect(() => {
     const subPath = location.pathname.split('/');

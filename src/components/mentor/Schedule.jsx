@@ -37,10 +37,10 @@ const Schedule = () => {
     const token = localStorage.getItem('token');
     const fetchAllScheduleOfMentor = async () => {
       try {
-        const response = await getAllScheduleByIdMentorForMentor(userData.id, token);
+        const response = await getAllScheduleByIdMentorForMentor(userData?.id, token);
         console.log(response);
 
-        if (response && response?.statusCode === 200) {
+        if (response?.statusCode === 200) {
           const formattedEvents = response?.mentorScheduleDTOList?.map(schedule => ({
             id: schedule.id,
             title: schedule?.status,
@@ -56,7 +56,7 @@ const Schedule = () => {
       }
     };
 
-    fetchAllScheduleOfMentor();
+    userData?.id && fetchAllScheduleOfMentor();
   }, [userData]);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const Schedule = () => {
         start: dayjs(response?.mentorScheduleDTO?.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
         end: dayjs(response?.mentorScheduleDTO?.availableTo, 'DD-MM-YYYY HH:mm').toDate()
       };
-      if (response && response?.statusCode === 200) {
+      if (response?.statusCode === 200) {
         toast.warning('A schedule was expire!', {
           autoClose: 2000
         });
