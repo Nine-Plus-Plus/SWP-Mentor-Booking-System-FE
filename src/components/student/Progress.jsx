@@ -58,7 +58,8 @@ export const Progress = () => {
       }
     };
 
-    fetchTask();
+    fullData?.groupDTO?.id && fetchTask();
+    setLoading(false);
   }, [fullData]);
 
   const showCreateModal = () => {
@@ -67,6 +68,7 @@ export const Progress = () => {
 
   const handleCreateTask = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const createData = {
@@ -77,7 +79,7 @@ export const Progress = () => {
         }
       };
 
-      const response = await createTask(createData, token);
+      response = await createTask(createData, token);
       console.log(response);
       if (response?.statusCode === 200) {
         setTasks([...tasks, response?.projectTasksDTOList[0]]);
@@ -85,11 +87,11 @@ export const Progress = () => {
         form.resetFields();
         message.success('Project Task created successfully');
       } else {
-        message.error('Failed to create Project Task');
+        message.error('Failed to create Project Task: ' + response?.message);
       }
     } catch (error) {
       console.error('Create Project Task error: ', error);
-      message.error('Failed to create Project Task: ' + error.message);
+      message.error('Failed to create Project Task: ' + response.message);
     }
   };
 
@@ -129,12 +131,12 @@ export const Progress = () => {
       if (result.isConfirmed) {
         deleteTaskLeader(taskId);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire({ 
-          title: 'Cancelled', 
-          text: 'Cancelled this action!', 
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
           icon: 'error',
           confirmButtonText: 'OK', // Văn bản nút xác nhận
-          confirmButtonColor: '#d33', // Màu nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
         });
       }
     });
@@ -152,11 +154,12 @@ export const Progress = () => {
 
   const handleUpdateTask = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const updateData = { ...values, status: parseStringStatus(values.status) };
       console.log('Update data: ', updateData);
-      const response = await updateTask(selectedTask.id, updateData, token);
+      response = await updateTask(selectedTask.id, updateData, token);
       console.log(response);
 
       if (response?.statusCode === 200) {
@@ -169,11 +172,11 @@ export const Progress = () => {
         setOpenCreateTaskModal(false);
         message.success('Project task updated successfully');
       } else {
-        message.error('Failed to update Project Task');
+        message.error('Failed to update Project Task: ' + response?.message);
       }
     } catch (error) {
       console.error('Update mentor error:', error);
-      message.error('Failed to update mentor: ' + error.message);
+      message.error('Failed to update mentor: ' + response.message);
     }
   };
 
@@ -239,7 +242,7 @@ export const Progress = () => {
                   (task, index) =>
                     task && (
                       <div
-                        key={task.id || index} 
+                        key={task.id || index}
                         className="border p-5 rounded-lg shadow-lg bg-white"
                         onClick={() => handleTaskClick(task)}
                       >

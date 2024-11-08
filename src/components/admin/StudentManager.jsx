@@ -39,7 +39,9 @@ function StudentManager() {
       try {
         setLoading(true);
         const response = await getAllSemester(token);
-        setSemesters(response.data?.semesterDTOList);
+        if (response?.data?.statusCode === 200) {
+          setSemesters(response?.data?.semesterDTOList);
+        }
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -72,7 +74,7 @@ function StudentManager() {
       }
     };
 
-    fetchStudents();
+    filterSemester && fetchStudents();
   }, [filterSemester, searchText]);
 
   useEffect(() => {
@@ -90,14 +92,15 @@ function StudentManager() {
       }
     };
     setLoading(false);
-    fetchClassBySemesterId();
+    selectedSemester && fetchClassBySemesterId();
   }, [selectedSemester]);
 
   // Delete student
   const handleDelete = async studentId => {
     const token = localStorage.getItem('token');
+    let response;
     try {
-      const response = await deleteStudent(studentId, token);
+      response = await deleteStudent(studentId, token);
 
       if (response && response.statusCode === 200) {
         message.success('Student deleted successfully');
@@ -107,7 +110,7 @@ function StudentManager() {
       }
     } catch (error) {
       console.error('Delete student error:', error);
-      message.error('Failed to delete student: ' + error.message);
+      message.error('Failed to delete student: ' + response.message);
     }
   };
 
@@ -145,6 +148,7 @@ function StudentManager() {
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields([
         'fullName',
@@ -173,7 +177,7 @@ function StudentManager() {
       };
       console.log(updateData);
 
-      const response = await updateStudent(selectedStudent.user.id, updateData, token);
+      response = await updateStudent(selectedStudent.user.id, updateData, token);
       console.log(response);
 
       if (response && response?.statusCode === 200) {
@@ -184,11 +188,11 @@ function StudentManager() {
         message.success('Student updated successfully');
         setUploadedAvatar(null);
       } else {
-        message.error('Failed to update student');
+        message.error('Failed to update student: ' + response?.message);
       }
     } catch (error) {
       console.error('Update student error:', error);
-      message.error('Failed to update student: ' + error.message);
+      message.error('Failed to update student: ' + response?.message);
     }
   };
 
@@ -207,6 +211,7 @@ function StudentManager() {
 
   const handleCreateStudent = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const { avatar, ...studentValues } = values;
@@ -221,7 +226,7 @@ function StudentManager() {
         avatarFile: uploadedAvatar // Đây là file avatar
       };
 
-      const response = await createStudent(createData, token);
+      response = await createStudent(createData, token);
       console.log(response);
 
       if (response && response.statusCode === 200) {
@@ -230,10 +235,10 @@ function StudentManager() {
         message.success('Student created successfully');
         setUploadedAvatar(null);
       } else {
-        message.error('Failed to create student');
+        message.error('Failed to create student: ' + response?.message);
       }
     } catch (error) {
-      message.error('Failed to create student: ' + error.message);
+      message.error('Failed to create student: ' + response?.message);
     }
   };
 
@@ -269,24 +274,23 @@ function StudentManager() {
       message.error('Please select a file to import!');
       return;
     }
-
+    let response;
     try {
       setLoading(true);
-      const response = await importExcelStudent(fileList[0].originFileObj, token, selectedSemester);
+      response = await importExcelStudent(fileList[0].originFileObj, token, selectedSemester);
 
-      if (response && response.statusCode === 200) {
-        await fetchStudents(token);
+      if (response?.statusCode === 200) {
+        filterSemester && (await fetchStudents(token));
         setIsImportModalVisible(false);
         setFileList([]);
         message.success('Students imported successfully');
       } else {
-        await fetchStudents(token);
-        message.error('Import Excel thất bại' + response.message);
+        filterSemester && (await fetchStudents(token));
+        message.error('Import Excel Failed' + response?.message);
       }
     } catch (error) {
-      ``;
       console.error('Import Excel error:', error);
-      message.error('Import Excel thất bại: ' + error.message);
+      message.error('Import Excel Failed: ' + response.message);
     } finally {
       setLoading(false);
     }
@@ -822,18 +826,20 @@ function StudentManager() {
               ))}
           </Select>
         </Form.Item>
-        <Dragger
-          accept=".xlsx, .xls"
-          beforeUpload={() => false} // Ngăn không cho upload tự động
-          fileList={fileList}
-          onChange={handleFileChange}
-        >
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-          <p className="ant-upload-text">Click hoặc kéo thả file để tải lên</p>
-          <p className="ant-upload-hint">Chỉ chấp nhận file Excel (.xls, .xlsx)</p>
-        </Dragger>
+        <Form.Item>
+          <Dragger
+            accept=".xlsx, .xls"
+            beforeUpload={() => false} // Ngăn không cho upload tự động
+            fileList={fileList}
+            onChange={handleFileChange}
+          >
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">Click hoặc kéo thả file để tải lên</p>
+            <p className="ant-upload-hint">Chỉ chấp nhận file Excel (.xls, .xlsx)</p>
+          </Dragger>
+        </Form.Item>
       </Modal>
     </div>
   );

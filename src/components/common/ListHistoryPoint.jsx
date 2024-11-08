@@ -34,7 +34,8 @@ export const ListHistoryPoint = ({ pointHistoryId, status, dateCreated, bookingI
       }
     };
 
-    fetchAllHistoryPoint();
+    userData?.id && fetchAllHistoryPoint();
+    setLoading(false);
     setIsUpdate(!isUpdate);
   }, [userData?.id]);
 

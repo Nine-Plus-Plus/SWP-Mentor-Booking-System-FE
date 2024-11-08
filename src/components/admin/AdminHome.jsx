@@ -70,7 +70,7 @@ export const AdminHome = () => {
         });
     };
     setTotalBookings(0);
-    fetchAllBooking();
+    selectedSemester && fetchAllBooking();
   }, [selectedSemester]);
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export const AdminHome = () => {
       }
     };
     setTotalStudents(0);
-    fetchAllStudent();
+    selectedSemester && fetchAllStudent();
   }, [selectedSemester]);
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export const AdminHome = () => {
       }
     };
     setTotalGroups(0);
-    fetchAllGroup();
+    selectedSemester && fetchAllGroup();
   }, [selectedSemester]);
 
   useEffect(() => {
@@ -103,7 +103,7 @@ export const AdminHome = () => {
       }
     };
     setTotalTopics(0);
-    fetchAllTopic();
+    selectedSemester && fetchAllTopic();
   }, [selectedSemester]);
 
   useEffect(() => {

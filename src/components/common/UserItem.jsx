@@ -173,12 +173,12 @@ const UserItem = ({
       if (result.isConfirmed) {
         handleRemove(id);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire({ 
-          title: 'Cancelled', 
-          text: 'Cancelled this action!', 
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
           icon: 'error',
           confirmButtonText: 'OK', // Văn bản nút xác nhận
-          confirmButtonColor: '#d33', // Màu nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
         });
       }
     });
@@ -215,12 +215,12 @@ const UserItem = ({
           handleNotiAddMember(dataSent);
         }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire({ 
-          title: 'Cancelled', 
-          text: 'Cancelled this action!', 
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
           icon: 'error',
           confirmButtonText: 'OK', // Văn bản nút xác nhận
-          confirmButtonColor: '#d33', // Màu nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
         });
       }
     });
@@ -277,7 +277,7 @@ const UserItem = ({
           text: `${response?.message}`, // Hiển thị thông báo lỗi
           icon: 'error',
           confirmButtonText: 'Try Again',
-          confirmButtonColor: '#dd6633',
+          confirmButtonColor: '#dd6633'
         });
     } catch (error) {
       console.log(error.message);

@@ -41,6 +41,7 @@ const SemesterManager = () => {
 
   const handleCreateSemester = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const { dateStart, dateEnd } = values;
@@ -52,7 +53,7 @@ const SemesterManager = () => {
       };
       console.log(dataCreate);
 
-      const response = await createSemester(dataCreate, token);
+      response = await createSemester(dataCreate, token);
       console.log(response);
 
       if (response?.statusCode === 200 && response?.semesterDTO) {
@@ -60,15 +61,17 @@ const SemesterManager = () => {
         setIsCreateModalVisible(false);
         message.success('Semester created successfully');
       } else {
-        message.error('Failed to create semester');
+        message.error('Failed to create semester:' + response?.message);
       }
     } catch (error2) {
       console.error('Create semester error:', error2);
-      message.error('Failed to create semester: ' + (error2.message || 'Unknown error'));
+      message.error('Failed to create semester: ' + (response.message || 'Unknown error'));
     }
   };
+  
   const handleUpdateSemester = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const { dateStart, dateEnd } = values;
@@ -80,10 +83,10 @@ const SemesterManager = () => {
       };
       console.log(selectedSemester.id, dataCreate);
 
-      const response = await updateSemester(selectedSemester.id, dataCreate, token);
+      response = await updateSemester(selectedSemester.id, dataCreate, token);
       console.log(response);
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
         setSemesters(
           semesters.map(semester => (semester.id === response.semesterDTO.id ? response.semesterDTO : semester))
@@ -91,11 +94,11 @@ const SemesterManager = () => {
         setIsUpdateModalVisible(false);
         message.success('Semester update successfully');
       } else {
-        message.error('Failed to update semester');
+        message.error('Failed to update semester: ' + response?.message);
       }
     } catch (error2) {
       console.error('Update semester error:', error2);
-      message.error('Failed to update semester: ' + (error2.message || 'Unknown error'));
+      message.error('Failed to update semester: ' + (response.message || 'Unknown error'));
     }
   };
 

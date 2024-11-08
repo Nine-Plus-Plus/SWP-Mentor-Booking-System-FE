@@ -86,6 +86,7 @@ const ClassManager = () => {
 
   const handleCreateClass = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       // Xác thực form và lấy dữ liệu
       const values = await form.validateFields();
@@ -105,19 +106,20 @@ const ClassManager = () => {
       // Gọi API tạo lớp học
       setLoading(true);
 
-      const response = await createClass(dataCreate, token);
+      response = await createClass(dataCreate, token);
 
       // Kiểm tra phản hồi từ API và cập nhật danh sách lớp học
-      if (response?.statusCode === 200 && response?.classDTO) {
+      if (response?.statusCode === 200) {
         setClasses([response.classDTO, ...classes]);
         setIsCreateModalVisible(false);
         message.success('Class created successfully');
       } else {
-        message.error('Failed to create class');
+        message.error('Failed to create class: ' + response?.message);
       }
     } catch (error) {
       console.error('Create class error:', error);
-      message.error('Failed to create class: ' + (error.message || 'Unknown error'));
+      console.log(response?.message);
+      message.error('Failed to create class: ', response?.message);
     } finally {
       setLoading(false);
     }
@@ -125,6 +127,7 @@ const ClassManager = () => {
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const updateData = {
@@ -133,7 +136,7 @@ const ClassManager = () => {
         semester: { id: values.semesterId }
       };
       setLoading(true);
-      const response = await updateClass(selectedClass.id, updateData, token);
+      response = await updateClass(selectedClass.id, updateData, token);
       if (response && response?.statusCode === 200) {
         // Kiểm tra xem semesterId đã thay đổi hay chưa
         const updatedClass = response.classDTO; // Lớp học sau khi cập nhật
@@ -149,12 +152,11 @@ const ClassManager = () => {
         setIsUpdateModalVisible(false);
         message.success('Class updated successfully');
       } else {
-        console.log('Update Data:', updateData);
-        message.error('Failed to update class');
+        message.error('Failed to update class:' + response?.message);
       }
     } catch (error) {
       console.error('Update class error:', error);
-      message.error('Failed to update class: ' + error.message);
+      message.error('Failed to update class: ' + response?.message);
     } finally {
       setLoading(false);
     }

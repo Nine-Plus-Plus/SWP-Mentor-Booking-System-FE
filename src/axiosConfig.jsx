@@ -42,22 +42,22 @@ instance.interceptors.response.use(
       res.data = error.response.data;
       res.status = error.response.status;
       res.headers = error.response.headers;
-      // if (error.response.status === 403) {
-      //   Swal.fire({
-      //     title: 'User authentication failed!',
-      //     text: `User verification failed, please log in again`,
-      //     icon: 'error',
-      //     timer: 3000,
-      //     timerProgressBar: true
-      //   });
+      if (error.response.status === 401) {
+        Swal.fire({
+          title: 'User authentication failed!',
+          text: `User verification failed, please log in again`,
+          icon: 'error',
+          timer: 3000,
+          timerProgressBar: true
+        });
 
-      //   localStorage.removeItem('token');
+        localStorage.removeItem('token');
 
-      //   setTimeout(() => {
-      //     // Điều hướng người dùng về trang đăng nhập
-      //     window.location.href = '/public/login';
-      //   }, 3000);
-      // }
+        setTimeout(() => {
+          // Điều hướng người dùng về trang đăng nhập
+          window.location.href = '/public/login';
+        }, 3000);
+      }
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser

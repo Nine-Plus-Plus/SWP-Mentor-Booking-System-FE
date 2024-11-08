@@ -15,7 +15,7 @@ const ListNotification = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAllNotiByReceiverId();
+    userData?.user?.id && fetchAllNotiByReceiverId();
   }, [userData]);
   const fetchAllNotiByReceiverId = async () => {
     const token = localStorage.getItem('token');

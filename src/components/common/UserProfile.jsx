@@ -103,13 +103,13 @@ function StudentProfile() {
       const response = await updateStudent(userData?.user?.id, updateData, token);
       console.log(response);
 
-      if (response && response?.statusCode === 200) {
+      if (response?.statusCode === 200) {
         setAvatar(response?.studentsDTO?.user?.avatar);
         setModalUpdateAvatar(false);
         setFile([]);
         message.success('Avatar updated successfully');
       } else {
-        message.error('Failed to update avatar');
+        message.error('Failed to update avatar: ' + response?.message);
       }
     } catch (error) {
       console.error('Update avatar error:', error);
@@ -151,7 +151,7 @@ function StudentProfile() {
         setAvatar(response?.mentorsDTO?.user?.avatar);
         message.success('Avatar updated successfully');
       } else {
-        message.error('Failed to update avatar');
+        message.error('Failed to update avatar: ' + response?.message);
       }
     } catch (error) {
       console.error('Update avatar error:', error);
@@ -216,7 +216,10 @@ function StudentProfile() {
           point: roleProfile === 'MENTOR' ? user?.star : user?.point,
           expertise:
             roleProfile === 'MENTOR' ? user?.skills?.map(skill => skill.skillName).join(', ') : user?.expertise,
-          className: roleProfile === 'MENTOR' ? user?.assignedClass?.className : user?.aclass?.className,
+          className:
+            roleProfile === 'MENTOR'
+              ? user?.assignedClass?.find(cls => cls?.availableStatus === 'ACTIVE')?.className
+              : user?.aclass?.className,
           timeRemain: user?.totalTimeRemain || '',
           groupProject: group?.project?.projectName || '',
           groupRole: user?.groupRole || ''
