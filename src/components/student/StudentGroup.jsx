@@ -77,7 +77,8 @@ const StudentGroup = () => {
       try {
         const response = await getAllTopicUnchosenClass(userData?.aclass?.id, token);
         console.log(response);
-        if (response && response?.statusCode === 200) setTopics(response?.topicDTOList);
+        if (response?.statusCode === 200)
+          setTopics(response?.topicDTOList?.filter(topic => topic?.availableStatus === 'ACTIVE'));
         else setTopics([]);
       } catch (error) {
         setError(err?.message || 'Đã xảy ra lỗi');
@@ -108,6 +109,7 @@ const StudentGroup = () => {
 
   const handleCreateProject = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       if (!selectedTopic) {
         throw new Error('Please choose a topic before submitting.'); // Gây lỗi nếu không có topic
@@ -123,27 +125,29 @@ const StudentGroup = () => {
           id: fullData?.groupDTO?.id
         }
       };
-      console.log(projectData);
 
       // Gọi API để tạo dự án
-      const response = await createProject(projectData, token);
-      console.log('Project created successfully:', response);
-      if (response && response?.statusCode === 200) {
+      response = await createProject(projectData, token);
+      console.log(response);
+
+      if (response?.statusCode === 200) {
         toast.success(response?.message);
         setInProject(response?.projectsDTO);
         setIsCreateProjectModalVisible(false);
         setSelectedTopic(null);
         setIsUpdate(!isUpdate);
+        setIsUpdate(!isUpdate);
       } else toast.error(response?.message);
     } catch (error) {
       toast.error(error.message);
+      toast.error(response.message);
       console.error('Create group error:', error);
-      message.error('Failed to create group: ' + error.message);
     }
   };
 
   const handleCreateGroup = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const data = {
@@ -154,17 +158,17 @@ const StudentGroup = () => {
         }
       };
       console.log(data);
-      const response = await createGroup(data, token);
+      response = await createGroup(data, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
         toast.success(response?.message);
         setInGroup(response?.groupDTO);
         setIsCreateGroupModalVisible(false);
-        setIsUpdate(isUpdate);
+        setIsUpdate(!isUpdate);
       } else toast.error(response?.message);
     } catch (error) {
       console.error('Create group error:', error);
-      message.error('Failed to create group: ' + error.message);
+      message.error('Failed to create group: ' + response.message);
     }
   };
 

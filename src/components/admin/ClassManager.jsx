@@ -69,7 +69,10 @@ const ClassManager = () => {
       try {
         setLoading(true);
         const response = await getClassBySemesterId(selectedSemester, searchText, token);
-        setClasses(response?.classDTOList || []);
+        if (response?.statusCode === 200) {
+          const sortedClass = response.classDTOList.sort((a, b) => b.id - a.id);
+          setClasses(sortedClass || []);
+        }
         console.log(response);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
@@ -106,7 +109,7 @@ const ClassManager = () => {
 
       // Kiểm tra phản hồi từ API và cập nhật danh sách lớp học
       if (response?.statusCode === 200 && response?.classDTO) {
-        setClasses([...classes, response.classDTO]);
+        setClasses([response.classDTO, ...classes]);
         setIsCreateModalVisible(false);
         message.success('Class created successfully');
       } else {
@@ -301,7 +304,7 @@ const ClassManager = () => {
         scroll={{ y: 400 }}
         loading={loading}
       />
-  
+
       {/* Modal for updating class */}
       <Modal title="Update Class" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
         <div className="max-h-96 overflow-y-auto p-5">
@@ -329,11 +332,13 @@ const ClassManager = () => {
               ]}
             >
               <Select placeholder="Select Semester">
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item label="Mentor" name="mentorId">
@@ -376,11 +381,13 @@ const ClassManager = () => {
               ]}
             >
               <Select placeholder="Select Semester">
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item label="Mentor" name="mentorId">

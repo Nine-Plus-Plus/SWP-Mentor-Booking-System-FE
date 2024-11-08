@@ -56,10 +56,13 @@ const TopicManager = () => {
     const fetchAllTopicBySemesterId = async () => {
       const token = localStorage.getItem('token');
       try {
-        console.log(selectedSemester);
+        setLoading(true);
         const response = await getTopicByIdSemester(selectedSemester, searchText, token);
         console.log(response);
-        response?.statusCode === 200 ? setTopics(response?.topicDTOList) : setTopics([]);
+        if (response?.statusCode === 200) {
+          const sortedTopic = response.topicDTOList.sort((a, b) => b.id - a.id);
+          setTopics(sortedTopic);
+        }
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -67,7 +70,7 @@ const TopicManager = () => {
       }
     };
     setLoading(false);
-    fetchAllTopicBySemesterId();
+    selectedSemester && fetchAllTopicBySemesterId();
   }, [selectedSemester, searchText]);
 
   useEffect(() => {
@@ -113,7 +116,7 @@ const TopicManager = () => {
       const response = await createTopic(dataCreate, token);
       console.log(response);
       if (response?.statusCode === 200 && response?.topicDTO) {
-        setTopics([...topics, response.topicDTO]);
+        setTopics([response.topicDTO, ...topics]);
         setIsCreateModalVisible(false);
         message.success('Topic created successfully');
       } else {
@@ -350,7 +353,9 @@ const TopicManager = () => {
       render: requirements => (
         <>
           {requirements.map((requirement, index) => (
-            <p key={index} className="whitespace-pre-wrap break-words"> {/* Allows line breaks */}
+            <p key={index} className="whitespace-pre-wrap break-words">
+              {' '}
+              {/* Allows line breaks */}
               {requirement}
             </p>
           ))}
@@ -400,13 +405,19 @@ const TopicManager = () => {
       width: 150,
       render: (text, record) => (
         <div className="flex flex-col gap-2">
-          <Button
-            className="bg-blue-500 text-white  w-full"
-            onClick={() => showUpdateModal(record)}
-            style={{ marginRight: '10px' }}
-          >
-            Update
-          </Button>
+          {record?.availableStatus === 'INACTIVE' ? (
+            <Button className="bg-gray-500 text-white  w-full hover:cursor-not-allowed" style={{ marginRight: '10px' }}>
+              Inactive
+            </Button>
+          ) : (
+            <Button
+              className="bg-blue-500 text-white  w-full"
+              onClick={() => showUpdateModal(record)}
+              style={{ marginRight: '10px' }}
+            >
+              Update
+            </Button>
+          )}
           <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.id)}>
             Delete
           </Button>
@@ -535,11 +546,13 @@ const TopicManager = () => {
               ]}
             >
               <Select placeholder="Select Semester">
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item
@@ -665,11 +678,13 @@ const TopicManager = () => {
               ]}
             >
               <Select placeholder="Select Semester">
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item

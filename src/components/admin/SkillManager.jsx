@@ -20,7 +20,10 @@ const SkillManager = () => {
       try {
         setLoading(true);
         const response = await getAllSkill(searchText, token);
-        setSkills(response.data.skillsDTOList);
+        if (response?.data?.statusCode === 200) {
+          const sortedSkills = response?.data?.skillsDTOList?.sort((a, b) => b.id - a.id);
+          setSkills(sortedSkills);
+        }
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -44,8 +47,8 @@ const SkillManager = () => {
       const response = await createSkill(createData, token);
       console.log(response);
 
-      if (response && response.statusCode === 200) {
-        setSkills([...skills, response.skillsDTO]);
+      if (response?.statusCode === 200) {
+        setSkills([response.skillsDTO, ...skills]);
         setIsCreateModalVisible(false);
         message.success('Skill created successfully');
       } else {

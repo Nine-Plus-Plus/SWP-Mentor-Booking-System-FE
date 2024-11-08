@@ -56,7 +56,7 @@ const SemesterManager = () => {
       console.log(response);
 
       if (response?.statusCode === 200 && response?.semesterDTO) {
-        setSemesters([...semesters, response?.semesterDTO]);
+        setSemesters([response?.semesterDTO, ...semesters]);
         setIsCreateModalVisible(false);
         message.success('Semester created successfully');
       } else {
