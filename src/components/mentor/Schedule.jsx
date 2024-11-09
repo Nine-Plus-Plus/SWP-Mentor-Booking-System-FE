@@ -253,6 +253,12 @@ const Schedule = () => {
                 validator(_, value) {
                   if (!value || !value[0] || !value[1]) return Promise.resolve();
 
+                  const now = dayjs(); // Thời gian hiện tại
+
+                  if (value[0].isBefore(now, 'minute')) {
+                    return Promise.reject(new Error('Start time must be greater than the current time'));
+                  }
+
                   const durationInMinutes = value[1].diff(value[0], 'minutes');
                   if (durationInMinutes > 180) {
                     return Promise.reject(new Error('Event duration cannot exceed 3 hours'));
