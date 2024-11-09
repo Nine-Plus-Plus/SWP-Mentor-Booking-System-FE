@@ -18,12 +18,14 @@ const SemesterManager = () => {
       try {
         setLoading(true);
         const response = await getAllSemester(token);
-        setSemesters(
-          response?.data?.semesterDTOList?.map(semester => ({
-            ...semester,
-            dateCreated: dayjs(semester.dateCreated).format('HH:mm DD-MM-YYYY')
-          }))
-        );
+        if (response?.data?.statusCode === 200)
+          setSemesters(
+            response?.data?.semesterDTOList?.map(semester => ({
+              ...semester,
+              dateCreated: dayjs(semester.dateCreated).format('HH:mm DD-MM-YYYY')
+            }))
+          );
+        else setSemesters([]);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -68,7 +70,7 @@ const SemesterManager = () => {
       message.error('Failed to create semester: ' + (response.message || 'Unknown error'));
     }
   };
-  
+
   const handleUpdateSemester = async () => {
     const token = localStorage.getItem('token');
     let response;
@@ -230,7 +232,7 @@ const SemesterManager = () => {
                 {
                   required: true,
                   message: 'Please input your semester start date!'
-                },
+                }
                 // {
                 //   validator: (_, value) =>
                 //     value && value.isAfter(dayjs(), 'day')
