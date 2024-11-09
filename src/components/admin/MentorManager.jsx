@@ -50,9 +50,9 @@ const MentorManager = () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getAllSkill('', token);
-        if (response?.statusCode === 200) {
+        if (response?.data?.statusCode === 200) {
           setSkills(response?.data?.skillsDTOList);
-        }
+        } else setSkills([]);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       }
