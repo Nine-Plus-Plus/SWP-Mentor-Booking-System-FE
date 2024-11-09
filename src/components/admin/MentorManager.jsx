@@ -294,13 +294,7 @@ const MentorManager = () => {
       title: 'Avatar',
       dataIndex: ['user', 'avatar'],
       key: 'avatar',
-      render: avatar => (
-        <img
-          src={avatar}
-          alt="Avatar"
-          className="w-[7vw] h-50" // Thêm các class Tailwind CSS cho kích thước và kiểu dáng
-        />
-      )
+      render: avatar => <img src={avatar} alt="Avatar" className="w-[7vw] h-50" />
     },
     {
       title: 'Full Name',
@@ -547,7 +541,16 @@ const MentorManager = () => {
             <Form.Item label="Address" name="address">
               <Input />
             </Form.Item>
-            <Form.Item label="Phone" name="phone">
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[
+                {
+                  pattern: /^(0)[0-9]{9}$/, // 9 chữ số sau chữ số đầu tiên '0' để tổng cộng là 10 chữ số
+                  message: "Phone number must start with '0' and contain exactly 10 digits"
+                }
+              ]}
+            >
               <Input />
             </Form.Item>
             <Form.Item
@@ -683,7 +686,16 @@ const MentorManager = () => {
             <Form.Item label="Address" name="address">
               <Input />
             </Form.Item>
-            <Form.Item label="Phone" name="phone">
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[
+                {
+                  pattern: /^(0)[0-9]{9}$/, // 9 chữ số sau chữ số đầu tiên '0' để tổng cộng là 10 chữ số
+                  message: "Phone number must start with '0' and contain exactly 10 digits"
+                }
+              ]}
+            >
               <Input />
             </Form.Item>
             <Form.Item

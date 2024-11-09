@@ -64,8 +64,8 @@ const Login = () => {
   const handleLogin = async () => {
     if (payload.username && payload.password) {
       setIsLoading(true);
-      try {
-        const response = await StudentLogin(payload);
+      const response = await StudentLogin(payload);
+      try {        
         setIsLoading(false);
 
         if (response?.data?.token) {

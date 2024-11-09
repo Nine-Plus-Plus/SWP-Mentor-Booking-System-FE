@@ -15,6 +15,7 @@ import { getAllSemester } from '../../apis/SemesterServices';
 import { getClassBySemesterId } from '../../apis/ClassServices';
 import Dragger from 'antd/es/upload/Dragger';
 import Search from 'antd/es/transfer/search';
+import { Pattern } from '@mui/icons-material';
 
 function StudentManager() {
   const [students, setStudents] = useState([]);
@@ -502,6 +503,10 @@ function StudentManager() {
                 {
                   required: true,
                   message: 'Please input your student code!'
+                },
+                {
+                  pattern: /^(SE|HE|QE|AI)[0-9]{6}$/,
+                  message: 'Student code must start with SE, QE, HE, or AI followed by 6 digits'
                 }
               ]}
             >
@@ -578,7 +583,16 @@ function StudentManager() {
             <Form.Item label="Address" name="address">
               <Input />
             </Form.Item>
-            <Form.Item label="Phone" name="phone">
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[
+                {
+                  pattern: /^(0)[0-9]{9}$/, // 9 chữ số sau chữ số đầu tiên '0' để tổng cộng là 10 chữ số
+                  message: "Phone number must start with '0' and contain exactly 10 digits"
+                }
+              ]}
+            >
               <Input />
             </Form.Item>
             <Form.Item label="Gender" name="gender">
@@ -692,6 +706,10 @@ function StudentManager() {
                 {
                   required: true,
                   message: 'Please input your student code!'
+                },
+                {
+                  pattern: /^(SE|HE|QE|AI)[0-9]{6}$/,
+                  message: 'Student code must start with SE, QE, HE, or AI followed by 6 digits'
                 }
               ]}
             >
@@ -750,7 +768,16 @@ function StudentManager() {
             <Form.Item label="Address" name="address">
               <Input />
             </Form.Item>
-            <Form.Item label="Phone" name="phone">
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[
+                {
+                  pattern: /^(0)[0-9]{9}$/, // 9 chữ số sau chữ số đầu tiên '0' để tổng cộng là 10 chữ số
+                  message: "Phone number must start with '0' and contain exactly 10 digits"
+                }
+              ]}
+            >
               <Input />
             </Form.Item>
             <Form.Item
