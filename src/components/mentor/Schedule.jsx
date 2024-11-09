@@ -136,13 +136,13 @@ const Schedule = () => {
       availableFrom: dateRange[0].format('DD-MM-YYYY HH:mm'),
       availableTo: dateRange[1].format('DD-MM-YYYY HH:mm')
     };
-    
+
     try {
       let response;
       if (!isEditing) {
         response = await createSchedule(data, token);
         console.log('Schedule create response:', response);
-  
+
         if (response?.statusCode === 200) {
           const added = {
             id: response.mentorScheduleDTO?.id,
@@ -158,7 +158,7 @@ const Schedule = () => {
         }
       } else {
         response = await updateSchedule(selectedEvent.id, data, token);
-  
+
         if (response?.statusCode === 200) {
           const updated = {
             id: response.mentorScheduleDTO?.id,
@@ -178,7 +178,7 @@ const Schedule = () => {
       console.error('Schedule handling error:', error.message);
       toast.error('An error occurred: ' + error.message);
     }
-  };  
+  };
 
   const handleDelete = async id => {
     const token = localStorage.getItem('token');
@@ -247,7 +247,33 @@ const Schedule = () => {
           <Form.Item
             name="range"
             label="Event Duration"
-            rules={[{ type: 'array', required: true, message: 'Please select time!' }]}
+            rules={[
+              { type: 'array', required: true, message: 'Please select time!' },
+              {
+                validator(_, value) {
+                  if (!value || !value[0] || !value[1]) return Promise.resolve();
+
+                  const now = dayjs(); // Thời gian hiện tại
+
+                  if (value[0].isBefore(now, 'minute')) {
+                    return Promise.reject(new Error('Start time must be greater than the current time'));
+                  }
+
+                  const durationInMinutes = value[1].diff(value[0], 'minutes');
+                  if (durationInMinutes > 180) {
+                    return Promise.reject(new Error('Event duration cannot exceed 3 hours'));
+                  }
+
+                  const startHour = value[0].hour();
+                  const endHour = value[1].hour();
+                  if (startHour < 8 || endHour > 22) {
+                    return Promise.reject(new Error('Event time must be within business hours (08:00 - 22:00)'));
+                  }
+
+                  return Promise.resolve();
+                }
+              }
+            ]}
           >
             <RangePicker
               showTime={{

@@ -17,25 +17,42 @@ import {
   IconButton
 } from '@mui/material';
 import CropEasy from './CropEasy';
-import { Modal, message, Dropdown, Menu } from 'antd';
+import { Modal, message, Dropdown, Menu, Form, Select } from 'antd';
 import { UploadOutlined, EyeOutlined } from '@ant-design/icons';
 import { updateStudent } from '../../apis/StudentServices';
 import { updateMentor } from '../../apis/MentorServices';
 import dayjs from 'dayjs';
 import Loading from './Loading';
+import { getAllSkill } from '../../apis/SkillServices';
 
 function StudentProfile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { role, userData, setAvatar, setLoadingGlobal, loadingGlobal } = useUserStore();
-  const [isDataChanged, setIsDataChanged] = useState(false);
+  const { role, userData, setAvatar, setIsUpdate, isUpdate } = useUserStore();
   const { name, id } = useParams();
-  const [openCrop, setOpenCrop] = useState(false);
   const [photoURL, setPhotoURL] = useState(null); // Lưu URL ảnh sau khi upload
   const [file, setFile] = useState([]);
   const [isAvatarVisible, setIsAvatarVisible] = useState(false);
+  const [isSkillsVisible, setIsSkillsVisible] = useState(false);
   const [modalUpdateAvatar, setModalUpdateAvatar] = useState(false);
+  const [skills, setSkills] = useState([]);
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    const fetchSkill = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await getAllSkill('', token);
+        if (response?.data?.statusCode === 200) {
+          setSkills(response?.data?.skillsDTOList);
+        }
+      } catch (err) {
+        setError(err.message || 'Đã xảy ra lỗi');
+      }
+    };
+    fetchSkill();
+  }, []);
 
   let roleProfile = name ? name.toUpperCase() : role;
 
@@ -156,6 +173,60 @@ function StudentProfile() {
     } catch (error) {
       console.error('Update avatar error:', error);
       message.error('Failed to update avatar: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showUpdateSkillsModal = mentor => {
+    form.setFieldsValue({
+      skills: mentor.skills.map(skill => skill.id)
+    });
+    setIsSkillsVisible(true);
+  };
+
+  const handleUpdateSkillsMentor = async () => {
+    const values = await form.validateFields();
+    console.log(values);
+    const token = localStorage.getItem('token');
+    try {
+      const skillsArray = values?.skills.map(skillId => ({ id: skillId }));
+      console.log(skillsArray);
+
+      const updateData = {
+        mentor: {
+          username: userData?.user?.username,
+          email: userData?.user?.email,
+          fullName: userData?.user?.fullName,
+          birthDate: dayjs(userData?.user?.birthDate),
+          address: userData?.user?.address,
+          phone: userData?.user?.phone,
+          gender: userData?.user?.gender,
+          mentorCode: userData?.mentorCode,
+          star: userData?.star,
+          totalTimeRemain: userData?.totalTimeRemain,
+          skills: skillsArray
+        },
+        avatarFile: file // Ensure this is a File or Blob
+      };
+      console.log(updateData);
+      setLoading(true);
+      const response = await updateMentor(userData?.user?.id, updateData, token);
+      console.log(response);
+      if (response?.statusCode === 200) {
+        setIsSkillsVisible(false);
+        setIsUpdate(!isUpdate);
+        setProfile(prev => ({
+          ...prev,
+          expertise: roleProfile === 'MENTOR' && response?.mentorsDTO?.skills?.map(skill => skill.skillName).join(', ')
+        }));
+        message.success('Edit Skills successfully');
+      } else {
+        message.error('Failed to edit skills: ' + response?.message);
+      }
+    } catch (error) {
+      console.error('Update skills error:', error);
+      message.error('Failed to edit skills: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -464,6 +535,41 @@ function StudentProfile() {
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg"
               />
+              {/* Update skill */}
+              {roleProfile === 'MENTOR' && (!id || userData?.user?.id.toString() === id) && (
+                <div className="mt-3">
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    onClick={() => {
+                      showUpdateSkillsModal(userData);
+                    }}
+                  >
+                    Edit Skill
+                  </Button>
+                </div>
+              )}
+              <Modal
+                title="Edit Skills"
+                open={isSkillsVisible}
+                onCancel={() => {
+                  setIsSkillsVisible(false);
+                }}
+                onOk={handleUpdateSkillsMentor}
+                width={700}
+              >
+                <Form form={form} layout="vertical">
+                  <Form.Item label="Skill" name="skills">
+                    <Select mode="multiple" placeholder="Select skills" style={{ width: '100%' }}>
+                      {skills?.map(skill => (
+                        <Select.Option key={skill.id} value={skill.id}>
+                          {skill.skillName}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Form>
+              </Modal>
             </div>
 
             {/* Nếu là student thì hiển thị Group Project và Role In Group */}

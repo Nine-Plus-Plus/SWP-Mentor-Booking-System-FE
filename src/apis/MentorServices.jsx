@@ -150,3 +150,19 @@ export const importExcelMentor = (file, token) =>
       reject(error);
     }
   });
+
+export const reportMentorBySemesterId = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'get',
+        url: `api/admin/get-mentor-stars-report-by-semester-id/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response?.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
