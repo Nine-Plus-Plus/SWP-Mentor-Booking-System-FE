@@ -58,23 +58,23 @@ function StudentManager() {
     }
   }, [semesters]);
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        setLoading(true);
-        const response = await getStudentsBySemesterId(filterSemester, searchText, token);
-        if (response?.statusCode === 200) {
-          const sortedStudents = response.studentsDTOList.sort((a, b) => b.id - a.id);
-          setStudents(sortedStudents);
-        }
-      } catch (err) {
-        setError(err.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchStudents = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      setLoading(true);
+      const response = await getStudentsBySemesterId(filterSemester, searchText, token);
+      if (response?.statusCode === 200) {
+        const sortedStudents = response.studentsDTOList.sort((a, b) => b.id - a.id);
+        setStudents(sortedStudents);
+      } else setStudents([]);
+    } catch (err) {
+      setError(err.message || 'Đã xảy ra lỗi');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     filterSemester && fetchStudents();
   }, [filterSemester, searchText]);
 
@@ -292,19 +292,6 @@ function StudentManager() {
     } catch (error) {
       console.error('Import Excel error:', error);
       message.error('Import Excel Failed: ' + response.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchStudents = async () => {
-    const token = localStorage.getItem('token');
-    try {
-      setLoading(true);
-      const response = await getStudentsBySemesterId(filterSemester, searchText, token);
-      setStudents(response.studentsDTOList);
-    } catch (err) {
-      setError(err.message || 'Đã xảy ra lỗi');
     } finally {
       setLoading(false);
     }

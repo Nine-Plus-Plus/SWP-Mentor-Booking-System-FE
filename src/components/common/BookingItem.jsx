@@ -490,27 +490,39 @@ export const BookingItem = ({
                   className="w-full min-w-[120px]"
                 />
               ) : status === 'CONFIRMED' ? (
-                <div className="flex flex-col w-full gap-3">
-                  <Button
-                    text={'Accepted'}
-                    textColor={'text-white'}
-                    bgColor={'bg-green-500'}
-                    bgHover={'hover:bg-green-400'}
-                    htmlType={'button'}
-                    className="w-full min-w-[120px]"
-                    acHover={'hover:cursor-not-allowed'}
-                  />
-                  <Button
-                    text={'Cancel'}
-                    textColor={'text-white'}
-                    bgColor={'bg-gray-500'}
-                    bgHover={'hover:bg-gray-400'}
-                    htmlType={'button'}
-                    className="w-full min-w-[120px]"
-                    acHover={'hover:cursor-pointer'}
-                    isLoading={isLoadingCancel}
-                    onClick={handleCancelStudent}
-                  />
+                <div>
+                  {availableStatus === 'INACTIVE' ? (
+                    <Button
+                      text={'Ended'}
+                      textColor={'text-white'}
+                      bgColor={'bg-gray-500'}
+                      acHover={'hover:cursor-not-allowed'}
+                      className="w-full min-w-[120px]"
+                    />
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <Button
+                        text={'Accepted'}
+                        textColor={'text-white'}
+                        bgColor={'bg-green-500'}
+                        bgHover={'hover:bg-green-400'}
+                        htmlType={'button'}
+                        className="w-full min-w-[120px]"
+                        acHover={'hover:cursor-not-allowed'}
+                      />
+                      <Button
+                        text={'Cancel'}
+                        textColor={'text-white'}
+                        bgColor={'bg-gray-500'}
+                        bgHover={'hover:bg-gray-400'}
+                        htmlType={'button'}
+                        className="w-full min-w-[120px]"
+                        acHover={'hover:cursor-pointer'}
+                        isLoading={isLoadingCancel}
+                        onClick={handleCancelStudent}
+                      />
+                    </div>
+                  )}
                 </div>
               ) : status === 'CANCELLED' ? (
                 <Button

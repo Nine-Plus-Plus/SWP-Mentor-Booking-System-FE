@@ -24,24 +24,24 @@ const MentorManager = () => {
   const [fileList, setFileList] = useState([]);
   const [searchText, setSearchText] = useState('');
 
-  useEffect(() => {
-    const fetchMentors = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        setLoading(true);
-        const response = await getAllMentors(searchText, token);
-        console.log(response);
-        if (response?.statusCode === 200) {
-          const sortedMentors = response.mentorsDTOList.sort((a, b) => b.id - a.id);
-          setMentors(sortedMentors);
-        }
-      } catch (err) {
-        setError(err.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchMentors = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      setLoading(true);
+      const response = await getAllMentors(searchText, token);
+      console.log(response);
+      if (response?.statusCode === 200) {
+        const sortedMentors = response.mentorsDTOList.sort((a, b) => b.id - a.id);
+        setMentors(sortedMentors);
+      } else setMentors([]);
+    } catch (err) {
+      setError(err.message || 'Đã xảy ra lỗi');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchMentors();
   }, [searchText]);
 
@@ -205,21 +205,6 @@ const MentorManager = () => {
     } catch (error) {
       console.error('Import Excel error:', error);
       message.error('Import Excel failed: ' + response.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchMentors = async () => {
-    const token = localStorage.getItem('token');
-    try {
-      setLoading(true);
-      const response = await getAllMentors(searchText, token);
-      console.log(response);
-
-      setMentors(response.mentorsDTOList);
-    } catch (err) {
-      setError(err.message || 'Đã xảy ra lỗi');
     } finally {
       setLoading(false);
     }

@@ -30,7 +30,7 @@ const GroupManager = () => {
               dateCreated: dayjs(semester.dateCreated).format('HH:mm DD-MM-YYYY')
             }))
           );
-        }
+        } else setSemesters([]);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -55,7 +55,7 @@ const GroupManager = () => {
         console.log(response);
         if (response?.statusCode === 200) {
           setGroups(response?.groupDTOList);
-        }
+        } else setGroups([]);
       } catch (error) {
         console.log(error.message);
       } finally {

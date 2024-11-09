@@ -23,7 +23,7 @@ const SkillManager = () => {
         if (response?.data?.statusCode === 200) {
           const sortedSkills = response?.data?.skillsDTOList?.sort((a, b) => b.id - a.id);
           setSkills(sortedSkills);
-        }
+        } else setSkills([]);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -43,6 +43,7 @@ const SkillManager = () => {
     const token = localStorage.getItem('token');
     let response;
     try {
+      setLoading(true);
       const values = await form.validateFields();
       const createData = form.getFieldValue();
       response = await createSkill(createData, token);
@@ -58,6 +59,8 @@ const SkillManager = () => {
     } catch (error) {
       console.log(error);
       message.error('Failed to create skill: ' + response?.message);
+    } finally {
+      setLoading(false);
     }
   };
 

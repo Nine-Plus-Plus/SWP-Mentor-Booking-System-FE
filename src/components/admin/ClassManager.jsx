@@ -28,8 +28,10 @@ const ClassManager = () => {
     const fetchSemesters = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllSemester(token);
-        setSemesters(response.data?.semesterDTOList);
+        if (response?.data?.statusCode === 200) setSemesters(response?.data?.semesterDTOList);
+        else setSemesters([]);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -50,8 +52,9 @@ const ClassManager = () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getMentorNoClass(token);
-        setMentors(response.mentorsDTOList);
         console.log(response);
+        if (response?.statusCode === 200) setMentors(response?.mentorsDTOList);
+        else setMentors([]);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -72,7 +75,7 @@ const ClassManager = () => {
         if (response?.statusCode === 200) {
           const sortedClass = response.classDTOList.sort((a, b) => b.id - a.id);
           setClasses(sortedClass || []);
-        }
+        } else setClasses([]);
         console.log(response);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
@@ -80,8 +83,8 @@ const ClassManager = () => {
         setLoading(false);
       }
     };
-    setLoading(false);
     selectedSemester && fetchClassBySemesterId();
+    // setLoading(false);
   }, [selectedSemester, searchText]);
 
   const handleCreateClass = async () => {

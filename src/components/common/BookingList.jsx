@@ -68,7 +68,9 @@ function BookingList() {
           : (response = await getAllBookingForGroupByStatus(fullData?.groupDTO?.id, filter, token));
 
         console.log(response);
-        response?.statusCode === 200 ? setBookings(response?.bookingDTOList) : setBookings([]);
+        response?.statusCode === 200
+          ? setBookings(response?.bookingDTOList?.filter(booking => booking?.availableStatus !== 'DELETED'))
+          : setBookings([]);
       } catch (error) {
         toast.error(error.message);
         console.log(error.message);

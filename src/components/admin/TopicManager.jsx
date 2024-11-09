@@ -36,7 +36,8 @@ const TopicManager = () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getAllSemester(token);
-        setSemesters(response.data?.semesterDTOList);
+        if (response?.data?.statusCode === 200) setSemesters(response?.data?.semesterDTOList);
+        else setSemesters([]);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -62,7 +63,7 @@ const TopicManager = () => {
         if (response?.statusCode === 200) {
           const sortedTopic = response.topicDTOList.sort((a, b) => b.id - a.id);
           setTopics(sortedTopic);
-        }
+        } else setTopics([]);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {

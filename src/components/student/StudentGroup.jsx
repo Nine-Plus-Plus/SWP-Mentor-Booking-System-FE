@@ -440,7 +440,7 @@ const StudentGroup = () => {
   return (
     <div className="w-full">
       {loading && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70">
           <Loading />
         </div>
       )}

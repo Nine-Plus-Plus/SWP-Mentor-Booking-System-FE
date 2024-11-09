@@ -8,6 +8,7 @@ import { Select } from 'antd';
 import { getAllMentors } from '../../apis/MentorServices';
 import { getStudents, getStudentsBySemesterId } from '../../apis/StudentServices';
 import { getTopicByIdSemester } from '../../apis/TopicServices';
+import Loading from '../common/Loading';
 
 export const AdminHome = () => {
   const [mentorRatings, setMentorRatings] = useState([]);
@@ -86,9 +87,16 @@ export const AdminHome = () => {
 
   useEffect(() => {
     const fetchAllGroup = async () => {
-      const response = await getAllGroupBySemesterId(selectedSemester, '', token);
-      if (response?.statusCode === 200) {
-        setTotalGroups(prevTotal => prevTotal + response.groupDTOList.length);
+      try {
+        setLoading(true);
+        const response = await getAllGroupBySemesterId(selectedSemester, '', token);
+        if (response?.statusCode === 200) {
+          setTotalGroups(prevTotal => prevTotal + response.groupDTOList.length);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     setTotalGroups(0);
@@ -97,22 +105,37 @@ export const AdminHome = () => {
 
   useEffect(() => {
     const fetchAllTopic = async () => {
-      const response = await getTopicByIdSemester(selectedSemester, '', token);
-      if (response?.statusCode === 200) {
-        setTotalTopics(prevTotal => prevTotal + response.topicDTOList.length);
+      try {
+        setLoading(true);
+        const response = await getTopicByIdSemester(selectedSemester, '', token);
+        if (response?.statusCode === 200) {
+          setTotalTopics(prevTotal => prevTotal + response.topicDTOList.length);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
+
     setTotalTopics(0);
     selectedSemester && fetchAllTopic();
   }, [selectedSemester]);
 
   useEffect(() => {
     const fetchAllMentor = async () => {
-      const response = await getAllMentors('', token);
-      if (response?.statusCode === 200) {
-        setTotalMentors(prevTotal => prevTotal + response.mentorsDTOList.length);
-        const rating = response?.mentorsDTOList?.map(mentor => mentor.star);
-        setMentorRatings(rating);
+      try {
+        setLoading(true);
+        const response = await getAllMentors('', token);
+        if (response?.statusCode === 200) {
+          setTotalMentors(prevTotal => prevTotal + response.mentorsDTOList.length);
+          const rating = response?.mentorsDTOList?.map(mentor => mentor.star);
+          setMentorRatings(rating);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     setTotalMentors(0);
@@ -212,16 +235,17 @@ export const AdminHome = () => {
     ]
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
-
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
 
   return (
     <div className="w-full mx-auto items-center">
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       <h1 className="text-3xl font-bold text-center mb-5 text-gray-800">Admin Dashboard</h1>
       <div className="w-[10vw] mb-3">
         <Select
