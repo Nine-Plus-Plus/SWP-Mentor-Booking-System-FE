@@ -228,12 +228,12 @@ const SemesterManager = () => {
                   required: true,
                   message: 'Please input your semester start date!'
                 },
-                {
-                  validator: (_, value) =>
-                    value && value.isAfter(dayjs(), 'day')
-                      ? Promise.resolve()
-                      : Promise.reject(new Error('The start date cannot be in the past.'))
-                }
+                // {
+                //   validator: (_, value) =>
+                //     value && value.isAfter(dayjs(), 'day')
+                //       ? Promise.resolve()
+                //       : Promise.reject(new Error('The start date cannot be in the past.'))
+                // }
               ]}
             >
               <DatePicker format="DD-MM-YYYY" />
@@ -259,9 +259,9 @@ const SemesterManager = () => {
                       return Promise.reject(new Error('End date must be at least 3 months after the start date.'));
                     }
 
-                    if (value.isBefore(dayjs(), 'day')) {
-                      return Promise.reject(new Error('End date cannot be in the past.'));
-                    }
+                    // if (value.isBefore(dayjs(), 'day')) {
+                    //   return Promise.reject(new Error('End date cannot be in the past.'));
+                    // }
 
                     return Promise.resolve();
                   }

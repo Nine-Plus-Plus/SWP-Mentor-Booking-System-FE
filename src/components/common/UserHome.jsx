@@ -15,12 +15,32 @@ const UserHome = () => {
   const searchParams = new URLSearchParams(location.search);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { FaStar, FaStarHalf } = icons;
+  const ITEMS_PER_PAGE = 5; // Số lượng kỹ năng hiển thị trên mỗi trang
 
   const handleStar = star => {
     let stars = [];
     if (star > 0) for (let i = 1; i <= star; i++) stars.push(<FaStar color="#F8D72A" className="start-item" />);
     if (star > 0 && star % 1 !== 0) stars.push(<FaStarHalf color="#F8D72A" className="start-item" />);
     return stars;
+  };
+
+  // Tính toán các chỉ mục hiển thị
+  const startIndex = currentIndex;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const visibleSkills = skills.slice(startIndex, endIndex);
+
+  const handleNext = () => {
+    const remainingSkills = skills.length - endIndex;
+    if (remainingSkills > 0) {
+      setCurrentIndex(currentIndex + Math.min(2, remainingSkills));
+    }
+  };
+
+  const handlePrevious = () => {
+    if (startIndex > 0) {
+      const previousSkills = currentIndex;
+      setCurrentIndex(currentIndex - Math.min(2, previousSkills));
+    }
   };
 
   // Lấy danh sách top mentor
@@ -112,7 +132,44 @@ const UserHome = () => {
       <div className="gap-3 pt-5">
         <div className="bg-white p-8 rounded-lg border-2 shadow-2xl">
           <div className="row mb-5 flex justify-center font-bold text-xl text-main-1">Skills</div>
-          <div className="flex justify-between overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
+
+          <div className="flex items-center">
+            {/* Nút mũi tên trái */}
+            {startIndex > 0 && (
+              <button onClick={handlePrevious} className="text-main-1 text-2xl mr-3 hover:cursor-pointer">
+                &#8592; {/* Mũi tên trái */}
+              </button>
+            )}
+
+            {/* Danh sách kỹ năng */}
+            <div className="flex justify-between p-3 overflow-hidden w-full">
+              {visibleSkills && visibleSkills.length > 0 ? (
+                visibleSkills.map(skill => (
+                  <Link
+                    key={skill.id}
+                    to={`${path.USER_VIEW_MENTOR}?skill=${skill?.id}`}
+                    className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105"
+                    style={{ flex: '0 0 18%' }}
+                  >
+                    <div className="mt-2 text-dark text-center" title={skill?.skillDescription}>
+                      {skill?.skillName}
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <div className="text-center w-full text-gray-500">The skill list is null</div>
+              )}
+            </div>
+
+            {/* Nút mũi tên phải */}
+            {endIndex < skills.length && (
+              <button onClick={handleNext} className="text-main-1 text-2xl ml-3 hover:cursor-pointer">
+                &#8594; {/* Mũi tên phải */}
+              </button>
+            )}
+          </div>
+
+          {/* <div className="flex justify-between overflow-x-auto p-3" style={{ overflowY: 'hidden' }}>
             {skills && skills.length > 0 ? (
               skills.map(skill => (
                 <Link
@@ -122,29 +179,13 @@ const UserHome = () => {
                   style={{ flex: '0 0 15.35%' }}
                 >
                   <div className="mt-2 text-dark text-center" title={skill?.skillDescription}>
-          {skill?.skillName}
+                    {skill?.skillName}
                   </div>
                 </Link>
               ))
             ) : (
               <div className="text-center w-full text-gray-500">The skill list is null</div>
             )}
-          </div>
-          {/* <div className="overflow-hidden justify-between w-full">
-            <div className="inline-flex animate-scrollLeftLoop">
-              {[...skills, ...skills].map((skill, index) => (
-                <Link
-                  key={`${skill.id}-${index}`}
-                  to={`${path.USER_VIEW_MENTOR}?skill=${skill?.id}`}
-                  className="bg-white p-5 rounded-lg border-2 shadow-2xl flex flex-col items-center mx-2 transition-transform duration-300 hover:scale-105"
-                  style={{ flex: '0 0 15.35%' }}
-                >
-                  <div className="mt-2 text-dark text-center" title={skill?.skillDescription}>
-                    {skill?.skillName}
-                  </div>
-                </Link>
-              ))}
-            </div>
           </div> */}
         </div>
       </div>
