@@ -815,7 +815,7 @@ function StudentManager() {
       </Modal>
       {/* Modal for importing Excel */}
       <Modal
-        title="Import Mentor từ Excel"
+        title="Import Student from Excel"
         open={isImportModalVisible}
         onOk={handleImportExcel}
         onCancel={handleCancelImport}
@@ -850,8 +850,8 @@ function StudentManager() {
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
-            <p className="ant-upload-text">Click hoặc kéo thả file để tải lên</p>
-            <p className="ant-upload-hint">Chỉ chấp nhận file Excel (.xls, .xlsx)</p>
+            <p className="ant-upload-text">Click or drag file to this area to upload</p>
+            <p className="ant-upload-hint">Only accept file Excel (.xls, .xlsx)</p>
           </Dragger>
         </Form.Item>
       </Modal>
