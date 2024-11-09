@@ -16,12 +16,12 @@ export const getAllGroup = token =>
     }
   });
 
-export const getAllGroupBySemesterId = (id, token) =>
+export const getAllGroupBySemesterId = (id, name, token) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
         method: 'get',
-        url: `api/admin/get-groups-in-semester/${id}`,
+        url: `api/admin/get-groups-in-semester/${id}?name=${name}`,
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -127,6 +127,26 @@ export const removeMember = (id, data, token) =>
         }
       });
       resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const uploadFilegroup = (data, token) =>
+  new Promise(async (resolve, reject) => {
+    const formData = new FormData();
+    formData.append('group', new Blob([JSON.stringify(data.group)], { type: 'application/json' }));
+    formData.append('file', data.file);
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: 'api/user/upload',
+        data: formData,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response);
     } catch (error) {
       reject(error);
     }

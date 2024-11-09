@@ -9,6 +9,7 @@ import {
 } from '../../apis/BookingServices';
 import { toast } from 'react-toastify';
 import { convertDateMeeting, formatDate } from '../../utils/commonFunction';
+import Loading from './Loading';
 
 function BookingList() {
   const [filter, setFilter] = useState('PENDING');
@@ -17,6 +18,7 @@ function BookingList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const topRef = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   const rejectByMentor = async id => {
     try {
@@ -59,16 +61,21 @@ function BookingList() {
 
     const fetchAllActiveBooking = async () => {
       try {
+        setLoading(true);
         let response;
         role === 'MENTOR'
           ? (response = await getAllBookingForMentorByStatus(userData?.id, filter, token))
           : (response = await getAllBookingForGroupByStatus(fullData?.groupDTO?.id, filter, token));
 
         console.log(response);
-        response && response?.statusCode === 200 ? setBookings(response?.bookingDTOList) : setBookings([]);
+        response?.statusCode === 200
+          ? setBookings(response?.bookingDTOList?.filter(booking => booking?.availableStatus !== 'DELETED'))
+          : setBookings([]);
       } catch (error) {
         toast.error(error.message);
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchAllActiveBooking();
@@ -83,6 +90,11 @@ function BookingList() {
 
   return (
     <div>
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       <Segmented
         options={['PENDING', 'CONFIRMED', 'CANCELLED', 'REJECTED']}
         value={filter}
@@ -112,6 +124,8 @@ function BookingList() {
                 studentBookId={booking?.group?.students?.find(student => student?.groupRole === 'LEADER')?.user?.id}
                 mentor={booking?.mentor?.user?.fullName}
                 mentorUserId={booking?.mentor?.user?.id}
+                availableStatus={booking?.availableStatus}
+                setLoading={setLoading}
               />
             ))
           )}

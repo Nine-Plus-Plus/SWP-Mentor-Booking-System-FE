@@ -7,6 +7,7 @@ import { formatDateTransaction } from '../../utils/commonFunction';
 import Button from './Button';
 import Rating from '@mui/material/Rating';
 import { Stack } from '@mui/material';
+import Loading from './Loading';
 
 export const ReviewList = () => {
   const { userData, role } = useUserStore();
@@ -15,6 +16,8 @@ export const ReviewList = () => {
   const [selectedReview, setSelectedReview] = useState(null);
   const [form] = Form.useForm();
   const { name, id } = useParams();
+  const [loading, setLoading] = useState(true);
+
   let roleProfile = name ? name.toUpperCase() : role;
 
   const columns = [
@@ -51,6 +54,7 @@ export const ReviewList = () => {
     const fetchAllReviewByReceiverId = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllReviewsByReceiverId(userData?.user?.id, token);
         console.log('API get Review: ', response);
         if (response?.statusCode === 200) {
@@ -60,16 +64,26 @@ export const ReviewList = () => {
         }
       } catch (error) {
         console.log('ERROR API get Review: ', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchAllReviewByReceiverId();
+    userData?.user?.id && fetchAllReviewByReceiverId();
+    setLoading(false);
   }, [userData]);
 
   return (
     <div className="w-full h-full bg-gray-100 p-2">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Review List</h1>
-      <Table columns={columns} bordered dataSource={reviews} rowKey="id" pagination={{ pageSize: 10 }} />
+      <Table
+        columns={columns}
+        bordered
+        dataSource={reviews}
+        rowKey="id"
+        pagination={{ pageSize: 10 }}
+        loading={loading}
+      />
 
       <Modal
         title={null}

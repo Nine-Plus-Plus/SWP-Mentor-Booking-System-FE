@@ -16,13 +16,16 @@ const SemesterManager = () => {
     const fetchSemesters = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllSemester(token);
-        setSemesters(
-          response?.data?.semesterDTOList?.map(semester => ({
-            ...semester,
-            dateCreated: dayjs(semester.dateCreated).format('HH:mm DD-MM-YYYY')
-          }))
-        );
+        if (response?.data?.statusCode === 200)
+          setSemesters(
+            response?.data?.semesterDTOList?.map(semester => ({
+              ...semester,
+              dateCreated: dayjs(semester.dateCreated).format('HH:mm DD-MM-YYYY')
+            }))
+          );
+        else setSemesters([]);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -40,6 +43,7 @@ const SemesterManager = () => {
 
   const handleCreateSemester = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const { dateStart, dateEnd } = values;
@@ -51,23 +55,25 @@ const SemesterManager = () => {
       };
       console.log(dataCreate);
 
-      const response = await createSemester(dataCreate, token);
+      response = await createSemester(dataCreate, token);
       console.log(response);
 
       if (response?.statusCode === 200 && response?.semesterDTO) {
-        setSemesters([...semesters, response?.semesterDTO]);
+        setSemesters([response?.semesterDTO, ...semesters]);
         setIsCreateModalVisible(false);
         message.success('Semester created successfully');
       } else {
-        message.error('Failed to create semester');
+        message.error('Failed to create semester:' + response?.message);
       }
     } catch (error2) {
       console.error('Create semester error:', error2);
-      message.error('Failed to create semester: ' + (error2.message || 'Unknown error'));
+      message.error('Failed to create semester: ' + (response.message || 'Unknown error'));
     }
   };
+
   const handleUpdateSemester = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const { dateStart, dateEnd } = values;
@@ -79,10 +85,10 @@ const SemesterManager = () => {
       };
       console.log(selectedSemester.id, dataCreate);
 
-      const response = await updateSemester(selectedSemester.id, dataCreate, token);
+      response = await updateSemester(selectedSemester.id, dataCreate, token);
       console.log(response);
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
         setSemesters(
           semesters.map(semester => (semester.id === response.semesterDTO.id ? response.semesterDTO : semester))
@@ -90,17 +96,13 @@ const SemesterManager = () => {
         setIsUpdateModalVisible(false);
         message.success('Semester update successfully');
       } else {
-        message.error('Failed to update semester');
+        message.error('Failed to update semester: ' + response?.message);
       }
     } catch (error2) {
       console.error('Update semester error:', error2);
-      message.error('Failed to update semester: ' + (error2.message || 'Unknown error'));
+      message.error('Failed to update semester: ' + (response.message || 'Unknown error'));
     }
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -165,15 +167,22 @@ const SemesterManager = () => {
     {
       title: 'Actions',
       key: 'actions',
+      width: 150,
       render: (text, record) => (
         <div className="flex flex-col gap-2">
-          <Button
-            className="bg-blue-500 text-white  w-full"
-            onClick={() => showUpdateModal(record)}
-            style={{ marginRight: '10px' }}
-          >
-            Update
-          </Button>
+          {record.availableStatus === 'INACTIVE' ? (
+            <Button className="bg-gray-500 text-white  w-full hover:cursor-not-allowed" style={{ marginRight: '10px' }}>
+              Inactive
+            </Button>
+          ) : (
+            <Button
+              className="bg-blue-500 text-white  w-full"
+              onClick={() => showUpdateModal(record)}
+              style={{ marginRight: '10px' }}
+            >
+              Update
+            </Button>
+          )}
         </div>
       )
     }
@@ -192,6 +201,7 @@ const SemesterManager = () => {
         rowKey="id"
         pagination={{ pageSize: 10 }}
         scroll={{ y: 430 }}
+        loading={loading}
       />
       {/* Modal for creating semester */}
 
@@ -221,20 +231,46 @@ const SemesterManager = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your date semester start!'
+                  message: 'Please input your semester start date!'
                 }
+                // {
+                //   validator: (_, value) =>
+                //     value && value.isAfter(dayjs(), 'day')
+                //       ? Promise.resolve()
+                //       : Promise.reject(new Error('The start date cannot be in the past.'))
+                // }
               ]}
             >
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
-              label="Birth end"
+              label="Date end"
               name="dateEnd"
+              dependencies={['dateStart']}
               rules={[
                 {
                   required: true,
-                  message: 'Please input your date semester start!'
-                }
+                  message: 'Please input your semester end date!'
+                },
+                ({ getFieldValue }) => ({
+                  validator: (_, value) => {
+                    const dateStart = getFieldValue('dateStart');
+                    if (!value || !dateStart) {
+                      return Promise.resolve();
+                    }
+
+                    const minEndDate = dayjs(dateStart).add(3, 'months');
+                    if (value.isBefore(minEndDate)) {
+                      return Promise.reject(new Error('End date must be at least 3 months after the start date.'));
+                    }
+
+                    // if (value.isBefore(dayjs(), 'day')) {
+                    //   return Promise.reject(new Error('End date cannot be in the past.'));
+                    // }
+
+                    return Promise.resolve();
+                  }
+                })
               ]}
             >
               <DatePicker format="DD-MM-YYYY" />
@@ -276,13 +312,29 @@ const SemesterManager = () => {
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
-              label="Birth end"
+              label="Date end"
               name="dateEnd"
+              dependencies={['dateStart']}
               rules={[
                 {
                   required: true,
-                  message: 'Please input your date semester end!'
-                }
+                  message: 'Please input your semester end date!'
+                },
+                ({ getFieldValue }) => ({
+                  validator: (_, value) => {
+                    const dateStart = getFieldValue('dateStart');
+                    if (!value || !dateStart) {
+                      return Promise.resolve();
+                    }
+
+                    const minEndDate = dayjs(dateStart).add(3, 'months');
+                    if (value.isBefore(minEndDate)) {
+                      return Promise.reject(new Error('End date must be at least 3 months after the start date.'));
+                    }
+
+                    return Promise.resolve();
+                  }
+                })
               ]}
             >
               <DatePicker format="DD-MM-YYYY" />

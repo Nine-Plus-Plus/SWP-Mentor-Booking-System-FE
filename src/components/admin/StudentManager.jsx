@@ -15,6 +15,7 @@ import { getAllSemester } from '../../apis/SemesterServices';
 import { getClassBySemesterId } from '../../apis/ClassServices';
 import Dragger from 'antd/es/upload/Dragger';
 import Search from 'antd/es/transfer/search';
+import { Pattern } from '@mui/icons-material';
 
 function StudentManager() {
   const [students, setStudents] = useState([]);
@@ -37,8 +38,11 @@ function StudentManager() {
     const fetchSemesters = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllSemester(token);
-        setSemesters(response.data?.semesterDTOList);
+        if (response?.data?.statusCode === 200) {
+          setSemesters(response?.data?.semesterDTOList);
+        }
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -54,26 +58,31 @@ function StudentManager() {
     }
   }, [semesters]);
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await getStudentsBySemesterId(filterSemester, searchText, token);
-        setStudents(response.studentsDTOList);
-      } catch (err) {
-        setError(err.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchStudents = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      setLoading(true);
+      const response = await getStudentsBySemesterId(filterSemester, searchText, token);
+      if (response?.statusCode === 200) {
+        const sortedStudents = response.studentsDTOList.sort((a, b) => b.id - a.id);
+        setStudents(sortedStudents);
+      } else setStudents([]);
+    } catch (err) {
+      setError(err.message || 'Đã xảy ra lỗi');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchStudents();
+  useEffect(() => {
+    filterSemester && fetchStudents();
   }, [filterSemester, searchText]);
 
   useEffect(() => {
     const fetchClassBySemesterId = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getClassBySemesterId(selectedSemester, '', token);
         setClasses(response?.classDTOList);
         // Đặt giá trị mặc định là tùy chọn cuối cùng
@@ -84,14 +93,15 @@ function StudentManager() {
       }
     };
     setLoading(false);
-    fetchClassBySemesterId();
+    selectedSemester && fetchClassBySemesterId();
   }, [selectedSemester]);
 
   // Delete student
   const handleDelete = async studentId => {
     const token = localStorage.getItem('token');
+    let response;
     try {
-      const response = await deleteStudent(studentId, token);
+      response = await deleteStudent(studentId, token);
 
       if (response && response.statusCode === 200) {
         message.success('Student deleted successfully');
@@ -101,7 +111,7 @@ function StudentManager() {
       }
     } catch (error) {
       console.error('Delete student error:', error);
-      message.error('Failed to delete student: ' + error.message);
+      message.error('Failed to delete student: ' + response.message);
     }
   };
 
@@ -139,6 +149,7 @@ function StudentManager() {
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields([
         'fullName',
@@ -167,7 +178,7 @@ function StudentManager() {
       };
       console.log(updateData);
 
-      const response = await updateStudent(selectedStudent.user.id, updateData, token);
+      response = await updateStudent(selectedStudent.user.id, updateData, token);
       console.log(response);
 
       if (response && response?.statusCode === 200) {
@@ -178,11 +189,11 @@ function StudentManager() {
         message.success('Student updated successfully');
         setUploadedAvatar(null);
       } else {
-        message.error('Failed to update student');
+        message.error('Failed to update student: ' + response?.message);
       }
     } catch (error) {
       console.error('Update student error:', error);
-      message.error('Failed to update student: ' + error.message);
+      message.error('Failed to update student: ' + response?.message);
     }
   };
 
@@ -201,6 +212,7 @@ function StudentManager() {
 
   const handleCreateStudent = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const { avatar, ...studentValues } = values;
@@ -215,19 +227,19 @@ function StudentManager() {
         avatarFile: uploadedAvatar // Đây là file avatar
       };
 
-      const response = await createStudent(createData, token);
+      response = await createStudent(createData, token);
       console.log(response);
 
       if (response && response.statusCode === 200) {
-        setStudents([...students, response.studentsDTO]);
+        setStudents([response.studentsDTO, ...students]);
         setIsCreateModalVisible(false);
         message.success('Student created successfully');
         setUploadedAvatar(null);
       } else {
-        message.error('Failed to create student');
+        message.error('Failed to create student: ' + response?.message);
       }
     } catch (error) {
-      message.error('Failed to create student: ' + error.message);
+      message.error('Failed to create student: ' + response?.message);
     }
   };
 
@@ -263,42 +275,27 @@ function StudentManager() {
       message.error('Please select a file to import!');
       return;
     }
-
+    let response;
     try {
-      const response = await importExcelStudent(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+      setLoading(true);
+      response = await importExcelStudent(fileList[0].originFileObj, token, selectedSemester);
 
-      if (response && response.statusCode === 200) {
-        // Cập nhật lại danh sách người dùng với thông tin mới
-        await fetchStudents(token); // Cập nhật lại danh sách mentors
-        setIsUpdateModalVisible(false);
+      if (response?.statusCode === 200) {
+        filterSemester && (await fetchStudents(token));
+        setIsImportModalVisible(false);
         setFileList([]);
-        message.success('Mentors imported successfully');
+        message.success('Students imported successfully');
       } else {
-        message.error('Import Excel thất bại');
+        filterSemester && (await fetchStudents(token));
+        message.error('Import Excel Failed' + response?.message);
       }
     } catch (error) {
       console.error('Import Excel error:', error);
-      message.error('Import Excel thất bại: ' + error.message);
-    }
-  };
-
-  const fetchStudents = async () => {
-    const token = localStorage.getItem('token');
-    try {
-      const response = await getStudents(token);
-      console.log(response);
-
-      setStudents(response.studentsDTOList);
-    } catch (err) {
-      setError(err.message || 'Đã xảy ra lỗi');
+      message.error('Import Excel Failed: ' + response.message);
     } finally {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -330,7 +327,7 @@ function StudentManager() {
       width: 250,
       dataIndex: ['user', 'fullName'],
       key: 'fullName',
-      fixed: 'left',
+      fixed: 'left'
     },
     {
       title: 'Email',
@@ -374,13 +371,19 @@ function StudentManager() {
       fixed: 'right',
       render: (text, record) => (
         <div className="flex flex-col gap-2">
-          <Button
-            className="bg-blue-500 text-white  w-full"
-            onClick={() => showUpdateModal(record)}
-            style={{ marginRight: '10px' }}
-          >
-            Update
-          </Button>
+          {record?.availableStatus !== 'ACTIVE' ? (
+            <Button className="bg-gray-500 text-white  w-full hover:cursor-not-allowed" style={{ marginRight: '10px' }}>
+              Inactive
+            </Button>
+          ) : (
+            <Button
+              className="bg-blue-500 text-white  w-full"
+              onClick={() => showUpdateModal(record)}
+              style={{ marginRight: '10px' }}
+            >
+              Update
+            </Button>
+          )}
           <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.user.id)}>
             Delete
           </Button>
@@ -392,10 +395,6 @@ function StudentManager() {
   const onChange = e => {
     setSearchText(e.target.value);
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -437,7 +436,8 @@ function StudentManager() {
         dataSource={students}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        scroll={{ x:'1600px', y: 400 }}
+        scroll={{ x: '1600px', y: 400 }}
+        loading={loading}
       />
       {/* Modal for updating student */}
       <Modal title="Update Student" open={isUpdateModalVisible} onOk={handleUpdate} onCancel={handleCancelUpdate}>
@@ -490,12 +490,31 @@ function StudentManager() {
                 {
                   required: true,
                   message: 'Please input your student code!'
+                },
+                {
+                  pattern: /^(SE|HE|QE|AI)[0-9]{6}$/,
+                  message: 'Student code must start with SE, QE, HE, or AI followed by 6 digits'
                 }
               ]}
             >
               <Input />
             </Form.Item>
-            <Form.Item label="Birth Date" name="birthDate">
+            <Form.Item
+              label="Birth Date"
+              name="birthDate"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select your birth date'
+                },
+                {
+                  validator: (_, value) =>
+                    value && value.isBefore(dayjs().subtract(18, 'years'))
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('You must be at least 18 years old'))
+                }
+              ]}
+            >
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
@@ -509,11 +528,13 @@ function StudentManager() {
               ]}
             >
               <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item
@@ -549,7 +570,16 @@ function StudentManager() {
             <Form.Item label="Address" name="address">
               <Input />
             </Form.Item>
-            <Form.Item label="Phone" name="phone">
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[
+                {
+                  pattern: /^(0)[0-9]{9}$/, // 9 chữ số sau chữ số đầu tiên '0' để tổng cộng là 10 chữ số
+                  message: "Phone number must start with '0' and contain exactly 10 digits"
+                }
+              ]}
+            >
               <Input />
             </Form.Item>
             <Form.Item label="Gender" name="gender">
@@ -639,18 +669,21 @@ function StudentManager() {
               <Input />
             </Form.Item>
             <Form.Item
-              label="Password"
-              name="password"
+              label="Birth Date"
+              name="birthDate"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your password!'
+                  message: 'Please select your birth date'
+                },
+                {
+                  validator: (_, value) =>
+                    value && value.isBefore(dayjs().subtract(18, 'years'))
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('You must be at least 18 years old'))
                 }
               ]}
             >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item label="Birth Date" name="birthDate">
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
@@ -660,6 +693,10 @@ function StudentManager() {
                 {
                   required: true,
                   message: 'Please input your student code!'
+                },
+                {
+                  pattern: /^(SE|HE|QE|AI)[0-9]{6}$/,
+                  message: 'Student code must start with SE, QE, HE, or AI followed by 6 digits'
                 }
               ]}
             >
@@ -688,11 +725,13 @@ function StudentManager() {
               ]}
             >
               <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item
@@ -716,7 +755,16 @@ function StudentManager() {
             <Form.Item label="Address" name="address">
               <Input />
             </Form.Item>
-            <Form.Item label="Phone" name="phone">
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[
+                {
+                  pattern: /^(0)[0-9]{9}$/, // 9 chữ số sau chữ số đầu tiên '0' để tổng cộng là 10 chữ số
+                  message: "Phone number must start with '0' and contain exactly 10 digits"
+                }
+              ]}
+            >
               <Input />
             </Form.Item>
             <Form.Item
@@ -772,18 +820,40 @@ function StudentManager() {
         onOk={handleImportExcel}
         onCancel={handleCancelImport}
       >
-        <Dragger
-          accept=".xlsx, .xls"
-          beforeUpload={() => false} // Ngăn không cho upload tự động
-          fileList={fileList}
-          onChange={handleFileChange}
+        <Form.Item
+          label="Semester"
+          name="semesterId"
+          rules={[
+            {
+              required: true,
+              message: 'Please select a semester!'
+            }
+          ]}
         >
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-          <p className="ant-upload-text">Click hoặc kéo thả file để tải lên</p>
-          <p className="ant-upload-hint">Chỉ chấp nhận file Excel (.xls, .xlsx)</p>
-        </Dragger>
+          <Select placeholder="Select Semester" onChange={value => setSelectedSemester(value)}>
+            {semesters
+              ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+              ?.map(semester => (
+                <Select.Option key={semester.id} value={semester.id}>
+                  {semester.semesterName}
+                </Select.Option>
+              ))}
+          </Select>
+        </Form.Item>
+        <Form.Item>
+          <Dragger
+            accept=".xlsx, .xls"
+            beforeUpload={() => false} // Ngăn không cho upload tự động
+            fileList={fileList}
+            onChange={handleFileChange}
+          >
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">Click hoặc kéo thả file để tải lên</p>
+            <p className="ant-upload-hint">Chỉ chấp nhận file Excel (.xls, .xlsx)</p>
+          </Dragger>
+        </Form.Item>
       </Modal>
     </div>
   );

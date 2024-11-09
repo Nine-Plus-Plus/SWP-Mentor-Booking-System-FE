@@ -8,6 +8,7 @@ import { useUserStore } from '../../store/useUserStore';
 import { getStudentByIdAndSearch } from '../../apis/StudentServices';
 import { capitalizeFirstLetter, convertSkillArray } from '../../utils/commonFunction';
 import { Pagination } from 'antd';
+import Loading from './Loading';
 
 const ClassList = ({ addGroup }) => {
   const [countMember, setCountMember] = useState(0);
@@ -16,6 +17,7 @@ const ClassList = ({ addGroup }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const topRef = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   const [searchPayload, setSearchPayload] = useState({
     name: '',
@@ -24,10 +26,9 @@ const ClassList = ({ addGroup }) => {
 
   const navigate = useNavigate();
   const { userData, mentorOfClass, role } = useUserStore();
-  console.log(mentorOfClass);
 
   useEffect(() => {
-    const fetchStudentByIdAndSearch = async () => {
+    const fetchStudentByClassIdAndSearch = async () => {
       const token = localStorage.getItem('token');
 
       try {
@@ -37,13 +38,16 @@ const ClassList = ({ addGroup }) => {
           searchPayload?.expertise || undefined,
           token
         );
-        if (response && response?.statusCode === 200) setStudents(response.studentsDTOList);
+        if (response?.statusCode === 200) setStudents(response.studentsDTOList);
         else setStudents([]);
       } catch (error) {
         setError(error.message || 'Đã xảy ra lỗi');
+      } finally {
+        setLoading(false);
       }
     };
-    fetchStudentByIdAndSearch();
+    fetchStudentByClassIdAndSearch();
+    setLoading(false);
   }, [userData, searchPayload]);
 
   useEffect(() => {
@@ -60,8 +64,17 @@ const ClassList = ({ addGroup }) => {
     topRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
+  if (loading) {
+    return <div className="text-center text-gray-700">Loading...</div>;
+  }
+
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
+      {/* {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )} */}
       <Search setPayload={setSearchPayload} />
       {addGroup && <p className="text-2xl font-semibold text-red-500">Limit member: {countMember}/4</p>}
       <div className=" bg-white flex flex-col gap-5 p-3 rounded-md" ref={topRef}>

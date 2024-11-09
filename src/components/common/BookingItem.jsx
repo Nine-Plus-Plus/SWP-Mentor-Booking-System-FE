@@ -11,6 +11,7 @@ import { createNoti } from '../../apis/NotificationServices';
 import { createMeeting } from '../../apis/MeetingServices';
 import { Form, Input, Modal } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
+import Loading from './Loading';
 
 export const BookingItem = ({
   className,
@@ -25,7 +26,8 @@ export const BookingItem = ({
   project,
   idGroup,
   idBooking,
-  mentorUserId
+  mentorUserId,
+  availableStatus
 }) => {
   const { role } = useUserStore();
   const [form] = Form.useForm();
@@ -34,7 +36,9 @@ export const BookingItem = ({
   const { userData } = useUserStore(); // Lấy userData từ store
   const sameGroup = className === userData?.aclass?.className; // Kiểm tra xem mentor có cùng group không
   const token = localStorage.getItem('token');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingAccept, setIsLoadingAccept] = useState(false);
+  const [isLoadingReject, setIsLoadingReject] = useState(false);
+  const [isLoadingCancel, setIsLoadingCancel] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [cancelBy, setCancelBy] = useState('');
@@ -42,13 +46,11 @@ export const BookingItem = ({
   const handleCreateNoti = async data => {
     const token = localStorage.getItem('token');
     try {
-      setIsLoading(true);
       const response = await createNoti(data, token);
       console.log(response);
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false);
       setReason('');
     }
   };
@@ -108,14 +110,15 @@ export const BookingItem = ({
     try {
       response = await createMeeting(data, token);
       console.log(response);
+      if (response?.statusCode !== 200) toast.error(response?.message);
     } catch (error) {
-      toast.error(response.error);
+      toast.error(response.message);
     }
   };
 
   const acceptByMentor = async id => {
     try {
-      setIsLoading(true);
+      setIsLoadingAccept(true);
       const response = await acceptBooking(id, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
@@ -135,13 +138,13 @@ export const BookingItem = ({
       toast.error(error);
       console.log(error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingAccept(false);
     }
   };
 
   const rejectByMentor = async id => {
     try {
-      setIsLoading(true);
+      setIsLoadingReject(true);
       const response = await rejectBooking(id, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
@@ -160,13 +163,13 @@ export const BookingItem = ({
       toast.error(error);
       console.log(error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingReject(false);
     }
   };
 
   const cancelByMentor = async id => {
     try {
-      setIsLoading(true);
+      setIsLoadingCancel(true);
       const response = await cancelBookingMentor(id, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
@@ -186,13 +189,13 @@ export const BookingItem = ({
       toast.error(error);
       console.log(error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingCancel(false);
     }
   };
 
   const cancelByStudent = async id => {
     try {
-      setIsLoading(true);
+      setIsLoadingCancel(true);
       const response = await cancelBookingStudent(id, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
@@ -212,7 +215,7 @@ export const BookingItem = ({
       toast.error(error);
       console.log(error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingCancel(false);
     }
   };
 
@@ -223,13 +226,20 @@ export const BookingItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, accept it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         acceptByMentor(idBooking);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled accept booking!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -241,13 +251,20 @@ export const BookingItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, reject it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         rejectByMentor(idBooking);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled reject booking!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -259,14 +276,21 @@ export const BookingItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, cancel it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         setCancelBy('mentor');
         setIsOpen(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -289,14 +313,21 @@ export const BookingItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, cancel it',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No!',
-      reverseButtons: true // Đảo ngược vị trí của nút xác nhận và hủy
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
     }).then(result => {
       if (result.isConfirmed) {
         setCancelBy('student');
         setIsOpen(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -328,16 +359,40 @@ export const BookingItem = ({
 
       <div className="flex p-2 justify-between w-full">
         <div className="flex flex-col gap-2 text-md w-1/3">
-          <p><span className="font-bold">Day Booking: </span>{dateCreated}</p>
-          <p><span className="font-bold">Class: </span>{className}</p>
-          <p><span className="font-bold">Group: </span>{group}</p>
-          <p><span className="font-bold">Project: </span>{project}</p>
+          <p>
+            <span className="font-bold">Day Booking: </span>
+            {dateCreated}
+          </p>
+          <p>
+            <span className="font-bold">Class: </span>
+            {className}
+          </p>
+          <p>
+            <span className="font-bold">Group: </span>
+            {group}
+          </p>
+          <p>
+            <span className="font-bold">Project: </span>
+            {project}
+          </p>
         </div>
         <div className="flex flex-col gap-2 text-md w-1/3">
-          <p><span className="font-bold">Schedule: </span>{schedule}</p>
-          <p><span className="font-bold">Student Booking: </span>{studentBook}</p>
-          <p><span className="font-bold">Point Manner: </span>{point} FUP</p>
-          <p><span className="font-bold">Total member: </span>{members?.length}/5</p>
+          <p>
+            <span className="font-bold">Schedule: </span>
+            {schedule}
+          </p>
+          <p>
+            <span className="font-bold">Student Booking: </span>
+            {studentBook}
+          </p>
+          <p>
+            <span className="font-bold">Point Manner: </span>
+            {point} FUP
+          </p>
+          <p>
+            <span className="font-bold">Total member: </span>
+            {members?.length}
+          </p>
         </div>
         <div className="flex flex-col items-end justify-center gap-y-3 w-1/3 ">
           {roleProfile === 'mentor' ? (
@@ -351,7 +406,7 @@ export const BookingItem = ({
                     bgHover={'hover:bg-green-400'}
                     htmlType={'button'}
                     onClick={handleAccept}
-                    isLoading={isLoading}
+                    isLoading={isLoadingAccept}
                     className="w-full min-w-[120px]"
                   />
                   <Button
@@ -359,7 +414,7 @@ export const BookingItem = ({
                     textColor={'text-white'}
                     bgColor={'bg-red-500'}
                     bgHover={'hover:bg-red-400'}
-                    isLoading={isLoading}
+                    isLoading={isLoadingReject}
                     htmlType={'button'}
                     onClick={handleReject}
                     className="w-full min-w-[120px]"
@@ -367,25 +422,37 @@ export const BookingItem = ({
                 </div>
               ) : status === 'CONFIRMED' ? (
                 <div className="flex flex-col gap-3">
-                  <Button
-                    text={'Accepted'}
-                    textColor={'text-white'}
-                    bgColor={'bg-green-500'}
-                    bgHover={'hover:bg-green-400'}
-                    htmlType={'button'}
-                    acHover={'hover:cursor-not-allowed'}
-                    className="w-full min-w-[120px]"
-                  />
-                  <Button
-                    text={'Cancel'}
-                    textColor={'text-white'}
-                    bgColor={'bg-gray-500'}
-                    bgHover={'hover:bg-gray-400'}
-                    htmlType={'button'}
-                    isLoading={isLoading}
-                    onClick={handleCancelMentor}
-                    className="w-full min-w-[120px]"
-                  />
+                  {availableStatus === 'INACTIVE' ? (
+                    <Button
+                      text={'Ended'}
+                      textColor={'text-white'}
+                      bgColor={'bg-gray-500'}
+                      acHover={'hover:cursor-not-allowed'}
+                      className="w-full min-w-[120px]"
+                    />
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <Button
+                        text={'Accepted'}
+                        textColor={'text-white'}
+                        bgColor={'bg-green-500'}
+                        bgHover={'hover:bg-green-400'}
+                        htmlType={'button'}
+                        acHover={'hover:cursor-not-allowed'}
+                        className="w-full min-w-[120px]"
+                      />
+                      <Button
+                        text={'Cancel'}
+                        textColor={'text-white'}
+                        bgColor={'bg-gray-500'}
+                        bgHover={'hover:bg-gray-400'}
+                        htmlType={'button'}
+                        isLoading={isLoadingCancel}
+                        onClick={handleCancelMentor}
+                        className="w-full min-w-[120px]"
+                      />
+                    </div>
+                  )}
                 </div>
               ) : status === 'CANCELLED' ? (
                 <Button
@@ -423,27 +490,39 @@ export const BookingItem = ({
                   className="w-full min-w-[120px]"
                 />
               ) : status === 'CONFIRMED' ? (
-                <div className="flex flex-col w-full gap-3">
-                  <Button
-                    text={'Accepted'}
-                    textColor={'text-white'}
-                    bgColor={'bg-green-500'}
-                    bgHover={'hover:bg-green-400'}
-                    htmlType={'button'}
-                    className="w-full min-w-[120px]"
-                    acHover={'hover:cursor-not-allowed'}
-                  />
-                  <Button
-                    text={'Cancel'}
-                    textColor={'text-white'}
-                    bgColor={'bg-gray-500'}
-                    bgHover={'hover:bg-gray-400'}
-                    htmlType={'button'}
-                    className="w-full min-w-[120px]"
-                    acHover={'hover:cursor-pointer'}
-                    isLoading={isLoading}
-                    onClick={handleCancelStudent}
-                  />
+                <div>
+                  {availableStatus === 'INACTIVE' ? (
+                    <Button
+                      text={'Ended'}
+                      textColor={'text-white'}
+                      bgColor={'bg-gray-500'}
+                      acHover={'hover:cursor-not-allowed'}
+                      className="w-full min-w-[120px]"
+                    />
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <Button
+                        text={'Accepted'}
+                        textColor={'text-white'}
+                        bgColor={'bg-green-500'}
+                        bgHover={'hover:bg-green-400'}
+                        htmlType={'button'}
+                        className="w-full min-w-[120px]"
+                        acHover={'hover:cursor-not-allowed'}
+                      />
+                      <Button
+                        text={'Cancel'}
+                        textColor={'text-white'}
+                        bgColor={'bg-gray-500'}
+                        bgHover={'hover:bg-gray-400'}
+                        htmlType={'button'}
+                        className="w-full min-w-[120px]"
+                        acHover={'hover:cursor-pointer'}
+                        isLoading={isLoadingCancel}
+                        onClick={handleCancelStudent}
+                      />
+                    </div>
+                  )}
                 </div>
               ) : status === 'CANCELLED' ? (
                 <Button

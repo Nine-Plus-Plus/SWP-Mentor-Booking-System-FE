@@ -15,7 +15,7 @@ const PublicMentor = () => {
         const response = await getMyProfile(token);
         const mentorsDTO = {
           ...response.mentorsDTO,
-          aclass: response?.mentorsDTO?.assignedClass
+          aclass: response?.mentorsDTO?.assignedClass?.find(cls => cls.avalebleStatus !== 'ACTIVE')
         };
         console.log(mentorsDTO);
         setUserData(mentorsDTO);

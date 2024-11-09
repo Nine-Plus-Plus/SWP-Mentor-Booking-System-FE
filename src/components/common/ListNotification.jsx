@@ -4,6 +4,7 @@ import { useUserStore } from '../../store/useUserStore';
 import { getAllNotiByReceiverId } from '../../apis/NotificationServices';
 import { formatDate } from '../../utils/commonFunction';
 import { Pagination } from 'antd';
+import Loading from './Loading';
 
 const ListNotification = () => {
   const [notis, setNotis] = useState([]);
@@ -11,18 +12,22 @@ const ListNotification = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
   const topRef = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAllNotiByReceiverId();
+    userData?.user?.id && fetchAllNotiByReceiverId();
   }, [userData]);
   const fetchAllNotiByReceiverId = async () => {
     const token = localStorage.getItem('token');
     try {
+      setLoading(true);
       const response = await getAllNotiByReceiverId(userData?.user?.id, token);
       console.log(response);
       response?.statusCode === 200 ? setNotis(response?.notificationsDTOList) : setNotis([]);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,6 +40,11 @@ const ListNotification = () => {
 
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       <div className=" bg-white flex flex-col gap-5 p-3 rounded-md" ref={topRef}>
         {currentNoti?.length === 0 ? (
           <p className="text-red-500">Do not have any notification.</p>

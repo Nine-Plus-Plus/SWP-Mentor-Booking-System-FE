@@ -19,6 +19,7 @@ const TopicManager = () => {
   const [mentors, setMentors] = useState([]);
   const [topics, setTopics] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState(null);
+  const [selectedSemesterImport, setSelectedSemesterImport] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -35,7 +36,8 @@ const TopicManager = () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getAllSemester(token);
-        setSemesters(response.data?.semesterDTOList);
+        if (response?.data?.statusCode === 200) setSemesters(response?.data?.semesterDTOList);
+        else setSemesters([]);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -55,10 +57,13 @@ const TopicManager = () => {
     const fetchAllTopicBySemesterId = async () => {
       const token = localStorage.getItem('token');
       try {
-        console.log(selectedSemester);
+        setLoading(true);
         const response = await getTopicByIdSemester(selectedSemester, searchText, token);
         console.log(response);
-        response?.statusCode === 200 ? setTopics(response?.topicDTOList) : setTopics([]);
+        if (response?.statusCode === 200) {
+          const sortedTopic = response.topicDTOList.sort((a, b) => b.id - a.id);
+          setTopics(sortedTopic);
+        } else setTopics([]);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -66,7 +71,7 @@ const TopicManager = () => {
       }
     };
     setLoading(false);
-    fetchAllTopicBySemesterId();
+    selectedSemester && fetchAllTopicBySemesterId();
   }, [selectedSemester, searchText]);
 
   useEffect(() => {
@@ -74,7 +79,7 @@ const TopicManager = () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getAllMentors('', token);
-        setMentors(response.mentorsDTOList);
+        if (response?.statusCode === 200) setMentors(response?.mentorsDTOList);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -87,6 +92,7 @@ const TopicManager = () => {
 
   const handleCreateTopic = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       // Xác thực form và lấy dữ liệu
       const values = await form.validateFields();
@@ -109,23 +115,24 @@ const TopicManager = () => {
         }
       };
       console.log(dataCreate);
-      const response = await createTopic(dataCreate, token);
+      response = await createTopic(dataCreate, token);
       console.log(response);
       if (response?.statusCode === 200 && response?.topicDTO) {
-        setTopics([...topics, response.topicDTO]);
+        setTopics([response.topicDTO, ...topics]);
         setIsCreateModalVisible(false);
         message.success('Topic created successfully');
       } else {
-        message.error('Failed to create topic');
+        message.error('Failed to create topic: ' + response?.message);
       }
     } catch (error) {
       console.error('Create topic error:', error);
-      message.error('Failed to create topic: ' + (error.message || 'Unknown error'));
+      message.error('Failed to create topic: ' + (response.message || 'Unknown error'));
     }
   };
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const dataUpdate = {
@@ -146,7 +153,7 @@ const TopicManager = () => {
         }
       };
 
-      const response = await updateTopic(selectedTopic.id, dataUpdate, token);
+      response = await updateTopic(selectedTopic.id, dataUpdate, token);
 
       if (response?.statusCode === 200 && response?.topicDTO) {
         // Cập nhật lại danh sách chủ đề với thông tin mới
@@ -156,11 +163,11 @@ const TopicManager = () => {
         setIsUpdateModalVisible(false);
         message.success('Topic updated successfully');
       } else {
-        message.error('Failed to update topic');
+        message.error('Failed to update topic: ' + response?.message);
       }
     } catch (error) {
       console.error('Update topic error:', error);
-      message.error('Failed to update topic: ' + error.message);
+      message.error('Failed to update topic: ' + response.message);
     }
   };
 
@@ -186,10 +193,11 @@ const TopicManager = () => {
 
   const handleDelete = async idTopic => {
     const token = localStorage.getItem('token');
+    let response;
     try {
-      const response = await deleteTopic(idTopic, token);
+      response = await deleteTopic(idTopic, token);
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         message.success('Topic deleted successfully');
         setTopics(prevTopic => prevTopic.filter(topic => topic.id !== idTopic)); // Cập nhật danh sách người dùng
       } else {
@@ -197,7 +205,7 @@ const TopicManager = () => {
       }
     } catch (error) {
       console.error('Delete topic error:', error);
-      message.error('Failed to delete topic: ' + error.message);
+      message.error('Failed to delete topic: ' + response?.message);
     }
   };
 
@@ -244,41 +252,45 @@ const TopicManager = () => {
       return;
     }
 
+    if (selectedSemesterImport === null) {
+      message.error('Chọn kì để import topics');
+      return;
+    }
+
     try {
-      const response = await importExcelTopic(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+      setLoading(true);
+      const response = await importExcelTopic(fileList[0].originFileObj, token, selectedSemesterImport); // Gọi hàm với tệp tin
 
       if (response && response.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
         await fetchAllTopicBySemesterId(token); // Cập nhật lại danh sách mentors
-        setIsUpdateModalVisible(false);
+        setIsImportModalVisible(false);
         setFileList([]);
         message.success('Topic imported successfully');
       } else {
-        message.error('Import Excel thất bại');
+        await fetchAllTopicBySemesterId(token);
+        message.error(response.message);
       }
     } catch (error) {
       console.error('Import Excel error:', error);
       message.error('Import Excel thất bại: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchAllTopicBySemesterId = async () => {
     const token = localStorage.getItem('token');
     try {
-      console.log(selectedSemester);
-      const response = await getTopicByIdSemester(selectedSemester, token);
-      console.log(response);
-      response?.statusCode === 200 ? setTopics(response?.topicDTOList) : setTopics([]);
+      setLoading(true);
+      const response = await getTopicByIdSemester(selectedSemesterImport, searchText, token);
+      setTopics(response.topicDTOList);
     } catch (err) {
       setError(err?.message || 'Đã xảy ra lỗi');
     } finally {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -341,11 +353,13 @@ const TopicManager = () => {
       title: 'Functional Requirements',
       dataIndex: 'requirement',
       key: 'requirement',
-      className: 'whitespace-pre-line text-left align-top',
+      className: 'text-left align-top w-[600px]', // Adjusted width
       render: requirements => (
         <>
           {requirements.map((requirement, index) => (
-            <p key={index} className="w-[800px]">
+            <p key={index} className="whitespace-pre-wrap break-words">
+              {' '}
+              {/* Allows line breaks */}
               {requirement}
             </p>
           ))}
@@ -356,11 +370,11 @@ const TopicManager = () => {
       title: 'Non-Functional Requirements',
       dataIndex: 'nonFunctionRequirement',
       key: 'nonFunctionRequirement',
-      className: 'whitespace-pre-line text-left align-top',
+      className: 'text-left align-top w-[400px]', // Adjusted width
       render: nf_requirements => (
         <>
           {nf_requirements?.map((nf_requirement, index) => (
-            <p key={index} className="w-[300px]">
+            <p key={index} className="whitespace-pre-wrap break-words">
               {nf_requirement}
             </p>
           ))}
@@ -392,15 +406,22 @@ const TopicManager = () => {
       title: 'Actions',
       key: 'actions',
       fixed: 'right',
+      width: 150,
       render: (text, record) => (
         <div className="flex flex-col gap-2">
-          <Button
-            className="bg-blue-500 text-white  w-full"
-            onClick={() => showUpdateModal(record)}
-            style={{ marginRight: '10px' }}
-          >
-            Update
-          </Button>
+          {record?.availableStatus === 'INACTIVE' ? (
+            <Button className="bg-gray-500 text-white  w-full hover:cursor-not-allowed" style={{ marginRight: '10px' }}>
+              Inactive
+            </Button>
+          ) : (
+            <Button
+              className="bg-blue-500 text-white  w-full"
+              onClick={() => showUpdateModal(record)}
+              style={{ marginRight: '10px' }}
+            >
+              Update
+            </Button>
+          )}
           <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.id)}>
             Delete
           </Button>
@@ -447,7 +468,8 @@ const TopicManager = () => {
         dataSource={topics}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        scroll={{ x: '2500px', y: 400 }}
+        scroll={{ x: '2500px', y: 600 }}
+        loading={loading}
       />
 
       {/* Modal for updating student */}
@@ -528,11 +550,13 @@ const TopicManager = () => {
               ]}
             >
               <Select placeholder="Select Semester">
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item
@@ -658,11 +682,13 @@ const TopicManager = () => {
               ]}
             >
               <Select placeholder="Select Semester">
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item
@@ -711,6 +737,24 @@ const TopicManager = () => {
         onOk={handleImportExcel}
         onCancel={handleCancelImport}
       >
+        <Form.Item
+          label="Semester"
+          name="semesterId"
+          rules={[
+            {
+              required: true,
+              message: 'Please select a semester!'
+            }
+          ]}
+        >
+          <Select placeholder="Select Semester" onChange={value => setSelectedSemesterImport(value)}>
+            {semesters?.map(semester => (
+              <Select.Option key={semester.id} value={semester.id}>
+                {semester.semesterName}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
         <Dragger
           accept=".xlsx, .xls"
           beforeUpload={() => false} // Ngăn không cho upload tự động

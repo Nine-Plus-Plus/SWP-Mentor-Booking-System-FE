@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from './Button';
 import Swal from 'sweetalert2';
 import { createNoti, updateAction } from '../../apis/NotificationServices';
 import { useUserStore } from '../../store/useUserStore';
 import { toast } from 'react-toastify';
 import { addNewMember } from '../../apis/GroupServices';
+import { formattedContent } from '../../utils/commonFunction';
 
 const NotificationItem = ({
   type,
@@ -20,14 +21,22 @@ const NotificationItem = ({
   notiAction
 }) => {
   const { userData, isUpdate, setIsUpdate } = useUserStore();
+  const [loadingAcceptAdd, setLoadingAcceptAdd] = useState(false);
+  const [loadingRejectAdd, setLoadingRejectAdd] = useState(false);
 
-  const handleCreateNoti = async data => {
+  const handleCreateNoti = async (data, dataUpdate, accept) => {
     const token = localStorage.getItem('token');
     try {
+      accept ? setLoadingAcceptAdd(true) : setLoadingRejectAdd(true);
       const response = await createNoti(data, token);
       console.log(response);
+      if (response?.statusCode === 200) {
+        dataUpdate && handleUpdateAction(dataUpdate);
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      accept ? setLoadingAcceptAdd(false) : setLoadingRejectAdd(false);
     }
   };
 
@@ -36,9 +45,13 @@ const NotificationItem = ({
     try {
       const response = await updateAction(notiId, data, token);
       console.log(response);
-      if (response?.statusCode === 200) updateActionClick();
+      if (response?.statusCode === 200) {
+        updateActionClick();
+        toast.success();
+      }
     } catch (error) {
       console.log(error);
+      toast.error();
     }
   };
 
@@ -48,6 +61,7 @@ const NotificationItem = ({
       const addMemberData = {
         id: idStudent
       };
+      setLoadingAcceptAdd(true);
       const response = await addNewMember(groupId, addMemberData, token);
       console.log(response);
       if (response?.statusCode === 200) {
@@ -64,7 +78,6 @@ const NotificationItem = ({
           const dataUpdate = {
             action: 'ACCEPT'
           };
-          handleUpdateAction(dataUpdate);
           const dataSent = {
             message: `Leader ${userData.user.fullName} accept you from group: ${groupName} !`,
             type: 'MESSAGE',
@@ -78,20 +91,12 @@ const NotificationItem = ({
               id: groupId
             }
           };
-          handleCreateNoti(dataSent);
+          handleCreateNoti(dataSent, dataUpdate, true);
         } else {
-          Swal.fire({
-            title: 'Accept Successful!',
-            text: `You became a new member of group!`,
-            icon: 'success',
-            confirmButtonText: 'OK',
-            timer: 3000, // Đóng sau 3 giây
-            timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
-          });
           const dataUpdate = {
             action: 'ACCEPT'
           };
-          handleUpdateAction(dataUpdate);
+          // handleUpdateAction(dataUpdate);
           const dataSent = {
             message: `${userData.user.fullName} accepted come your group !`,
             type: 'MESSAGE',
@@ -105,12 +110,22 @@ const NotificationItem = ({
               id: groupId
             }
           };
-          handleCreateNoti(dataSent);
+          handleCreateNoti(dataSent, dataUpdate, true);
+          Swal.fire({
+            title: 'Accept Successful!',
+            text: `You became a new member of group!`,
+            icon: 'success',
+            confirmButtonText: 'OK',
+            timer: 3000, // Đóng sau 3 giây
+            timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+          });
         }
       } else toast.error(response?.message);
     } catch (error) {
       toast.error(message);
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -161,10 +176,11 @@ const NotificationItem = ({
       reverseButtons: true
     }).then(result => {
       if (result.isConfirmed) {
+        setLoadingRejectAdd(true);
         const dataUpdate = {
           action: 'REJECT'
         };
-        handleUpdateAction(dataUpdate);
+        // handleUpdateAction(dataUpdate);
         const dataSent = {
           message:
             userData?.groupRole === 'LEADER'
@@ -172,7 +188,7 @@ const NotificationItem = ({
               : `${userData.user.fullName} reject your invent became a member of group: ${groupName} `,
           type: 'MESSAGE',
           sender: {
-            id: userData.user.id
+            id: userData?.user?.id
           },
           reciver: {
             id: senderId
@@ -181,16 +197,20 @@ const NotificationItem = ({
             id: groupId
           }
         };
-        handleCreateNoti(dataSent);
+        handleCreateNoti(dataSent, dataUpdate, false);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Cancelled', 'Cancelled this action!', 'error');
       }
     });
   };
 
+  useEffect(() => {
+    console.log(loadingRejectAdd);
+  }, [loadingRejectAdd]);
+
   return (
     <div className=" border shadow-md rounded-md p-3 w-full ">
-      <h1 className="font-bold text-xl text-main-1"> Notification {type.toLowerCase()}: </h1>
+      <h1 className="font-bold text-xl text-main-1"> Notification {type.toLowerCase()} </h1>
       <div className="flex p-2 justify-between">
         <div className="flex flex-col gap-2 text-md">
           <p>
@@ -202,7 +222,7 @@ const NotificationItem = ({
           </p>
           <p>
             <span className="font-bold">Content: </span>
-            {content}
+            {formattedContent(content)}
           </p>
         </div>
         <div className="flex items-center justify-center flex-col gap-3 w-1/6">
@@ -218,6 +238,7 @@ const NotificationItem = ({
                 onClick={() => {
                   userData?.groupRole === 'LEADER' ? handleAcceptJoin() : handleAcceptAdd();
                 }}
+                isLoading={loadingAcceptAdd}
               />
               <Button
                 text={'Reject'}
@@ -226,6 +247,7 @@ const NotificationItem = ({
                 htmlType={'button'}
                 fullWidth={'w-full'}
                 onClick={() => handleRejectJoin()}
+                isLoading={loadingRejectAdd}
               />
             </>
           ) : notiAction === 'ACCEPT' ? (

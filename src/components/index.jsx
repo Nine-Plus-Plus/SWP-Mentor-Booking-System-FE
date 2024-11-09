@@ -35,3 +35,4 @@ export { default as SemesterManager } from './admin/SemesterManager';
 export { default as ClassManager } from './admin/ClassManager';
 export { default as TopicManager } from './admin/TopicManager';
 export { default as UserList } from './admin/UserList';
+export { default as GroupManager } from './admin/GroupManager';

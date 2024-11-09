@@ -16,7 +16,9 @@ export const HistoryPointItem = ({ pointHistoryId, points, status, dateCreated, 
         />
         <div className="flex justify-between items-center w-full">
           <div className="flex flex-col pl-5 gap-2 w-1/3">
-            <h1 className="font-bold text-xl text-blue-500">{status}</h1>
+            <h1 className={`font-bold text-xl ${status === 'REDEEMED' ? 'text-red-500' : ' text-blue-500'}`}>
+              {status}
+            </h1>
             <p>
               <span className="font-bold">Mentor Booking: </span>
               <span>{mentorBooking}</span>

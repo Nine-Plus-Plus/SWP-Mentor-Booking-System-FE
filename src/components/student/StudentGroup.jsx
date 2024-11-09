@@ -3,16 +3,19 @@ import Button from '../common/Button';
 import path from '../../utils/path';
 import ListGroup from '../common/ListGroup';
 import { useUserStore } from '../../store/useUserStore';
-import { Form, Input, Modal, Table, Tag } from 'antd';
+import { Form, Input, Modal, Table, Tag, Spin, message } from 'antd';
 import { getAllTopicUnchosenClass } from '../../apis/TopicServices';
 import { toast } from 'react-toastify';
-import { createGroup, getGroupByClassId, getGroupById, updateGroup } from '../../apis/GroupServices';
+import { createGroup, getGroupByClassId, getGroupById, updateGroup, uploadFilegroup } from '../../apis/GroupServices';
 import Swal from 'sweetalert2';
 import { dateFnsLocalizer } from 'react-big-calendar';
 import { createProject } from '../../apis/ProjectServices';
 import { capitalizeFirstLetter } from '../../utils/commonFunction';
 import UserItem from '../common/UserItem';
 import { getStudentNotGroup } from '../../apis/StudentServices';
+import Dragger from 'antd/es/upload/Dragger';
+import { DownloadOutlined, InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import Loading from '../common/Loading';
 
 const StudentGroup = () => {
   // const [haveGroup, setHaveGroup] = useState(true);
@@ -31,29 +34,53 @@ const StudentGroup = () => {
   const [inProject, setInProject] = useState(inGroup?.project);
   const [studentNoGroup, setStudentNoGroup] = useState([]);
 
-  useEffect(() => {
-    fetchGroup();
-  }, [fullData]);
+  const [isUploadFile, setIsUploadFile] = useState(false);
+  const [canUploadFile, setCanUploadFile] = useState(true);
+  const [fileList, setFileList] = useState([]);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   const fetchGroup = async () => {
     const token = localStorage.getItem('token');
     const groupId = fullData?.groupDTO?.id;
     try {
+      setLoading(true);
       const response = await getGroupById(groupId, token);
       console.log(response);
       response?.statusCode === 200 && setInGroup(response?.groupDTO);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fullData?.groupDTO?.id && fetchGroup();
+    setLoading(false);
+  }, [fullData]);
+
+  useEffect(() => {
+    if (inGroup?.fileURL) {
+      const file = {
+        uid: '-1', // Đặt một uid duy nhất cho file
+        name: 'file.zip', // Tên file (có thể thay đổi nếu cần)
+        status: 'done', // Trạng thái của file
+        url: inGroup.fileURL || null
+      };
+      setFileList([file]);
+      setUploadedFile(file);
+    }
+  }, [inGroup]);
 
   useEffect(() => {
     const fetchTopicUnchosen = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllTopicUnchosenClass(userData?.aclass?.id, token);
         console.log(response);
-        if (response && response?.statusCode === 200) setTopics(response?.topicDTOList);
+        if (response?.statusCode === 200)
+          setTopics(response?.topicDTOList?.filter(topic => topic?.availableStatus === 'ACTIVE'));
         else setTopics([]);
       } catch (error) {
         setError(err?.message || 'Đã xảy ra lỗi');
@@ -61,21 +88,26 @@ const StudentGroup = () => {
         setLoading(false);
       }
     };
-    fetchTopicUnchosen();
+    userData?.aclass?.id && fetchTopicUnchosen();
+    setLoading(false);
   }, [userData]);
 
   useEffect(() => {
     const fetchStudentNoGroup = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getStudentNotGroup(userData?.aclass?.id, token);
-        if (response && response?.statusCode === 200) setStudentNoGroup(response?.studentsDTOList);
+        if (response?.statusCode === 200) setStudentNoGroup(response?.studentsDTOList);
         console.log(response);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchStudentNoGroup();
+    userData?.aclass?.id && fetchStudentNoGroup();
+    setLoading(false);
   }, [addModal]);
 
   useEffect(() => {
@@ -84,10 +116,12 @@ const StudentGroup = () => {
 
   const handleCreateProject = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       if (!selectedTopic) {
         throw new Error('Please choose a topic before submitting.'); // Gây lỗi nếu không có topic
       }
+      setLoading(true);
       const values = await form.validateFields();
       const projectData = {
         projectName: values.projectName,
@@ -99,28 +133,33 @@ const StudentGroup = () => {
           id: fullData?.groupDTO?.id
         }
       };
-      console.log(projectData);
 
       // Gọi API để tạo dự án
-      const response = await createProject(projectData, token);
-      console.log('Project created successfully:', response);
-      if (response && response?.statusCode === 200) {
+      response = await createProject(projectData, token);
+      console.log(response);
+
+      if (response?.statusCode === 200) {
         toast.success(response?.message);
         setInProject(response?.projectsDTO);
         setIsCreateProjectModalVisible(false);
         setSelectedTopic(null);
         setIsUpdate(!isUpdate);
+        setIsUpdate(!isUpdate);
       } else toast.error(response?.message);
     } catch (error) {
       toast.error(error.message);
+      toast.error(response.message);
       console.error('Create group error:', error);
-      message.error('Failed to create group: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCreateGroup = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
+      setLoading(true);
       const values = await form.validateFields();
       const data = {
         groupName: values.groupName,
@@ -130,17 +169,19 @@ const StudentGroup = () => {
         }
       };
       console.log(data);
-      const response = await createGroup(data, token);
+      response = await createGroup(data, token);
       console.log(response);
       if (response && response?.statusCode === 200) {
         toast.success(response?.message);
         setInGroup(response?.groupDTO);
         setIsCreateGroupModalVisible(false);
-        setIsUpdate(isUpdate);
+        setIsUpdate(!isUpdate);
       } else toast.error(response?.message);
     } catch (error) {
       console.error('Create group error:', error);
-      message.error('Failed to create group: ' + error.message);
+      message.error('Failed to create group: ' + response.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -186,7 +227,7 @@ const StudentGroup = () => {
       const dataUpdate = { groupName: values.groupName };
       const response = await updateGroup(id, dataUpdate, token);
 
-      if (response && response?.statusCode === 200) {
+      if (response?.statusCode === 200) {
         setInGroup(response?.groupDTO);
         setIsUpdateGroupModalVisible(false);
         Swal.fire({
@@ -196,11 +237,73 @@ const StudentGroup = () => {
           timer: 2000, // Đóng sau 2 giây
           showConfirmButton: false // Ẩn nút OK
         });
-      }
+      } else message.error('Failed to update group: ' + response.message);
     } catch (error) {
       console.error('Update group error:', error);
       message.error('Failed to update group: ' + error.message);
     }
+  };
+
+  const uploadProps = {
+    accept: '.zip', // Chỉ cho phép file ZIP
+    beforeUpload: file => {
+      setUploadedFile(file); // Lưu file vào state để sử dụng sau
+      return false; // Ngăn upload tự động
+    },
+    fileList,
+    onChange: info => {
+      if (info.fileList.length > 0) {
+        setFileList(info.fileList.slice(-1)); // Chỉ giữ lại file cuối cùng
+      }
+    },
+    onRemove: file => {
+      setFileList(fileList.filter(item => item.uid !== file.uid)); // Xóa file khỏi danh sách
+      // setUploadedFile(null);
+      setCanUploadFile(false);
+      return true; // Xác nhận việc xóa
+    }
+  };
+
+  const handleUploadFile = async () => {
+    const data = {
+      group: inGroup?.id,
+      file: uploadedFile
+    };
+    const token = localStorage.getItem('token');
+    console.log(data);
+    if (data?.file?.url) {
+      toast.success('Re-upload file successfully!!!');
+      setIsUploadFile(false);
+      return;
+    }
+    let response;
+    try {
+      setLoading(true);
+      response = await uploadFilegroup(data, token);
+      if (response?.status === 200) {
+        console.log(response);
+        const url = response?.data?.split('File uploaded successfully. URL: ')[1]; // Lấy phần sau "URL: "
+        const file = {
+          uid: '-1',
+          name: 'file.zip',
+          status: 'done',
+          url: url || null
+        };
+        setFileList([file]);
+        setUploadedFile(file);
+        toast.success('Upload file successfully!!!');
+        setIsUploadFile(false);
+      } else toast.error('Upload file fail: ' + response?.message);
+    } catch (error) {
+      console.log(error);
+      toast.error('Upload file fail: ' + response?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showUploadFileModal = () => {
+    setIsUploadFile(true);
   };
 
   const showCreateGroupModal = () => {
@@ -218,6 +321,8 @@ const StudentGroup = () => {
     setIsCreateProjectModalVisible(false);
     setIsUpdateGroupModalVisible(false);
     setAddModal(false);
+    setFileList([uploadedFile]);
+    setIsUploadFile(false);
   };
 
   const columns = [
@@ -334,6 +439,11 @@ const StudentGroup = () => {
 
   return (
     <div className="w-full">
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70">
+          <Loading />
+        </div>
+      )}
       {
         <div className="flex flex-col gap-5">
           {/* /// Add student to group */}
@@ -437,7 +547,7 @@ const StudentGroup = () => {
               <div className=" border shadow-md rounded-md p-3 w-full">
                 <h1 className="font-bold text-xl text-main-1"> Group name: {inGroup?.groupName}</h1>
                 <div className="flex p-2 justify-between">
-                  <div className="flex flex-col gap-2 text-md">
+                  <div className="flex flex-col gap-2 text-md text-left">
                     <p>
                       <span className="font-bold">Class: </span>
                       {inGroup?.classDTO?.className}
@@ -450,27 +560,45 @@ const StudentGroup = () => {
                       <span className="font-bold">Total member: </span>
                       {inGroup?.students?.length}
                     </p>
+                    {userData?.groupRole === 'LEADER' && (
+                      <button
+                        className="text-blue-500 hover:underline text-left border p-1 rounded-sm border-blue-300"
+                        onClick={showUploadFileModal}
+                      >
+                        {uploadedFile?.url ? 'Re-Upload specification' : 'Upload specification'} <UploadOutlined />
+                      </button>
+                    )}
+                    {uploadedFile?.url && (
+                      <a
+                        className="text-blue-500 hover:underline text-left border p-1 rounded-sm border-blue-300"
+                        href={uploadedFile?.url}
+                      >
+                        Get specification <DownloadOutlined />
+                      </a>
+                    )}
                   </div>
-                  <div className="flex justify-center h-full flex-col gap-3 ">
-                    <Button
-                      text={'Edit Group'}
-                      textColor={'text-white'}
-                      bgColor={'bg-blue-500'}
-                      bgHover={'hover:bg-blue-400'}
-                      htmlType={'button'}
-                      fullWidth={'w-full'}
-                      onClick={showUpdateGroupModal}
-                    />
-                    <Button
-                      text={'Add Member'}
-                      textColor={'text-white'}
-                      bgColor={'bg-green-500'}
-                      htmlType={'button'}
-                      bgHover={'hover:bg-green-400'}
-                      fullWidth={'w-full'}
-                      onClick={showADdMemberModal}
-                    />
-                  </div>
+                  {userData?.groupRole === 'LEADER' && (
+                    <div className="flex justify-center h-full flex-col gap-3 ">
+                      <Button
+                        text={'Edit Group'}
+                        textColor={'text-white'}
+                        bgColor={'bg-blue-500'}
+                        bgHover={'hover:bg-blue-400'}
+                        htmlType={'button'}
+                        fullWidth={'w-full'}
+                        onClick={showUpdateGroupModal}
+                      />
+                      <Button
+                        text={'Add Member'}
+                        textColor={'text-white'}
+                        bgColor={'bg-green-500'}
+                        htmlType={'button'}
+                        bgHover={'hover:bg-green-400'}
+                        fullWidth={'w-full'}
+                        onClick={showADdMemberModal}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               {inGroup?.students?.map(member => (
@@ -595,15 +723,15 @@ const StudentGroup = () => {
                 cancelButtonText: 'No, cancel.', // Văn bản nút hủy
                 reverseButtons: false // Đảo ngược vị trí các nút
               }).then(result => {
-                if(result.isConfirmed) {
+                if (result.isConfirmed) {
                   handleUpdateGroup(inGroup?.id);
-                } else if(result.dismiss === Swal.DismissReason.cancel) {
-                  Swal.fire({ 
-                    title: 'Cancelled', 
-                    text: 'Cancelled this action!', 
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                  Swal.fire({
+                    title: 'Cancelled',
+                    text: 'Cancelled this action!',
                     icon: 'error',
                     confirmButtonText: 'OK', // Văn bản nút xác nhận
-                    confirmButtonColor: '#d33', // Màu nút xác nhận
+                    confirmButtonColor: '#d33' // Màu nút xác nhận
                   });
                 }
               })
@@ -635,7 +763,6 @@ const StudentGroup = () => {
           {studentNoGroup?.map(student => (
             <UserItem
               key={student.id}
-              addGroup={inGroup?.id}
               roleItem={capitalizeFirstLetter(student?.user?.role?.roleName)}
               specialized={student?.expertise}
               name={student?.user?.fullName}
@@ -646,10 +773,32 @@ const StudentGroup = () => {
               code={student?.studentCode}
               studentAdd={userData?.user?.id}
               groupName={inGroup?.groupName}
+              addGroup={inGroup?.id}
               avatar={student?.user?.avatar}
             />
           ))}
         </div>
+      </Modal>
+
+      {/* Modal upload file group */}
+      <Modal
+        title="Upload ZIP File"
+        open={isUploadFile}
+        onCancel={handleCancel}
+        onOk={() => {
+          handleUploadFile();
+        }}
+        okButtonProps={{
+          disabled: !canUploadFile || !uploadedFile
+        }}
+      >
+        <Dragger {...uploadProps}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">Click or drag ZIP file to this area to upload</p>
+          <p className="ant-upload-hint">Only one ZIP file is allowed.</p>
+        </Dragger>
       </Modal>
     </div>
   );

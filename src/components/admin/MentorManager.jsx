@@ -6,7 +6,7 @@ import { getAllSkill } from '../../apis/SkillServices';
 import dayjs from 'dayjs';
 import { colors } from '../../utils/constant';
 import Dragger from 'antd/es/upload/Dragger';
-import { InboxOutlined } from '@ant-design/icons';
+import { InboxOutlined, Loading3QuartersOutlined } from '@ant-design/icons';
 import Search from 'antd/es/transfer/search';
 
 const MentorManager = () => {
@@ -24,21 +24,24 @@ const MentorManager = () => {
   const [fileList, setFileList] = useState([]);
   const [searchText, setSearchText] = useState('');
 
+  const fetchMentors = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      setLoading(true);
+      const response = await getAllMentors(searchText, token);
+      console.log(response);
+      if (response?.statusCode === 200) {
+        const sortedMentors = response.mentorsDTOList.sort((a, b) => b.id - a.id);
+        setMentors(sortedMentors);
+      } else setMentors([]);
+    } catch (err) {
+      setError(err.message || 'Đã xảy ra lỗi');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchMentors = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const response = await getAllMentors(searchText, token);
-        console.log(response);
-
-        setMentors(response.mentorsDTOList);
-      } catch (err) {
-        setError(err.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMentors();
   }, [searchText]);
 
@@ -47,11 +50,11 @@ const MentorManager = () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getAllSkill('', token);
-        setSkills(response.data.skillsDTOList);
+        if (response?.statusCode === 200) {
+          setSkills(response?.data?.skillsDTOList);
+        }
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
-      } finally {
-        setLoading(false);
       }
     };
     fetchSkill();
@@ -66,10 +69,12 @@ const MentorManager = () => {
 
   const handleCreateMentor = async () => {
     const token = localStorage.getItem('token');
+    const fullSkill = skills;
+    let response;
     try {
+      setLoading(true);
       const values = await form.validateFields();
       const { avatar, ...mentorValue } = values;
-
       const { skills, ...otherFields } = mentorValue;
       const skillsArray = skills.map(skillId => ({ id: skillId }));
       const createData = {
@@ -80,34 +85,37 @@ const MentorManager = () => {
         },
         avatarFile: uploadedAvatar
       };
-      const response = await createMentor(createData, token);
+      response = await createMentor(createData, token);
       console.log(response);
 
       if (response && response.statusCode === 200) {
         setMentors(prevMentors => [
-          ...prevMentors,
           {
-            ...response.mentorsDTO,
-            skills: response.mentorsDTO?.skills.map(skill => {
-              const skillDetail = skills.find(s => s.id === skill.id);
+            ...response?.mentorsDTO,
+            skills: response?.mentorsDTO?.skills?.map(skill => {
+              const skillDetail = fullSkill?.find(s => s.id === skill.id);
               return skillDetail ? { id: skillDetail.id, skillName: skillDetail.skillName } : skill;
             })
-          }
+          },
+          ...prevMentors
         ]);
         setIsCreateModalVisible(false);
         message.success('Mentor created successfully');
         setFileList([]);
       } else {
-        message.error('Failed to create mentor');
+        message.error('Failed to create mentor: ' + response?.message);
       }
     } catch (error) {
       console.error('Create mentor error:', error);
-      message.error('Failed to create mentor: ' + error.message);
+      message.error('Failed to create mentor: ' + response?.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields([
         'fullName',
@@ -136,7 +144,7 @@ const MentorManager = () => {
       };
       console.log(updateData);
 
-      const response = await updateMentor(selectedMentor.user.id, updateData, token);
+      response = await updateMentor(selectedMentor.user.id, updateData, token);
 
       if (response && response?.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
@@ -145,28 +153,29 @@ const MentorManager = () => {
         setFileList([]);
         message.success('Mentor updated successfully');
       } else {
-        message.error('Failed to update mentor');
+        message.error('Failed to update mentor: ' + response?.message);
       }
     } catch (error) {
       console.error('Update mentor error:', error);
-      message.error('Failed to update mentor: ' + error.message);
+      message.error('Failed to update mentor: ' + response?.message);
     }
   };
 
   const handleDelete = async mentorId => {
     const token = localStorage.getItem('token');
+    let response;
     try {
-      const response = await deleteMentor(mentorId, token);
+      response = await deleteMentor(mentorId, token);
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         message.success('Mentor deleted successfully');
         setMentors(prevMentors => prevMentors.filter(mentor => mentor.user.id !== mentorId)); // Cập nhật danh sách người dùng
       } else {
-        message.error('Failed to delete mentor: ' + response.data.message);
+        message.error('Failed to delete mentor: ' + response?.data?.message);
       }
     } catch (error) {
       console.error('Delete mentor error:', error);
-      message.error('Failed to delete mentor: ' + error.message);
+      message.error('Failed to delete mentor: ' + response?.data?.message);
     }
   };
 
@@ -178,34 +187,24 @@ const MentorManager = () => {
       message.error('Please select a file to import!');
       return;
     }
-
+    let response;
     try {
-      const response = await importExcelMentor(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
+      setLoading(true);
+      response = await importExcelMentor(fileList[0].originFileObj, token); // Gọi hàm với tệp tin
 
-      if (response && response.statusCode === 200) {
+      if (response?.statusCode === 200) {
         // Cập nhật lại danh sách người dùng với thông tin mới
-        await fetchMentors(token); // Cập nhật lại danh sách mentors
-        setIsUpdateModalVisible(false);
+        await fetchMentors(); // Cập nhật lại danh sách mentors
+        setIsImportModalVisible(false);
         setFileList([]);
         message.success('Mentors imported successfully');
       } else {
-        message.error('Import Excel thất bại');
+        await fetchMentors();
+        message.error(response.message);
       }
     } catch (error) {
       console.error('Import Excel error:', error);
-      message.error('Import Excel thất bại: ' + error.message);
-    }
-  };
-
-  const fetchMentors = async token => {
-    try {
-      const response = await getAllMentors(token);
-      console.log(response);
-
-      // Cập nhật danh sách mentors từ API
-      setMentors(response.mentorsDTOList);
-    } catch (err) {
-      setError(err.message || 'Đã xảy ra lỗi');
+      message.error('Import Excel failed: ' + response.message);
     } finally {
       setLoading(false);
     }
@@ -280,19 +279,13 @@ const MentorManager = () => {
       title: 'Avatar',
       dataIndex: ['user', 'avatar'],
       key: 'avatar',
-      render: avatar => (
-        <img
-          src={avatar}
-          alt="Avatar"
-          className="w-[7vw] h-50" // Thêm các class Tailwind CSS cho kích thước và kiểu dáng
-        />
-      )
+      render: avatar => <img src={avatar} alt="Avatar" className="w-[7vw] h-50" />
     },
     {
       title: 'Full Name',
       dataIndex: ['user', 'fullName'],
       key: 'fullName',
-      fixed: 'left',
+      fixed: 'left'
     },
     {
       title: 'Email',
@@ -327,7 +320,8 @@ const MentorManager = () => {
     {
       title: 'Star',
       dataIndex: 'star',
-      key: 'star'
+      key: 'star',
+      render: value => (Math.round(value * 2) / 2).toFixed(1)
     },
     {
       title: 'Time remain',
@@ -364,10 +358,6 @@ const MentorManager = () => {
     setSearchText(e.target.value);
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
-
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
@@ -391,7 +381,8 @@ const MentorManager = () => {
         dataSource={mentors}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        scroll={{ x:'1600px', y: 400 }}
+        scroll={{ x: '1600px', y: 600 }}
+        loading={loading}
       />
 
       {/* Modal for updating mentor */}
@@ -493,7 +484,22 @@ const MentorManager = () => {
             >
               <InputNumber min={0} />
             </Form.Item>
-            <Form.Item label="Birth Date" name="birthDate">
+            <Form.Item
+              label="Birth Date"
+              name="birthDate"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select your birth date'
+                },
+                {
+                  validator: (_, value) =>
+                    value && value.isBefore(dayjs().subtract(18, 'years'))
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('You must be at least 18 years old'))
+                }
+              ]}
+            >
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
@@ -520,7 +526,16 @@ const MentorManager = () => {
             <Form.Item label="Address" name="address">
               <Input />
             </Form.Item>
-            <Form.Item label="Phone" name="phone">
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[
+                {
+                  pattern: /^(0)[0-9]{9}$/, // 9 chữ số sau chữ số đầu tiên '0' để tổng cộng là 10 chữ số
+                  message: "Phone number must start with '0' and contain exactly 10 digits"
+                }
+              ]}
+            >
               <Input />
             </Form.Item>
             <Form.Item
@@ -615,18 +630,21 @@ const MentorManager = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              label="Password"
-              name="password"
+              label="Birth Date"
+              name="birthDate"
               rules={[
                 {
                   required: true,
-                  message: 'Please input your password!'
+                  message: 'Please select your birth date'
+                },
+                {
+                  validator: (_, value) =>
+                    value && value.isBefore(dayjs().subtract(18, 'years'))
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('You must be at least 18 years old'))
                 }
               ]}
             >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item label="Birth Date" name="birthDate">
               <DatePicker format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
@@ -653,7 +671,16 @@ const MentorManager = () => {
             <Form.Item label="Address" name="address">
               <Input />
             </Form.Item>
-            <Form.Item label="Phone" name="phone">
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[
+                {
+                  pattern: /^(0)[0-9]{9}$/, // 9 chữ số sau chữ số đầu tiên '0' để tổng cộng là 10 chữ số
+                  message: "Phone number must start with '0' and contain exactly 10 digits"
+                }
+              ]}
+            >
               <Input />
             </Form.Item>
             <Form.Item

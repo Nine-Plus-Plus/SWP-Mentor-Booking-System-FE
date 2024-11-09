@@ -37,10 +37,10 @@ const Schedule = () => {
     const token = localStorage.getItem('token');
     const fetchAllScheduleOfMentor = async () => {
       try {
-        const response = await getAllScheduleByIdMentorForMentor(userData.id, token);
+        const response = await getAllScheduleByIdMentorForMentor(userData?.id, token);
         console.log(response);
 
-        if (response && response?.statusCode === 200) {
+        if (response?.statusCode === 200) {
           const formattedEvents = response?.mentorScheduleDTOList?.map(schedule => ({
             id: schedule.id,
             title: schedule?.status,
@@ -56,7 +56,7 @@ const Schedule = () => {
       }
     };
 
-    fetchAllScheduleOfMentor();
+    userData?.id && fetchAllScheduleOfMentor();
   }, [userData]);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const Schedule = () => {
         start: dayjs(response?.mentorScheduleDTO?.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
         end: dayjs(response?.mentorScheduleDTO?.availableTo, 'DD-MM-YYYY HH:mm').toDate()
       };
-      if (response && response?.statusCode === 200) {
+      if (response?.statusCode === 200) {
         toast.warning('A schedule was expire!', {
           autoClose: 2000
         });
@@ -136,55 +136,49 @@ const Schedule = () => {
       availableFrom: dateRange[0].format('DD-MM-YYYY HH:mm'),
       availableTo: dateRange[1].format('DD-MM-YYYY HH:mm')
     };
-    let response;
+    
     try {
+      let response;
       if (!isEditing) {
         response = await createSchedule(data, token);
-        console.log('schedule create: ', response);
-        const added = {
-          id: response?.mentorScheduleDTO?.id,
-          title: 'AVAILABLE',
-          start: dayjs(response.mentorScheduleDTO.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
-          end: dayjs(response.mentorScheduleDTO.availableTo, 'DD-MM-YYYY HH:mm').toDate()
-        };
+        console.log('Schedule create response:', response);
+  
         if (response?.statusCode === 200) {
-          toast.success('Event created successfully', {
-            autoClose: 500
-          });
+          const added = {
+            id: response.mentorScheduleDTO?.id,
+            title: 'AVAILABLE',
+            start: dayjs(response.mentorScheduleDTO.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
+            end: dayjs(response.mentorScheduleDTO.availableTo, 'DD-MM-YYYY HH:mm').toDate()
+          };
+          toast.success('Event created successfully', { autoClose: 500 });
           setEvents([...events, added]);
           setSelectedEvent(null);
         } else {
-          toast.error('Event create successfully' + response.message, {
-            autoClose: 500
-          });
+          toast.error('Failed to create event: ' + (response.message || 'Unknown error'), { autoClose: 500 });
         }
       } else {
         response = await updateSchedule(selectedEvent.id, data, token);
-        const updated = {
-          id: response?.mentorScheduleDTO?.id,
-          title: 'AVAILABLE',
-          start: dayjs(response?.mentorScheduleDTO?.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
-          end: dayjs(response?.mentorScheduleDTO?.availableTo, 'DD-MM-YYYY HH:mm').toDate()
-        };
-        if (response && response?.statusCode === 200) {
-          toast.success('Event update successfully!', {
-            autoClose: 5000
-          });
+  
+        if (response?.statusCode === 200) {
+          const updated = {
+            id: response.mentorScheduleDTO?.id,
+            title: 'AVAILABLE',
+            start: dayjs(response.mentorScheduleDTO.availableFrom, 'DD-MM-YYYY HH:mm').toDate(),
+            end: dayjs(response.mentorScheduleDTO.availableTo, 'DD-MM-YYYY HH:mm').toDate()
+          };
+          toast.success('Event updated successfully!', { autoClose: 500 });
           setEvents(events.map(event => (event.id === updated.id ? updated : event)));
           setSelectedEvent(null);
-          // Thêm sự kiện mới vào danh sách
         } else {
-          toast.error('Failed to update event: ' + response.data.message, {
-            autoClose: 5000
-          });
+          toast.error('Failed to update event: ' + (response.message || 'Unknown error'), { autoClose: 500 });
         }
       }
       handleModalCancel();
     } catch (error) {
       console.error('Schedule handling error:', error.message);
-      toast.error('An error occurred: ' + response.message);
+      toast.error('An error occurred: ' + error.message);
     }
-  };
+  };  
 
   const handleDelete = async id => {
     const token = localStorage.getItem('token');

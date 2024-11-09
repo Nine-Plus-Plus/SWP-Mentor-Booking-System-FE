@@ -28,8 +28,10 @@ const ClassManager = () => {
     const fetchSemesters = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getAllSemester(token);
-        setSemesters(response.data?.semesterDTOList);
+        if (response?.data?.statusCode === 200) setSemesters(response?.data?.semesterDTOList);
+        else setSemesters([]);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
       } finally {
@@ -50,8 +52,9 @@ const ClassManager = () => {
       const token = localStorage.getItem('token');
       try {
         const response = await getMentorNoClass(token);
-        setMentors(response.mentorsDTOList);
         console.log(response);
+        if (response?.statusCode === 200) setMentors(response?.mentorsDTOList);
+        else setMentors([]);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi');
       } finally {
@@ -67,8 +70,12 @@ const ClassManager = () => {
     const fetchClassBySemesterId = async () => {
       const token = localStorage.getItem('token');
       try {
+        setLoading(true);
         const response = await getClassBySemesterId(selectedSemester, searchText, token);
-        setClasses(response?.classDTOList || []);
+        if (response?.statusCode === 200) {
+          const sortedClass = response.classDTOList.sort((a, b) => b.id - a.id);
+          setClasses(sortedClass || []);
+        } else setClasses([]);
         console.log(response);
       } catch (err) {
         setError(err?.message || 'Đã xảy ra lỗi');
@@ -76,12 +83,13 @@ const ClassManager = () => {
         setLoading(false);
       }
     };
-    setLoading(false);
     selectedSemester && fetchClassBySemesterId();
+    // setLoading(false);
   }, [selectedSemester, searchText]);
 
   const handleCreateClass = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       // Xác thực form và lấy dữ liệu
       const values = await form.validateFields();
@@ -99,24 +107,30 @@ const ClassManager = () => {
       console.log(dataCreate);
 
       // Gọi API tạo lớp học
-      const response = await createClass(dataCreate, token);
+      setLoading(true);
+
+      response = await createClass(dataCreate, token);
 
       // Kiểm tra phản hồi từ API và cập nhật danh sách lớp học
-      if (response?.statusCode === 200 && response?.classDTO) {
-        setClasses([...classes, response.classDTO]);
+      if (response?.statusCode === 200) {
+        setClasses([response.classDTO, ...classes]);
         setIsCreateModalVisible(false);
         message.success('Class created successfully');
       } else {
-        message.error('Failed to create class');
+        message.error('Failed to create class: ' + response?.message);
       }
     } catch (error) {
       console.error('Create class error:', error);
-      message.error('Failed to create class: ' + (error.message || 'Unknown error'));
+      console.log(response?.message);
+      message.error('Failed to create class: ', response?.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleUpdate = async () => {
     const token = localStorage.getItem('token');
+    let response;
     try {
       const values = await form.validateFields();
       const updateData = {
@@ -124,8 +138,8 @@ const ClassManager = () => {
         mentor: { id: values.mentorId },
         semester: { id: values.semesterId }
       };
-
-      const response = await updateClass(selectedClass.id, updateData, token);
+      setLoading(true);
+      response = await updateClass(selectedClass.id, updateData, token);
       if (response && response?.statusCode === 200) {
         // Kiểm tra xem semesterId đã thay đổi hay chưa
         const updatedClass = response.classDTO; // Lớp học sau khi cập nhật
@@ -141,18 +155,21 @@ const ClassManager = () => {
         setIsUpdateModalVisible(false);
         message.success('Class updated successfully');
       } else {
-        console.log('Update Data:', updateData);
-        message.error('Failed to update class');
+        message.error('Failed to update class:' + response?.message);
       }
     } catch (error) {
       console.error('Update class error:', error);
-      message.error('Failed to update class: ' + error.message);
+      message.error('Failed to update class: ' + response?.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async idClass => {
     const token = localStorage.getItem('token');
     try {
+      setLoading(true);
+
       const response = await deleteClass(idClass, token);
 
       if (response && response.statusCode === 200) {
@@ -164,6 +181,8 @@ const ClassManager = () => {
     } catch (error) {
       console.error('Delete class error:', error);
       message.error('Failed to delete class: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -172,9 +191,9 @@ const ClassManager = () => {
     console.log(classU);
 
     form.setFieldsValue({
-      className: classU.className,
-      semesterId: classU.semester.id,
-      mentorId: classU.mentor.id
+      className: classU?.className,
+      semesterId: classU?.semester?.id,
+      mentorId: classU?.mentor?.id
     });
     setIsUpdateModalVisible(true);
   };
@@ -226,13 +245,20 @@ const ClassManager = () => {
       key: 'actions',
       render: (text, record) => (
         <div className="flex flex-col gap-2">
-          <Button
-            className="bg-blue-500 text-white  w-full"
-            onClick={() => showUpdateModal(record)}
-            style={{ marginRight: '10px' }}
-          >
-            Update
-          </Button>
+          {record.availableStatus === 'INACTIVE' ? (
+            <Button className="bg-gray-500 text-white  w-full hover:cursor-not-allowed" style={{ marginRight: '10px' }}>
+              Inactive
+            </Button>
+          ) : (
+            <Button
+              className="bg-blue-500 text-white  w-full"
+              onClick={() => showUpdateModal(record)}
+              style={{ marginRight: '10px' }}
+            >
+              Update
+            </Button>
+          )}
+
           <Button className="bg-red-500 text-white  w-full" onClick={() => handleDelete(record.id)}>
             Delete
           </Button>
@@ -244,10 +270,6 @@ const ClassManager = () => {
   const onChange = e => {
     setSearchText(e.target.value);
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-700">Loading...</div>;
-  }
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -285,6 +307,7 @@ const ClassManager = () => {
         rowKey="id"
         pagination={{ pageSize: 10 }}
         scroll={{ y: 400 }}
+        loading={loading}
       />
 
       {/* Modal for updating class */}
@@ -314,11 +337,13 @@ const ClassManager = () => {
               ]}
             >
               <Select placeholder="Select Semester">
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item label="Mentor" name="mentorId">
@@ -361,11 +386,13 @@ const ClassManager = () => {
               ]}
             >
               <Select placeholder="Select Semester">
-                {semesters?.map(semester => (
-                  <Select.Option key={semester.id} value={semester.id}>
-                    {semester.semesterName}
-                  </Select.Option>
-                ))}
+                {semesters
+                  ?.filter(semester => semester.availableStatus !== 'INACTIVE')
+                  ?.map(semester => (
+                    <Select.Option key={semester.id} value={semester.id}>
+                      {semester.semesterName}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
             <Form.Item label="Mentor" name="mentorId">

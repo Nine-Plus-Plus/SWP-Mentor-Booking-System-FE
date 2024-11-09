@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { getStudentNotGroup } from '../../apis/StudentServices';
 import { createNoti } from '../../apis/NotificationServices';
 import Swal from 'sweetalert2';
+import { DownloadOutlined } from '@ant-design/icons';
 
 const GroupItem = ({
   idGroup,
@@ -18,12 +19,15 @@ const GroupItem = ({
   totalMember,
   process,
   leader,
-  leaderId
+  leaderId,
+  urlFile
 }) => {
   const [isShowMore, setIsShowMore] = useState(false);
   const [joined, setJoined] = useState(true);
   const [addModal, setAddModal] = useState(false);
   const [studentNoGroup, setStudentNoGroup] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const { userData } = useUserStore();
 
   const showADdMemberModal = () => {
@@ -52,10 +56,13 @@ const GroupItem = ({
 
   const handleCreateNoti = async data => {
     const token = localStorage.getItem('token');
+    let response;
     try {
-      const response = await createNoti(data, token);
+      setLoading(true);
+
+      response = await createNoti(data, token);
       console.log(response);
-      response?.statusCode === 200 &&
+      if (response?.statusCode === 200) {
         Swal.fire({
           title: 'Sent Request Successful!',
           text: `Your request was sent successfully.`,
@@ -64,8 +71,13 @@ const GroupItem = ({
           timer: 3000, // Đóng sau 3 giây
           timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
         });
+        setJoined(!joined);
+      }
     } catch (error) {
-      console.log(error);
+      toast.error(response.message);
+      console.log(response.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,9 +107,7 @@ const GroupItem = ({
           }
         };
         console.log(dataSent);
-
         handleCreateNoti(dataSent);
-        setJoined(!joined);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire({
           title: 'Cancelled',
@@ -115,7 +125,7 @@ const GroupItem = ({
     <div className=" border shadow-md rounded-md p-3 w-full">
       <h1 className="font-bold text-xl text-main-1"> Group name: {groupName}</h1>
       <div className="flex p-2 justify-between">
-        <div className="flex flex-col gap-2 text-md">
+        <div className="flex flex-col gap-2 text-md w-4/12">
           <p>
             <span className="font-bold">Project Name: </span> {projectName}
           </p>
@@ -127,8 +137,16 @@ const GroupItem = ({
             <span className="font-bold">Leader: </span>
             {leader}
           </p>
+          {userData.user.role.roleName === 'MENTOR' && urlFile && (
+            <a
+              className="text-blue-500 hover:underline text-left border p-1 rounded-sm border-blue-300 inline-block max-w-max"
+              href={urlFile}
+            >
+              Get specification <DownloadOutlined />
+            </a>
+          )}
         </div>
-        <div className="flex flex-col gap-2 text-md">
+        <div className="flex flex-col gap-2 text-md w-4/12">
           <p>
             <span className="font-bold">Process: </span>
             {process || 0}%
@@ -153,7 +171,7 @@ const GroupItem = ({
               setIsShowMore(!isShowMore);
             }}
           />
-          {role === 'MENTOR' && totalMember?.length < 5 && (
+          {role === 'MENTOR' && totalMember?.length < 7 && (
             <Button
               text={'Add More'}
               textColor={'text-white'}
@@ -164,7 +182,7 @@ const GroupItem = ({
               onClick={showADdMemberModal}
             />
           )}
-          {totalMember?.length < 5 ? (
+          {totalMember?.length < 7 ? (
             role !== 'MENTOR' &&
             (joined ? (
               <Button
@@ -175,6 +193,7 @@ const GroupItem = ({
                 htmlType={'button'}
                 fullWidth={'w-4/5'}
                 onClick={() => handleJoinForStudent()}
+                isLoading={loading}
               />
             ) : (
               <Button

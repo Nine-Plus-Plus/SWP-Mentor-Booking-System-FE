@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Search, UserItem } from '../index';
+import { Loading, Search, UserItem } from '../index';
 import { getAllMentorByNameSkillDate } from '../../apis/MentorServices';
 import { capitalizeFirstLetter, convertSkillArray } from '../../utils/commonFunction';
 import { useUserStore } from '../../store/useUserStore';
@@ -16,6 +16,7 @@ const MentorList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const topRef = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   // This will parse the URL query params
   const searchParams = new URLSearchParams(location.search);
@@ -49,6 +50,8 @@ const MentorList = () => {
         else setMentors([]);
       } catch (error) {
         setError(error.message || 'Đã xảy ra lỗi');
+      } finally {
+        setLoading(false);
       }
     };
     fetchMentorByCondition();
@@ -69,6 +72,10 @@ const MentorList = () => {
   };
 
   const currentMentors = mentors.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  if (loading) {
+    return <div className="text-center text-gray-700">Loading...</div>;
+  }
 
   return (
     <div className="w-full h-full flex flex-col break-words gap-3">
