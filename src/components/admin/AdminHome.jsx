@@ -5,10 +5,11 @@ import { getAllBookingBySemesterId, getAllBookingByStats } from '../../apis/Book
 import { getAllGroup, getAllGroupBySemesterId } from '../../apis/GroupServices';
 import { getAllSemester } from '../../apis/SemesterServices';
 import { Select } from 'antd';
-import { getAllMentors } from '../../apis/MentorServices';
+import { getAllMentors, reportMentorBySemesterId } from '../../apis/MentorServices';
 import { getStudents, getStudentsBySemesterId } from '../../apis/StudentServices';
 import { getTopicByIdSemester } from '../../apis/TopicServices';
 import Loading from '../common/Loading';
+import dayjs from 'dayjs';
 
 export const AdminHome = () => {
   const [mentorRatings, setMentorRatings] = useState([]);
@@ -21,6 +22,9 @@ export const AdminHome = () => {
   const [error, setError] = useState(null);
   const [semesters, setSemesters] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState(null);
+  const [isEndSemester, setIsEndSemester] = useState(false);
+  const [isInRangSemester, setIsInRangSemester] = useState(false);
+
   const token = localStorage.getItem('token');
   const [bookingStatus, setBookingStatus] = useState({
     CONFIRMED: 0,
@@ -43,6 +47,20 @@ export const AdminHome = () => {
     };
     fetchSemesters();
   }, []);
+
+  useEffect(() => {
+    const currentSemester = semesters?.find(semester => selectedSemester === semester?.id);
+
+    if (currentSemester) {
+      const { dateStart, dateEnd, availableStatus } = currentSemester;
+      const startDate = dayjs(dateStart, 'DD-MM-YYYY');
+      const endDate = dayjs(dateEnd, 'DD-MM-YYYY');
+      const now = dayjs();
+      const isInDateRange = now.isAfter(startDate) && now.isBefore(endDate);
+      setIsEndSemester(availableStatus === 'INACTIVE');
+      setIsInRangSemester(isInDateRange);
+    }
+  }, [selectedSemester, semesters]);
 
   useEffect(() => {
     if (semesters?.length > 0) {
@@ -73,6 +91,20 @@ export const AdminHome = () => {
     setTotalBookings(0);
     selectedSemester && fetchAllBooking();
   }, [selectedSemester]);
+
+  useEffect(() => {
+    const fetchReportSemester = async () => {
+      const response = await reportMentorBySemesterId(selectedSemester, token);
+      console.log(response);
+      if (response?.statusCode === 200) {
+        setTotalMentors(prevTotal => prevTotal + response?.mentorReportDTOList?.length);
+        const rating = response?.mentorReportDTOList?.map(mentor => mentor.starRating);
+        setMentorRatings(rating);
+      }
+    };
+    setTotalMentors(0);
+    isEndSemester && fetchReportSemester();
+  }, [isEndSemester]);
 
   useEffect(() => {
     const fetchAllStudent = async () => {
@@ -129,7 +161,11 @@ export const AdminHome = () => {
         const response = await getAllMentors('', token);
         if (response?.statusCode === 200) {
           setTotalMentors(prevTotal => prevTotal + response.mentorsDTOList.length);
-          const rating = response?.mentorsDTOList?.map(mentor => mentor.star);
+          const rating = !isInRangSemester
+            ? response?.mentorsDTOList?.map(() => 5)
+            : response?.mentorsDTOList?.map(mentor => mentor.star);
+          console.log(rating);
+
           setMentorRatings(rating);
         }
       } catch (error) {
@@ -139,8 +175,8 @@ export const AdminHome = () => {
       }
     };
     setTotalMentors(0);
-    fetchAllMentor();
-  }, []);
+    !isEndSemester && fetchAllMentor();
+  }, [isEndSemester, isInRangSemester]);
 
   // Set giá trị star đến số gần nhất
   const roundStarRating = rating => {
