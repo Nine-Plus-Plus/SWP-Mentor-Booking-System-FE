@@ -4,7 +4,13 @@ import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Button from './Button';
 import clsx from 'clsx';
-import { acceptBooking, cancelBookingMentor, cancelBookingStudent, rejectBooking } from '../../apis/BookingServices';
+import {
+  acceptBooking,
+  cancelBookingMentor,
+  cancelBookingStudent,
+  cancelPendingBooking,
+  rejectBooking
+} from '../../apis/BookingServices';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { createNoti } from '../../apis/NotificationServices';
@@ -27,7 +33,9 @@ export const BookingItem = ({
   idGroup,
   idBooking,
   mentorUserId,
-  availableStatus
+  availableStatus,
+  reload,
+  setReload
 }) => {
   const { role } = useUserStore();
   const [form] = Form.useForm();
@@ -219,6 +227,30 @@ export const BookingItem = ({
     }
   };
 
+  const cancelPendingBookingStudent = async id => {
+    try {
+      setIsLoadingCancel(true);
+      const response = await cancelPendingBooking(id, token);
+      console.log(response);
+      if (response && response?.statusCode === 200) {
+        Swal.fire({
+          title: 'Cancel Successful!',
+          text: `Your pending booking has been cancel successfully.`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Đóng sau 3 giây
+          timerProgressBar: true // Hiển thị progress bar khi đếm thời gian
+        });
+      } else toast.error(response?.message);
+    } catch (error) {
+      toast.error(error);
+      console.log(error);
+    } finally {
+      setIsLoadingCancel(false);
+      setReload(!reload);
+    }
+  };
+
   const handleAccept = () => {
     Swal.fire({
       title: 'Are you sure?',
@@ -320,6 +352,42 @@ export const BookingItem = ({
       if (result.isConfirmed) {
         setCancelBy('student');
         setIsOpen(true);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
+      }
+    });
+  };
+
+  const handleCancelPendingStudent = () => {
+    if (userData?.groupRole !== 'LEADER') {
+      Swal.fire({
+        title: 'No Authority!',
+        text: 'You must be a leader to have access to this function!!!',
+        icon: 'error',
+        timer: 2000, // Đóng sau 2 giây
+        showConfirmButton: true, // Ẩn nút OK
+        timerProgressBar: true // Hiển thị progress bar
+      });
+      return;
+    }
+    Swal.fire({
+      title: 'Are you sure?',
+      html: `Are you sure cancel this pending booking?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel it',
+      confirmButtonColor: '#dd6633',
+      cancelButtonText: 'No!',
+      reverseButtons: false // Đảo ngược vị trí của nút xác nhận và hủy
+    }).then(result => {
+      if (result.isConfirmed) {
+        cancelPendingBookingStudent(idBooking);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire({
           title: 'Cancelled',
@@ -480,15 +548,30 @@ export const BookingItem = ({
           ) : (
             <>
               {status === 'PENDING' ? (
-                <Button
-                  text={'PENDING'}
-                  textColor={'text-white'}
-                  bgColor={'bg-yellow-500'}
-                  bgHover={'hover:bg-yellow-400'}
-                  htmlType={'button'}
-                  acHover={'hover:cursor-not-allowed'}
-                  className="w-full min-w-[120px]"
-                />
+                <>
+                  <Button
+                    text={'PENDING'}
+                    textColor={'text-white'}
+                    bgColor={'bg-yellow-500'}
+                    bgHover={'hover:bg-yellow-400'}
+                    htmlType={'button'}
+                    acHover={'hover:cursor-not-allowed'}
+                    className=" min-w-[120px]"
+                    fullWidth={'w-[10vw]'}
+                  />
+                  <Button
+                    text={'CANCEL'}
+                    textColor={'text-white'}
+                    bgColor={'bg-gray-500'}
+                    bgHover={'hover:bg-gray-400'}
+                    htmlType={'button'}
+                    acHover={'hover:cursor-pointer'}
+                    fullWidth={'w-[10vw]'}
+                    onClick={handleCancelPendingStudent}
+                    isLoading={isLoadingCancel}
+                    className=" min-w-[120px]"
+                  />
+                </>
               ) : status === 'CONFIRMED' ? (
                 <div>
                   {availableStatus === 'INACTIVE' ? (
@@ -497,6 +580,7 @@ export const BookingItem = ({
                       textColor={'text-white'}
                       bgColor={'bg-gray-500'}
                       acHover={'hover:cursor-not-allowed'}
+                      fullWidth={'w-[10vw]'}
                       className="w-full min-w-[120px]"
                     />
                   ) : (
@@ -508,6 +592,7 @@ export const BookingItem = ({
                         bgHover={'hover:bg-green-400'}
                         htmlType={'button'}
                         className="w-full min-w-[120px]"
+                        fullWidth={'w-[10vw]'}
                         acHover={'hover:cursor-not-allowed'}
                       />
                       <Button
@@ -518,6 +603,7 @@ export const BookingItem = ({
                         htmlType={'button'}
                         className="w-full min-w-[120px]"
                         acHover={'hover:cursor-pointer'}
+                        fullWidth={'w-[10vw]'}
                         isLoading={isLoadingCancel}
                         onClick={handleCancelStudent}
                       />
@@ -531,6 +617,7 @@ export const BookingItem = ({
                   bgColor={'bg-gray-500'}
                   bgHover={'hover:bg-gray-400 hover:cursor-not-allowed'}
                   htmlType={'button'}
+                  fullWidth={'w-[10vw]'}
                   className="w-full min-w-[120px]"
                 />
               ) : (
@@ -539,6 +626,7 @@ export const BookingItem = ({
                   textColor={'text-white'}
                   bgColor={'bg-red-500'}
                   bgHover={'hover:bg-red-400'}
+                  fullWidth={'w-[10vw]'}
                   htmlType={'button'}
                   className="w-full min-w-[120px]"
                   acHover={'hover:cursor-not-allowed'}

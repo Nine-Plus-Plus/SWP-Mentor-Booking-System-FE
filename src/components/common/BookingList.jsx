@@ -19,6 +19,7 @@ function BookingList() {
   const [pageSize] = useState(10);
   const topRef = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [reload, setReload] = useState(false);
 
   const rejectByMentor = async id => {
     try {
@@ -79,7 +80,7 @@ function BookingList() {
       }
     };
     fetchAllActiveBooking();
-  }, [userData?.id, filter, fullData?.groupDTO?.id]);
+  }, [userData?.id, filter, fullData?.groupDTO?.id, reload]);
 
   const currentBooking = bookings.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -125,7 +126,8 @@ function BookingList() {
                 mentor={booking?.mentor?.user?.fullName}
                 mentorUserId={booking?.mentor?.user?.id}
                 availableStatus={booking?.availableStatus}
-                setLoading={setLoading}
+                reload={reload}
+                setReload={setReload}
               />
             ))
           )}
