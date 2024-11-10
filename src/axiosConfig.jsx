@@ -56,7 +56,7 @@ instance.interceptors.response.use(
         setTimeout(() => {
           // Điều hướng người dùng về trang đăng nhập
           window.location.href = '/public/login';
-        }, 3000);
+        }, 2000);
       }
     } else if (error.request) {
       // The request was made but no response was received

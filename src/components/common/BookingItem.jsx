@@ -141,6 +141,7 @@ export const BookingItem = ({
         createMeetingAccept(id);
         handleSentNotiOptionMentor('accepted');
         setStatus('CONFIRMED');
+        setReload(!reload);
       } else toast.error(response?.message);
     } catch (error) {
       toast.error(error);
@@ -473,6 +474,7 @@ export const BookingItem = ({
                     bgColor={'bg-green-500'}
                     bgHover={'hover:bg-green-400'}
                     htmlType={'button'}
+                    fullWidth={'w-[10vw]'}
                     onClick={handleAccept}
                     isLoading={isLoadingAccept}
                     className="w-full min-w-[120px]"
@@ -484,6 +486,7 @@ export const BookingItem = ({
                     bgHover={'hover:bg-red-400'}
                     isLoading={isLoadingReject}
                     htmlType={'button'}
+                    fullWidth={'w-[10vw]'}
                     onClick={handleReject}
                     className="w-full min-w-[120px]"
                   />
@@ -497,6 +500,7 @@ export const BookingItem = ({
                       bgColor={'bg-gray-500'}
                       acHover={'hover:cursor-not-allowed'}
                       className="w-full min-w-[120px]"
+                      fullWidth={'w-[10vw]'}
                     />
                   ) : (
                     <div className="flex flex-col gap-3">
@@ -505,6 +509,7 @@ export const BookingItem = ({
                         textColor={'text-white'}
                         bgColor={'bg-green-500'}
                         bgHover={'hover:bg-green-400'}
+                        fullWidth={'w-[10vw]'}
                         htmlType={'button'}
                         acHover={'hover:cursor-not-allowed'}
                         className="w-full min-w-[120px]"
@@ -516,6 +521,7 @@ export const BookingItem = ({
                         bgHover={'hover:bg-gray-400'}
                         htmlType={'button'}
                         isLoading={isLoadingCancel}
+                        fullWidth={'w-[10vw]'}
                         onClick={handleCancelMentor}
                         className="w-full min-w-[120px]"
                       />
@@ -530,6 +536,7 @@ export const BookingItem = ({
                   bgHover={'hover:bg-gray-400 hover:cursor-not-allowed'}
                   htmlType={'button'}
                   className="w-full min-w-[120px]"
+                  fullWidth={'w-[10vw]'}
                 />
               ) : (
                 <div className="flex flex-col gap-3">
@@ -539,6 +546,7 @@ export const BookingItem = ({
                     bgColor={'bg-red-500'}
                     bgHover={'hover:bg-red-400'}
                     htmlType={'button'}
+                    fullWidth={'w-[10vw]'}
                     acHover={'hover:cursor-not-allowed'}
                     className="w-full min-w-[120px]"
                   />
