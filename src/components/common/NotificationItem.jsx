@@ -139,13 +139,20 @@ const NotificationItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel.',
-      reverseButtons: true
+      reverseButtons: false
     }).then(result => {
       if (result.isConfirmed) {
         handleAddMember(studentSenderId);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -156,9 +163,10 @@ const NotificationItem = ({
       text: `Become a member of group:${groupName}!`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: 'Yes, join in',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel.',
-      reverseButtons: true
+      reverseButtons: false
     }).then(result => {
       if (result.isConfirmed) {
         handleAddMember(userData?.id);
@@ -174,9 +182,10 @@ const NotificationItem = ({
       text: 'Reject student join group!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: 'Yes, reject',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel.',
-      reverseButtons: true
+      reverseButtons: false
     }).then(result => {
       if (result.isConfirmed) {
         setLoadingRejectAdd(true);
@@ -202,7 +211,13 @@ const NotificationItem = ({
         };
         handleCreateNoti(dataSent, dataUpdate, false);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
