@@ -24,14 +24,14 @@ const NotificationItem = ({
   const [loadingAcceptAdd, setLoadingAcceptAdd] = useState(false);
   const [loadingRejectAdd, setLoadingRejectAdd] = useState(false);
 
-  const handleCreateNoti = async (data, dataUpdate, accept) => {
+  const handleCreateNoti = async (data, dataUpdate, accept, update) => {
     const token = localStorage.getItem('token');
     try {
       accept ? setLoadingAcceptAdd(true) : setLoadingRejectAdd(true);
       const response = await createNoti(data, token);
       console.log(response);
       if (response?.statusCode === 200) {
-        dataUpdate && handleUpdateAction(dataUpdate);
+        dataUpdate && handleUpdateAction(dataUpdate, accept, update);
       }
     } catch (error) {
       console.log(error);
@@ -40,9 +40,10 @@ const NotificationItem = ({
     }
   };
 
-  const handleUpdateAction = async data => {
+  const handleUpdateAction = async (data, accept, update) => {
     const token = localStorage.getItem('token');
     try {
+      accept ? setLoadingAcceptAdd(true) : setLoadingRejectAdd(true);
       const response = await updateAction(notiId, data, token);
       console.log(response);
       if (response?.statusCode === 200) {
@@ -52,6 +53,9 @@ const NotificationItem = ({
     } catch (error) {
       console.log(error);
       toast.error();
+    } finally {
+      accept ? setLoadingAcceptAdd(true) : setLoadingRejectAdd(true);
+      update && setIsUpdate(!isUpdate);
     }
   };
 
@@ -65,7 +69,6 @@ const NotificationItem = ({
       const response = await addNewMember(groupId, addMemberData, token);
       console.log(response);
       if (response?.statusCode === 200) {
-        setIsUpdate(!isUpdate);
         if (idStudent !== userData?.id) {
           Swal.fire({
             title: 'Added Successful!',
@@ -110,7 +113,7 @@ const NotificationItem = ({
               id: groupId
             }
           };
-          handleCreateNoti(dataSent, dataUpdate, true);
+          handleCreateNoti(dataSent, dataUpdate, true, true);
           Swal.fire({
             title: 'Accept Successful!',
             text: `You became a new member of group!`,
@@ -125,7 +128,7 @@ const NotificationItem = ({
       toast.error(message);
       console.log(error);
     } finally {
-      setLoading(false);
+      setLoadingAcceptAdd(false);
     }
   };
 
@@ -136,13 +139,20 @@ const NotificationItem = ({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel.',
-      reverseButtons: true
+      reverseButtons: false
     }).then(result => {
       if (result.isConfirmed) {
         handleAddMember(studentSenderId);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
@@ -153,9 +163,10 @@ const NotificationItem = ({
       text: `Become a member of group:${groupName}!`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: 'Yes, join in',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel.',
-      reverseButtons: true
+      reverseButtons: false
     }).then(result => {
       if (result.isConfirmed) {
         handleAddMember(userData?.id);
@@ -171,9 +182,10 @@ const NotificationItem = ({
       text: 'Reject student join group!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes',
+      confirmButtonText: 'Yes, reject',
+      confirmButtonColor: '#dd6633',
       cancelButtonText: 'No, cancel.',
-      reverseButtons: true
+      reverseButtons: false
     }).then(result => {
       if (result.isConfirmed) {
         setLoadingRejectAdd(true);
@@ -199,14 +211,21 @@ const NotificationItem = ({
         };
         handleCreateNoti(dataSent, dataUpdate, false);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Cancelled this action!', 'error');
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Cancelled this action!',
+          icon: 'error',
+          confirmButtonText: 'OK', // Văn bản nút xác nhận
+          confirmButtonColor: '#d33' // Màu nút xác nhận
+        });
       }
     });
   };
 
   useEffect(() => {
+    console.log(loadingAcceptAdd);
     console.log(loadingRejectAdd);
-  }, [loadingRejectAdd]);
+  }, [loadingRejectAdd, loadingAcceptAdd]);
 
   return (
     <div className=" border shadow-md rounded-md p-3 w-full ">

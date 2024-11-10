@@ -34,10 +34,7 @@ export const ForgotPass = () => {
 
   return (
     <div className="w-full h-min-heigh-custom flex items-center justify-center">
-      <div
-        className="w-1/3 shadow-2xl p-6 gap-8 border
-                flex flex-col items-center justify-center rounded-lg"
-      >
+      <div className="w-1/3 shadow-2xl p-6 gap-8 border flex flex-col items-center justify-center rounded-lg">
         <h1 className="text-3xl font-semibold text-orange-600 font-Merriweather text-center">
           Welcome To Booking Mentor System
         </h1>
@@ -62,7 +59,7 @@ export const ForgotPass = () => {
               <div>
                 <Input
                   prefix={<MailOutlined className="mr-2" />}
-                  placeholder="email"
+                  placeholder="Email"
                   className="text-xl"
                   onChange={() => {
                     setIsValid(false);

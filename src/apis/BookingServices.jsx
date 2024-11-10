@@ -170,3 +170,19 @@ export const cancelBookingStudent = (id, token) =>
       reject(error);
     }
   });
+
+export const cancelPendingBooking = (id, token) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: 'post',
+        url: `api/student/cancel-pending-booking/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      resolve(response.data);
+    } catch (error) {
+      reject(error);
+    }
+  });
