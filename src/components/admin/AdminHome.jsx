@@ -71,6 +71,8 @@ export const AdminHome = () => {
   useEffect(() => {
     const fetchAllBooking = async () => {
       const response = await getAllBookingBySemesterId(selectedSemester, token);
+      console.log(response);
+
       if (response?.statusCode === 200) {
         response.bookingDTOList.map(booking => {
           const { status } = booking;
